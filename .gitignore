@@ -1,0 +1,4 @@
+*.pyc
+pygameui/*.pyc
+*.log
+.git
