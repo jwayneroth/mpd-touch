@@ -54,14 +54,14 @@ class ScreensaverScene(PiScene):
     mouse_down
     """
     def hit(self, pt):
-        #self.on_nav_change('NowPlaying', from_screensaver=True)
-        pass
+        self.on_nav_change('NowPlaying', from_screensaver=True)
 
     """
     key_down
     """
     def key_down(self, key, code):
-        self.on_nav_change('NowPlaying', from_screensaver=True)
+        #self.on_nav_change('NowPlaying', from_screensaver=True)
+        pass
 
     """
     make_screenaver
