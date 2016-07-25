@@ -4,6 +4,9 @@ import socket
 import subprocess
 import fmuglobals
 
+if fmuglobals.RUN_ON_RASPBERRY_PI:
+    import RPi.GPIO as GPIO
+
 """
 SettingsScene
  app settings
@@ -165,6 +168,7 @@ class SettingsScene(PiScene):
             if fmuglobals.RUN_ON_RASPBERRY_PI:
                 #pygame.display.quit()
                 #os.system("sudo shutdown -h now")
+                #GPIO.output(18, GPIO.LOW)
                 subprocess.Popen('sudo shutdown -h now', shell=True, stdout=subprocess.PIPE)
             else:
                 sys.exit()

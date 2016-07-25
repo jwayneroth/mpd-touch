@@ -2,7 +2,6 @@ import pygame
 import view
 import render
 import callback
-import iconbutton
 
 HORIZONTAL = 0
 VERTICAL = 1

@@ -68,7 +68,7 @@ class ImageView(view.View):
         self.surface = self._image
         if self.updated or force:
             self.updated = False
-            print 'ImageView::draw returning True'
+            #print 'ImageView::draw returning True'
             return True
 
 

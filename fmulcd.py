@@ -4,6 +4,7 @@ import random
 import sys
 from signal import alarm, signal, SIGALRM, SIGKILL
 import os
+import time
 import subprocess
 import logging
 from mpd_client import *
@@ -16,6 +17,13 @@ from controls import *
 from nowplaying import *
 from radio import *
 from settings import *
+from screensaver import *
+
+#if fmuglobals.RUN_ON_RASPBERRY_PI:
+#    import RPi.GPIO as GPIO
+#    GPIO.setmode(GPIO.BCM)
+#    GPIO.setup(18, GPIO.OUT)
+#    GPIO.output(18, GPIO.HIGH)
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 
@@ -34,8 +42,12 @@ logger.addHandler(fh)
 class FMU(object):
     def __init__(self):
         self.current = False
+        self.last = False
         self.screen_dimensions = (320,480)
         self.screen = False
+        self.ss_timer = 0
+        self.ss_timer_on = True
+        self.ss_delay = 12000
 
         if not mpd.connect():
             print 'failed to connect to mpd once'
@@ -65,7 +77,8 @@ class FMU(object):
             'Albums': AlbumListScene(rect), 
             'Radio': RadioScene(rect),
             'Settings': SettingsScene(rect),
-            'Controls': ControlsScene(rect)
+            'Controls': ControlsScene(rect),
+            'Screensaver': ScreensaverScene(rect)
         }
 
         for name,scene in self.scenes.iteritems():
@@ -122,12 +135,11 @@ class FMU(object):
         print '\nFMULCD::signal_handler: {}'.format(signal)
         time.sleep(1)
         pygame.display.quit()
-        pygame.quit()
-        sys.exit(0)
+        fmu.kill_app()
 
 
     """
-    change_scene
+    make_current_scene
     """
     def make_current_scene(self, scene):
         print 'FMULCD::make_current_scene \t' + scene.name
@@ -135,6 +147,7 @@ class FMU(object):
         #    return
         if self.current:
             self.current.exited()
+            self.last = self.current
         self.current = scene
         self.current.entered()
         self.current.refresh()
@@ -144,10 +157,33 @@ class FMU(object):
      called from a PiScene on_nav_change
      push requested scene to ui and refresh it
     """
-    def change_scene(self, scene_name, refresh=False):
+    def change_scene(self, scene_name, refresh=False, from_screensaver=False):
+        if from_screensaver:
+            self.ss_timer_on = True
+            if self.last:
+                self.make_current_scene(self.last)
+                return
         if refresh == True:
             self.scenes['Albums'].populate_artists_view()
         self.make_current_scene(self.scenes[scene_name])
+
+    def screensaver_tick(self, ms, activity):
+        if activity:
+            self.ss_timer = 0
+        else:
+            self.ss_timer += ms
+            if self.ss_timer >= self.ss_delay:
+                logger.debug('going to screensaver')
+                self.ss_timer_on = False
+                self.ss_timer = 0
+                self.change_scene('Screensaver')
+
+    def kill_app(self):
+        #if fmuglobals.RUN_ON_RASPBERRY_PI:
+        #    GPIO.output(18, GPIO.LOW)
+        pygame.quit()
+        sys.exit(0)
+
 
 """
 main
@@ -157,33 +193,36 @@ if __name__ == '__main__':
     fmu = FMU()
     clock = pygame.time.Clock()
     fps = 12 if fmuglobals.RUN_ON_RASPBERRY_PI else 30
+    ticks = 0
 
     while True:
-        clock.tick(fps)
+        ticks = clock.tick(fps)
+
         down_in_view = None
-        
+        user_active = False
+
         for e in pygame.event.get():
             
             if e.type == pygame.QUIT:
-                pygame.quit()
-                sys.exit(0)
+                fmu.kill_app()
                 break
             
             mousepoint = pygame.mouse.get_pos()
 
             if e.type == pygame.KEYDOWN:
+                user_active = True
                 if (( e.key == pygame.K_ESCAPE )):
-                    pygame.quit()
-                    sys.exit(0)
+                    fmu.kill_app()
                 else:
                     fmu.current.key_down(e.key, e.unicode)
                     break
            
             elif e.type == pygame.MOUSEBUTTONDOWN:
+                user_active = True
                 hit_view = fmu.current.hit(mousepoint)
                 
                 logger.debug('hit %s at %s' % (hit_view, mousepoint))
-                
+
                 if (hit_view is not None and
                     not isinstance(hit_view, ui.Scene)
                 ):
@@ -195,6 +234,7 @@ if __name__ == '__main__':
                     ui.focus.set(None)
             
             elif e.type == pygame.MOUSEBUTTONUP:
+                user_active = True
                 hit_view = fmu.current.hit(mousepoint)
                 if hit_view is not None:
                     if down_in_view and hit_view != down_in_view:
@@ -205,12 +245,16 @@ if __name__ == '__main__':
                 down_in_view = None
             
             elif e.type == pygame.MOUSEMOTION:
+                user_active = True
                 if down_in_view and down_in_view.draggable:
                     pt = down_in_view.from_window(mousepoint)
                     down_in_view.mouse_drag(pt, e.rel)
                 else:
                     fmu.current.mouse_motion(mousepoint)
 
+        if fmu.ss_timer_on:
+            fmu.screensaver_tick(ticks, user_active)
+        
         fmu.current.update()
         
         if fmu.current.draw():

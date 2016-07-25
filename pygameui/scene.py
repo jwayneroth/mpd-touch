@@ -34,8 +34,7 @@ class Scene(view.View):
             self.updated = False
            
             if self.background_color is not None:
-                #print 'Scene filling BG'
-                render.fillrect(self.surface, self.background_color, rect=pygame.Rect((0, 0), self.frame.size))
+                render.fillrect(self.surface, (self.background_color), rect=pygame.Rect((0, 0), self.frame.size))
 
             for child in self.children:
                 if not child.hidden:

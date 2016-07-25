@@ -11,7 +11,7 @@ NowPlayingScene
 """
 class NowPlayingScene(PiScene):
     def __init__(self, frame=None):
-        
+
         PiScene.__init__(self, frame, 'NowPlaying')
 
         self.has_nav = True
@@ -30,9 +30,9 @@ class NowPlayingScene(PiScene):
         self.cover_image_directory = self.image_directory + 'covers'
 
         self.make_labels()
-        
+
         #self.scroller = TrackScroller(self.components['track'], 1, self.frame.right)
-        
+
         #self.main.add_child(self.labels)
 
     """
@@ -40,7 +40,7 @@ class NowPlayingScene(PiScene):
     """
     def key_down(self, key, code):
         ui.Scene.key_down(self,key,code)
-        
+
         if key == pygame.K_RIGHT or  key == pygame.K_LEFT or key == pygame.K_RETURN:
             self.key_down_sidebar(key)
 
@@ -73,14 +73,14 @@ class NowPlayingScene(PiScene):
             ui.Rect(
                 0,
                 self.label_height * 2 + self.margins * 2,
-                self.main.frame.width, 
+                self.main.frame.width,
                 self.cover_size
             ),
             self.get_cover_image(),
             ui.Rect(
                 0,
-                self.label_height * 2 + self.margins * 2, 
-                self.main.frame.width, 
+                self.label_height * 2 + self.margins * 2,
+                self.main.frame.width,
                 self.cover_size
             )
         )
@@ -116,7 +116,7 @@ class NowPlayingScene(PiScene):
 
         self.stylize()
 
-        PiScene.entered(self)
+        #PiScene.entered(self)
 
     """
     exited
@@ -129,9 +129,9 @@ class NowPlayingScene(PiScene):
     radio_track_settings
     """
     def radio_track_settings(self, on_off):
-        
+
         track = self.components['track']
-        
+
         if on_off == True:
             track.halign = ui.LEFT
             self.resize_track()
@@ -157,7 +157,7 @@ class NowPlayingScene(PiScene):
     """
     def update(self):
         PiScene.update(self)
-        if mpd.now_playing.playing_type == 'radio': 
+        if mpd.now_playing.playing_type == 'radio':
         #if 1:
             track = self.components['track']
             track.frame.left = track.frame.left - self.track_scroll_velocity
@@ -176,7 +176,7 @@ class NowPlayingScene(PiScene):
                 event = mpd.events.popleft()
 
                 #print 'NowPlaying::on_mpd_update \t ' + event
-                
+
                 if event == 'radio_mode_on':
                     print 'NowPlayingScene::on_mpd_update: \t radio_mode_on'
                     self.radio_track_settings(True)
@@ -229,7 +229,7 @@ class NowPlayingScene(PiScene):
                 return ui.get_image(self.get_default_cover_image())
 
 
-        file_dir = self.music_directory + os.path.dirname(mpd.now_playing.file) 
+        file_dir = self.music_directory + os.path.dirname(mpd.now_playing.file)
         file_name = file_dir + '/' + 'cover_art.jpg'
 
         print 'NowPlaying::get_cover_image: ' + file_name
@@ -245,10 +245,10 @@ class NowPlayingScene(PiScene):
                 else:
                     print '\t no cover art data'
                     return ui.get_image( self.get_default_cover_image() )
-            
+
                 with open(file_name, 'wb') as img:
                     img.write(art_data)
-            
+
             except IOError, e:
                 print '\t no music file'
                 return ui.get_image( self.get_default_cover_image() )
@@ -261,7 +261,7 @@ class NowPlayingScene(PiScene):
     get_default_cover_image
     """
     def get_default_cover_image(self):
-        defaults = [name for name in os.listdir( self.default_cover_image_directory ) if os.path.isfile( self.default_cover_image_directory + '/' + name )]   
+        defaults = [name for name in os.listdir( self.default_cover_image_directory ) if os.path.isfile( self.default_cover_image_directory + '/' + name )]
         return self.default_cover_image_directory + '/' + defaults[random.randrange(0, len(defaults))]
 
 """
@@ -270,7 +270,7 @@ CoverView
 """
 class CoverView(ui.ImageView):
     def __init__(self, frame, img, parent_frame, content_mode=1):
-        
+
         #ui.ImageView.__init__(self, frame, img)
 
         if img == None:
@@ -291,7 +291,7 @@ class CoverView(ui.ImageView):
         self.parent_frame = parent_frame
 
         #assert self.padding[0] == 0 and self.padding[1] == 0
-        
+
         if self.content_mode == 0:
             self._image = ui.resource.scale_image(self.image, frame.size)
         elif self.content_mode == 1:
@@ -311,7 +311,7 @@ class CoverView(ui.ImageView):
         return self._image
 
     @image.setter
-    def image(self, new_image):        
+    def image(self, new_image):
         try:
             self._image = ui.resource.scale_to_fit(new_image, self._max_frame.size)
         except:
@@ -321,7 +321,7 @@ class CoverView(ui.ImageView):
             pf = self.parent_frame
 
             try:
-                f = self.frame   
+                f = self.frame
                 if self._image.get_width() < pf.width:
                     f.left = (pf.width - self._image.get_width() ) / 2
             except:
