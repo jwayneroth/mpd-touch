@@ -58,7 +58,7 @@ class PiScene(ui.Scene):
             ('Settings','cog'),
             ('Controls','volume-down')
         ]
-        
+
         btn_x = 0
 
         for btn_data in btns:
@@ -73,7 +73,7 @@ class PiScene(ui.Scene):
             btn_x = btn_x + self.btn_size + self.margins
             btn.on_clicked.connect(self.sidebar_btn_clicked)
             btn.tag_name = btn_data[0]
-            
+
             if btn_data[0] == self.name:
                 btn.state = 'selected'
             sidebar.add_child(btn)
@@ -94,7 +94,7 @@ class PiScene(ui.Scene):
                 self.frame.height - self.sidebar.frame.height # - self.margins - self.margins
             )
         )
-    
+
         return main
 
     """
@@ -108,9 +108,9 @@ class PiScene(ui.Scene):
             self.frame.width - self.modal_left_right_margin * 2,
             self.frame.height - self.modal_top_bottom_margin * 2
         ))
-        
+
         controls.on_dismissed.connect(self.onControlsDismissed)
-        
+
         return controls
 
     """
@@ -135,7 +135,7 @@ class PiScene(ui.Scene):
         #print 'key_down key: ' + str(key) + ' code: ' + str(code)
 
         ui.Scene.key_down(self,key,code)
-        
+
         if self.main_active == True:
             self.key_down_main(key)
         else:
@@ -154,7 +154,6 @@ class PiScene(ui.Scene):
     key_down_sidebar
     """
     def key_down_sidebar(self, key):
-
         if key == pygame.K_LEFT:
             if self.active_sidebar_btn > 0:
                 if self.sidebar_btns[self.active_sidebar_btn].tag_name == self.name:
@@ -210,13 +209,13 @@ class PiScene(ui.Scene):
     """
     update
     """
-    def update(self): 
+    def update(self):
         #ui.Scene.update(self, dt)
         if self.is_mpd_listener == True:
             if mpd.status_get():
                 self.on_mpd_update()
 
-    """ 
+    """
     on_mpd_update
     """
     def on_mpd_update(self):
@@ -237,7 +236,7 @@ class PiMain(ui.View):
 
         if self.updated or force:
             self.updated = False
-           
+
             for child in self.children:
                 if not child.hidden:
                     child.draw(True)

@@ -13,9 +13,9 @@ SettingsScene
 """
 class SettingsScene(PiScene):
     def __init__(self, frame=None):
-        
+
         PiScene.__init__(self, frame, 'Settings')
-        
+
         self.sidebar_index = 3
         self.active_sidebar_btn = 3
 
@@ -43,7 +43,7 @@ class SettingsScene(PiScene):
         # up
         #
         if key == pygame.K_UP:
-            
+
             if self.active_btn_index == 0:
                 self.active_btn.state = 'normal'
                 self.main_active = False
@@ -61,14 +61,14 @@ class SettingsScene(PiScene):
 
         #
         # down
-        #  
+        #
         elif key == pygame.K_DOWN:
-            
+
             new_index = self.active_btn_index + 1
-            
+
             if new_index >= len(self.btns):
                 return
-                
+
             self.active_btn.state = 'normal'
             self.active_btn = self.btns[new_index]
             self.active_btn.state = 'focused'
@@ -84,7 +84,7 @@ class SettingsScene(PiScene):
             self.main_active = False
             self.active_sidebar_btn = 0
             self.sidebar_btns[self.active_sidebar_btn].state = 'focused'
-        
+
         #
         # right
         #
@@ -95,7 +95,7 @@ class SettingsScene(PiScene):
         # return
         #
         elif key == pygame.K_RETURN:
-            
+
             self.active_btn.on_clicked(self.active_btn, False)
 
     """
@@ -110,8 +110,8 @@ class SettingsScene(PiScene):
             { 'name':'reboot', 'icon_class':'signal', 'text':'Restart Pi' },
             { 'name':'shutdown', 'icon_class':'off', 'text':'Shutdown' }
         ]
-        
-        scr_y = 0 
+
+        scr_y = 0
 
         for data in btn_data:
 
@@ -147,11 +147,11 @@ class SettingsScene(PiScene):
             s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
             s.connect(('google.com', 0))
             ip_address = s.getsockname()[0]
-            
+
             #print 'SettingsScene::make_buttons \t ip: ' + ip_address
 
             self.main.add_child(ui.Label(
-                ui.Rect(icon.frame.right + self.margins,scr_y,self.main.frame.width,self.label_height), 
+                ui.Rect(icon.frame.right + self.margins,scr_y,self.main.frame.width,self.label_height),
                 "IP: " + ip_address,
                 halign=ui.LEFT,
                 valign=ui.CENTER
@@ -166,38 +166,34 @@ class SettingsScene(PiScene):
     def on_btn_clicked(self, btn, mouse_btn):
         if btn.name == 'shutdown':
             if fmuglobals.RUN_ON_RASPBERRY_PI:
-                #pygame.display.quit()
-                #os.system("sudo shutdown -h now")
                 #GPIO.output(18, GPIO.LOW)
+                logger.debug('calling shutdown')
                 subprocess.Popen('sudo shutdown -h now', shell=True, stdout=subprocess.PIPE)
             else:
                 sys.exit()
         elif btn.name == 'reboot':
             if fmuglobals.RUN_ON_RASPBERRY_PI:
-                #pygame.display.quit()
-                #os.system("sudo shutdown -r now")
+                logger.debug('calling reboot now')
                 subprocess.Popen('sudo shutdown -r now', shell=True, stdout=subprocess.PIPE)
             else:
                 sys.exit()
         elif btn.name == 'update':
             mpd.library_rescan()
             pygame.time.wait(5000)
-            #scenes['Albums'].populate_artists_view()
-            #print 'attempted artist repopulated'
-            #ui.scene.push(scenes['Albums'])
-            #scenes['Albums'].refresh()
             self.on_nav_change('Albums', True)
 
         elif btn.name == 'restart':
             if fmuglobals.RUN_ON_RASPBERRY_PI:
                 #pygame.display.quit()
                 #os.system("sudo service fmulcd restart")
+                logger.debug('requesting fmulcd service restart')
                 subprocess.Popen('sudo service fmulcd restart', shell=True, stdout=subprocess.PIPE)
             else:
                 import sys
                 sys.exit()
         elif btn.name == 'quit':
-            import pygame 
+            logger.debug('quitting fmulcd')
+            import pygame
             pygame.quit()
             import sys
             sys.exit(0)

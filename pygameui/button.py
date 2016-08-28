@@ -72,7 +72,7 @@ class ImageButton(view.View):
 IconButton
 """
 class IconButton(Button):
-    def __init__(self, frame, icon_class='cd', font_size=30):
+    def __init__(self, frame, icon_class='cd', caption=''):
         self.classes = {
             'asterisk'               : u'\u002a',
             'plus'                   : u'\u002b',
@@ -342,8 +342,14 @@ class IconButton(Button):
         self._icon_class = icon_class
 
         caption = self.get_caption( icon_class )
-        
+
         Button.__init__(self, frame, caption)
+
+    def __repr__(self):
+        if self._icon_class is None:
+            return ''
+        return self._icon_class
+
 
     @property
     def icon_class(self):
@@ -370,22 +376,22 @@ class IconButton(Button):
         #                 self.text_shadow_offset is not None)
 
         self.text_size = self._render_line(self._text, None)
-        
+
 
     def _render_line(self, line_text, wants_shadows):
-        
+
         #line_text = u'\u002a'
 
         try:
 
             text_surface = self.font.render(line_text, True, self.text_color)
-        
+
             self.text_surfaces.append(text_surface)
-        
+
             if wants_shadows:
                 text_shadow_surface = self.font.render(line_text, True, self.text_shadow_color)
                 self.text_shadow_surfaces.append(text_shadow_surface)
-        
+
             return text_surface.get_size()
 
         except:

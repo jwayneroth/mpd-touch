@@ -2,6 +2,7 @@ import pygame
 import view
 import render
 import callback
+import button
 
 HORIZONTAL = 0
 VERTICAL = 1
@@ -125,14 +126,14 @@ class VBar(ScrollbarView):
 
     def __init__(self, scroll_view):
         self.btn_size = 45
-       
+
         height = scroll_view.frame.h - SCROLLBAR_SIZE - self.btn_size * 2
-        
+
         frame = pygame.Rect(0, self.btn_size, SCROLLBAR_SIZE, height)
-        
+
         #frame.bottom = frame.bottom - self.btn_size
         frame.right = scroll_view.frame.w
-        
+
         view.View.__init__(self, frame)
 
         self.direction = VERTICAL
@@ -150,18 +151,18 @@ class VBar(ScrollbarView):
         self.thumb.frame.centerx = SCROLLBAR_SIZE // 2
 
         self.frame.right = self.scroll_view.frame.w
-        
+
         off_x = self.scroll_view._content_offset[0]
         off_y = self.thumb.frame.top / float(self.frame.h)
-        
+
         self.scroll_view.set_content_offset(off_x, off_y)
-        
+
         percentage = (self.scroll_view.frame.h / float(self.scroll_view.content_view.frame.h))
-        
+
         #print 'VBar::_update_thumb pct:' + str(percentage) + ' h: ' + str(self.thumb.frame.h)
 
         self.thumb.frame.h = self.frame.h * percentage
-  
+
         if (self.scroll_view.vscrollbar.hidden): # and not self.scroll_view.hscrollbar.hidden):
             self.frame.h = self.scroll_view.frame.h - self.btn_size * 2
 
@@ -228,7 +229,7 @@ class ScrollView(view.View):
         #print self.__class__.__name__ + '::draw'
 
         if not self.vscrollbar.hidden and not self.hscrollbar.hidden:
-            hole = pygame.Rect(self.vscrollbar.frame.left, self.vscrollbar.frame.bottom, SCROLLBAR_SIZE, SCROLLBAR_SIZE) 
+            hole = pygame.Rect(self.vscrollbar.frame.left, self.vscrollbar.frame.bottom, SCROLLBAR_SIZE, SCROLLBAR_SIZE)
             render.fillrect(self.surface, self.hole_color, hole)
 
         return True
@@ -238,9 +239,9 @@ ScrollBox
 """
 class ScrollBox(ScrollView):
     def __init__(self, frame, content_view):
-        
+
         self.btn_size = 45
-        
+
         width = frame.size[0] + SCROLLBAR_SIZE
         height = frame.size[1] + SCROLLBAR_SIZE
         rect = pygame.Rect(frame.topleft, (width, height))
@@ -251,6 +252,31 @@ class ScrollBox(ScrollView):
         self.content_view = content_view
         self.vscrollbar = VBar(self)
 
+        """
+        icon_down = button.IconButton(
+            pygame.Rect(width - self.btn_size,
+                    0,
+                    self.btn_size,
+                    self.btn_size),
+            'chevron-down',
+            12)
+        icon_up = button.IconButton(
+            pygame.Rect(width - self.btn_size,
+                    height - self.btn_size,
+                    self.btn_size,
+                    self.btn_size),
+            'chevron-up',
+            12)
+        icon_down.tag_name = 'Down'
+        icon_up.tag_name ='Up'
+        icon_down.on_clicked.connect(self.on_page_nav_clicked)
+        icon_up.on_clicked.connect(self.on_page_nav_clicked)
+        self.icon_down = icon_down
+        self.icon_up = icon_up
+        self.add_child(self.icon_down)
+        self.add_child(self.icon_up)
+        """
+
         self.add_child(self.content_view)
         self.add_child(self.vscrollbar)
 
@@ -259,6 +285,53 @@ class ScrollBox(ScrollView):
 
         if not self.scrollable:
             self.vscrollbar.hidden = True
+
+    def on_page_nav_clicked(self, btn, mouse_btn):
+        pass
+        """
+        idx = 1
+        if btn == self.page_down:
+            for button in self.child_btns[self.current_child_index][idx:]:
+                btn_y = button.frame.top + self.label_height
+                offset = self.current_child.content_view.frame.top
+                btn_vy = btn_y + offset
+
+                if btn_vy > self.current_child.frame.height:
+                    #self.active_btn.state = 'normal'
+                    #self.active_btn = button
+
+                    pct = (self.current_child.frame.height - self.label_height) / float(self.current_child.content_view.frame.h)
+                    self.current_child.do_scroll(pct, 'down')
+
+                    #self.active_btn.state = 'focused'
+                    #self.active_btn_index = idx
+                    #self.sibling_active = False
+
+                    break
+
+                idx += 1
+
+        else:
+            for button in self.child_btns[self.current_child_index][idx:]:
+                btn_y = button.frame.top + self.label_height
+                offset = self.current_child.content_view.frame.top
+                btn_vy = btn_y + offset
+
+                if btn_vy < 0:
+                    #self.active_btn.state = 'normal'
+                    #self.active_btn = button
+
+                    pct = (self.current_child.frame.height - self.label_height) / float(self.current_child.content_view.frame.h)
+                    self.current_child.do_scroll(pct, 'up')
+
+                    #self.active_btn.state = 'focused'
+                    #self.active_btn_index = idx
+                    #self.sibling_active = False
+
+                    break
+
+                idx += 1
+    """
 
     def update_content_view(self, content_view):
         self.rm_child(self.content_view)
@@ -312,7 +385,7 @@ class ScrollBox(ScrollView):
             return False
 
         if not self.vscrollbar.hidden:
-            hole = pygame.Rect(self.vscrollbar.frame.left, self.vscrollbar.frame.bottom, SCROLLBAR_SIZE, SCROLLBAR_SIZE) 
+            hole = pygame.Rect(self.vscrollbar.frame.left, self.vscrollbar.frame.bottom, SCROLLBAR_SIZE, SCROLLBAR_SIZE)
             render.fillrect(self.surface, self.hole_color, hole)
 
         return True
