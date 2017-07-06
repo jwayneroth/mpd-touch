@@ -179,6 +179,7 @@ class SettingsScene(PiScene):
                 sys.exit()
         elif btn.name == 'update':
             mpd.library_rescan()
+            import pygame
             pygame.time.wait(5000)
             self.on_nav_change('Albums', True)
 

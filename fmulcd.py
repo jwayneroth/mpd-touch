@@ -27,7 +27,7 @@ ch = logging.StreamHandler()
 ch.setLevel(logging.DEBUG)
 fh = logging.FileHandler('/var/log/fmulcd.log', 'a')
 fh.setLevel(logging.DEBUG)
-formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+formatter = logging.Formatter('%(asctime)s_%(name)s_%(levelname)s - %(message)s')
 ch.setFormatter(formatter)
 fh.setFormatter(formatter)
 logger.addHandler(ch)
@@ -116,7 +116,7 @@ class FMU(object):
     signal_handler
     """
     def signal_handler(self, signal, frame):
-        print '\nFMULCD::signal_handler: {}'.format(signal)
+        print '\FMU::signal_handler: {}'.format(signal)
         time.sleep(1)
         pygame.display.quit()
         fmu.kill_app()
@@ -126,7 +126,7 @@ class FMU(object):
     make_current_scene
     """
     def make_current_scene(self, scene):
-        print 'FMULCD::make_current_scene \t' + scene.name
+        logger.debug('FMU::make_current_scene \t' + scene.name)
         #if self.current == scene:
         #    return
         if self.current:

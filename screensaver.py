@@ -93,8 +93,6 @@ class ScreensaverScene(PiScene):
     """
     def entered(self):
 
-        print 'Screensaver::entered'
-
         PiScene.entered(self)
 
         self.stylize()
@@ -103,7 +101,7 @@ class ScreensaverScene(PiScene):
     exited
     """
     def exited(self):
-        print 'Screensaver exited'
+        logger.debug('Screensaver exited')
 
     """
     update

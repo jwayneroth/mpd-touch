@@ -204,6 +204,7 @@ class PiScene(ui.Scene):
     entered
     """
     def entered(self):
+        logger.debug(self.name + ' entered.')
         ui.Scene.entered(self)
 
     """
