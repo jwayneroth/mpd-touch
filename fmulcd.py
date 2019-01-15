@@ -34,7 +34,7 @@ import ttk as ttk
 from mpd_client import *
 
 #from albumlist import *
-#from controls import *
+from controls import *
 from nowplaying import *
 #from radio import *
 #from settings import *
@@ -54,7 +54,7 @@ class FMU(object):
 		self.container = tk.Frame(self.root, width=320, height=480)
 		#self.container.grid()
 		self.container.pack(side=tk.TOP, fill=tk.BOTH, expand=tk.YES)
-		self.sidebar = self.make_sidebar()
+		self.toolbar = self.make_toolbar()
 		self.main = self.make_main()
 		self.root.title('FMU Player')
 		
@@ -76,13 +76,12 @@ class FMU(object):
 			#'Albums': AlbumListScene(rect),
 			#'Radio': RadioScene(rect),
 			#'Settings': SettingsScene(rect),
-			#'Controls': ControlsScene(rect),
+			'Controls': ControlsScene(self.main),
 			#'Screensaver': ScreensaverScene(rect)
 		}
 		
 		for name,scene in self.scenes.iteritems():
-			pass
-			#scene.on_nav_change.connect(self.change_scene)
+			scene.on_nav_change.connect(self.change_scene)
 		
 		print 'created scenes'
 		
@@ -90,9 +89,9 @@ class FMU(object):
 		
 		#self.ab = buttons.AnalogButtons()
 		
-	def make_sidebar(self):
+	def make_toolbar(self):
 		
-		sidebar = tk.Frame(self.container)
+		toolbar = tk.Frame(self.container)
 		
 		btns = [
 			('NowPlaying','cd'),
@@ -102,23 +101,18 @@ class FMU(object):
 			('Controls','volume-down')
 		]
 		
-		btn_col = 0;
-		
 		for btn_data in btns:
 			btn_img = tk.PhotoImage(file='images/icon.gif', width=20, height=20)# + btn_data[1])
-			btn = tk.Button(sidebar, image=btn_img, width=50, height=50)
+			btn = tk.Button(toolbar, image=btn_img, width=50, height=50)
 			btn.image = btn_img
 			def cb(evt, self=self, btn_data=btn_data):
-				return self.sidebar_btn_clicked(evt, btn_data[0])
+				return self.toolbar_btn_clicked(evt, btn_data[0])
 			btn.bind('<Button-1>', cb)
-			#btn.grid(row=0, column=btn_col)
 			btn.pack(side=tk.LEFT, expand=tk.YES)
-			btn_col = btn_col + 1
 		
-		#sidebar.grid(row=0, column=0, sticky=tk.N+tk.E+tk.W)
-		sidebar.pack(side=tk.TOP, anchor=tk.W, fill=tk.X, expand=tk.YES)
+		toolbar.pack(side=tk.TOP, anchor=tk.W, fill=tk.X, expand=tk.YES)
 		
-		return sidebar
+		return toolbar
 	
 	def make_main(self):
 		main = tk.Frame(self.container)
@@ -126,14 +120,12 @@ class FMU(object):
 		main.pack(side=tk.TOP, anchor=tk.W, fill=tk.X, expand=tk.YES)
 		return main
 		
-	def sidebar_btn_clicked(self, evt, btn):
-		"""
-		btn.state = 'normal'
+	def toolbar_btn_clicked(self, evt, btn):
+		logger.debug('toolbar_btn_clicked: %s' % btn)
+		#btn.state = 'normal'
 		self.main_active = True
-		self.on_main_active()
-		self.on_nav_change(btn.tag_name)
-		"""
-		logger.debug('sidebar_btn_clicked: %s' % btn)
+		#self.on_main_active()
+		self.scenes[btn].on_nav_change()
 		
 	"""
 	init_pygame
@@ -194,15 +186,18 @@ class FMU(object):
 			self.current.exited()
 			self.last = self.current
 		self.current = scene
+		self.current.frame.tkraise()
 		self.current.entered()
 		self.current.refresh()
-
+		
 	"""
 	change_scene
 	 called from a PiScene on_nav_change
 	 push requested scene to ui and refresh it
 	"""
 	def change_scene(self, scene_name, refresh=False, from_screensaver=False):
+		logger.debug('FMU::change_scene to %s' % scene_name)
+		
 		if from_screensaver:
 			self.ss_timer_on = True
 			if self.last:

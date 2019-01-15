@@ -1,5 +1,7 @@
+import Tkinter as tk
 from mpd_client import *
 #import pygameui as ui
+import callback
 
 """
 PiScene
@@ -10,7 +12,9 @@ class PiScene():
 	def __init__(self, frame=None, name='PiScene'):
 		
 		#ui.Scene.__init__(self, frame)
-		self.frame = frame
+		self.frame = tk.Frame(frame)
+		#self.frame.pack(anchor=tk.N, fill=tk.BOTH, expand=tk.YES)#frame
+		self.frame.grid(row=0, column=0, sticky=tk.N+tk.S+tk.E+tk.W)
 		self.name = name
 		self.margins = 15
 		self.btn_size = 45
@@ -33,8 +37,8 @@ class PiScene():
 		#self.add_child(self.sidebar)
 		#self.add_child(self.main)
 		
-		#self.on_nav_change = callback.Signal()
-
+		self.on_nav_change = callback.Signal()
+		
 	"""
 	make_sidebar
 	"""
