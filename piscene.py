@@ -8,9 +8,9 @@ PiScene
 """
 class PiScene():
 	def __init__(self, frame=None, name='PiScene'):
-
+		
 		#ui.Scene.__init__(self, frame)
-
+		self.frame = frame
 		self.name = name
 		self.margins = 15
 		self.btn_size = 45
@@ -25,15 +25,15 @@ class PiScene():
 		self.main_active = False
 		self.sidebar_index = 0
 		self.active_sidebar_btn = 0
-
+		
 		#self.sidebar = self.make_sidebar()
-		self.main = self.make_main()
+		#self.main = self.make_main()
 		#self.controls = self.make_controls()
-
-		self.add_child(self.sidebar)
-		self.add_child(self.main)
-
-		self.on_nav_change = callback.Signal()
+		
+		#self.add_child(self.sidebar)
+		#self.add_child(self.main)
+		
+		#self.on_nav_change = callback.Signal()
 
 	"""
 	make_sidebar
@@ -167,7 +167,8 @@ class PiScene():
 	entered
 	"""
 	def entered(self):
-		ui.Scene.entered(self)
+		pass
+		#ui.Scene.entered(self)
 
 	"""
 	update

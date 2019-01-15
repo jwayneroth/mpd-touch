@@ -139,8 +139,10 @@ class MPDNowPlaying(object):
 class MPDController(object):
 	""" Controls playback and volume
 	"""
-
+	
 	def __init__(self):
+		logger.debug('MPDController::init')
+		
 		self.host = 'localhost'
 		self.port = 6600
 		self.mpd_client = PersistentMPDClient(None, self.host, self.port); #python_mpd2.MPDClient()
@@ -178,6 +180,9 @@ class MPDController(object):
 		print ', '.join("%s=%r" % (key,val) for (key,val) in dict.iteritems())
 
 	def connect(self):
+		
+		logger.debug('MPDController::connect')
+		
 		""" Connects to mpd server.
 
 			:return: Boolean indicating if successfully connected to mpd server.
@@ -200,12 +205,13 @@ class MPDController(object):
 		#except Exception:
 		#	 pass
 
-		#self.__starts_with_radio()
+		self.__starts_with_radio()
 
 		return True
 
 	def __starts_with_radio(self):
-
+		logger.debug('MPDController::__starts_with_radio')
+		
 		was_playing = False	 # Indicates whether mpd was playing on start
 		now_playing = MPDNowPlaying()
 

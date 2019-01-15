@@ -1,27 +1,11 @@
 #!/usr/bin/python
 
-import random
 import sys
-from signal import alarm, signal, SIGALRM, SIGKILL
 import os
-import time
-import subprocess
-import logging
-from mpd_client import *
-import fmuglobals
-#import buttons
-#import pygameui as ui
-import Tkinter as tk
-import ttk as ttk
-
-#from albumlist import *
-#from controls import *
-from nowplaying import *
-#from radio import *
-#from settings import *
-#from screensaver import *
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
+
+import logging
 
 logger = logging.getLogger('fmu_logger')
 logger.setLevel(logging.DEBUG)
@@ -35,6 +19,27 @@ fh.setFormatter(formatter)
 logger.addHandler(ch)
 logger.addHandler(fh)
 
+import random
+
+from signal import alarm, signal, SIGALRM, SIGKILL
+
+import time
+import subprocess
+import fmuglobals
+#import buttons
+#import pygameui as ui
+import Tkinter as tk
+import ttk as ttk
+
+from mpd_client import *
+
+#from albumlist import *
+#from controls import *
+from nowplaying import *
+#from radio import *
+#from settings import *
+#from screensaver import *
+
 class FMU(object):
 	def __init__(self):
 		self.current = False
@@ -46,8 +51,11 @@ class FMU(object):
 		self.ss_delay = 60000
 		
 		self.root = tk.Tk()
-		self.container = tk.Frame(self.root, width=320, height=480, borderwidth=0).grid()
-		self.make_sidebar()
+		self.container = tk.Frame(self.root, width=320, height=480)
+		#self.container.grid()
+		self.container.pack(side=tk.TOP, fill=tk.BOTH, expand=tk.YES)
+		self.sidebar = self.make_sidebar()
+		self.main = self.make_main()
 		self.root.title('FMU Player')
 		
 		if fmuglobals.RUN_ON_RASPBERRY_PI:
@@ -55,35 +63,36 @@ class FMU(object):
 			os.environ["SDL_NOMOUSE"] = "1"
 			os.environ['SDL_MOUSEDEV'] = '/dev/input/touchscreen'
 			os.environ['SDL_MOUSEDRV'] = 'TSLIB'
-
+		
 		#self.init_pygame()
-
+		
 		#ui.theme.init()
 		#ui.theme.use_theme(ui.theme.dark_theme)
 
 		#rect = pygame.Rect((0,0),self.screen_dimensions)
 
 		self.scenes = {
-			'NowPlaying': NowPlayingScene(rect),
+			'NowPlaying': NowPlayingScene(self.main),
 			#'Albums': AlbumListScene(rect),
 			#'Radio': RadioScene(rect),
 			#'Settings': SettingsScene(rect),
 			#'Controls': ControlsScene(rect),
 			#'Screensaver': ScreensaverScene(rect)
 		}
-
+		
 		for name,scene in self.scenes.iteritems():
-			scene.on_nav_change.connect(self.change_scene)
-
+			pass
+			#scene.on_nav_change.connect(self.change_scene)
+		
 		print 'created scenes'
-
+		
 		self.make_current_scene(self.scenes['NowPlaying'])
-
+		
 		#self.ab = buttons.AnalogButtons()
-	
+		
 	def make_sidebar(self):
 		
-		sidebar = tk.Frame(self.container, borderwidth=0)
+		sidebar = tk.Frame(self.container)
 		
 		btns = [
 			('NowPlaying','cd'),
@@ -97,15 +106,25 @@ class FMU(object):
 		
 		for btn_data in btns:
 			btn_img = tk.PhotoImage(file='images/icon.gif', width=20, height=20)# + btn_data[1])
-			btn = tk.Button(sidebar, image=btn_img, width=50, height=50, borderwidth=0)
+			btn = tk.Button(sidebar, image=btn_img, width=50, height=50)
 			btn.image = btn_img
 			def cb(evt, self=self, btn_data=btn_data):
 				return self.sidebar_btn_clicked(evt, btn_data[0])
 			btn.bind('<Button-1>', cb)
-			btn.grid(row=0, column=btn_col)
+			#btn.grid(row=0, column=btn_col)
+			btn.pack(side=tk.LEFT, expand=tk.YES)
 			btn_col = btn_col + 1
 		
-		sidebar.grid(row=0, column=0, sticky=tk.N)
+		#sidebar.grid(row=0, column=0, sticky=tk.N+tk.E+tk.W)
+		sidebar.pack(side=tk.TOP, anchor=tk.W, fill=tk.X, expand=tk.YES)
+		
+		return sidebar
+	
+	def make_main(self):
+		main = tk.Frame(self.container)
+		#main.grid(row=1, column=0, sticky=tk.N+tk.E+tk.W)
+		main.pack(side=tk.TOP, anchor=tk.W, fill=tk.X, expand=tk.YES)
+		return main
 		
 	def sidebar_btn_clicked(self, evt, btn):
 		"""
@@ -216,15 +235,23 @@ main
 """
 if __name__ == '__main__':
 	logger.debug('fmulcd started')
+	
+	mpd.status_get()
+	
 	fmu = FMU()
+	
 	#clock = pygame.time.Clock()
 	#fps = 12 if fmuglobals.RUN_ON_RASPBERRY_PI else 30
 	#ticks = 0
 	
-	fmu.root.mainloop()
+	#fmu.root.mainloop()
 	
-	"""
 	while True:
+		
+		fmu.root.update_idletasks()
+		fmu.root.update()
+		
+		"""
 		ticks = clock.tick(fps)
 
 		down_in_view = None
@@ -290,14 +317,17 @@ if __name__ == '__main__':
 
 		if fmu.ss_timer_on:
 			fmu.screensaver_tick(ticks, user_active)
-
-		fmu.current.update()
-
-		if fmu.current.draw():
-
-			fmu.screen.blit(fmu.current.surface, (0, 0))
-
-			pygame.display.flip()
-
-		#time.sleep(.05)
 		"""
+		
+		
+		fmu.current.update()
+		
+		"""
+		if fmu.current.draw():
+			
+			fmu.screen.blit(fmu.current.surface, (0, 0))
+			
+			pygame.display.flip()
+		"""
+		
+		time.sleep(.05)

@@ -1,8 +1,12 @@
 import fmuglobals
+import Tkinter as tk
 from piscene import *
 import thread
 import time
 import os
+
+import logging
+logger = logging.getLogger('fmu_logger')
 
 """
 NowPlayingScene
@@ -11,6 +15,8 @@ NowPlayingScene
 """
 class NowPlayingScene(PiScene):
 	def __init__(self, frame=None):
+		logger.debug('NowPlaying::init')
+		logger.debug('mpd host %s' % mpd.host)
 		
 		PiScene.__init__(self, frame, 'NowPlaying')
 		
@@ -18,7 +24,7 @@ class NowPlayingScene(PiScene):
 		self.is_mpd_listener = True
 		self.cover_size = 160
 		self.label_height = 20
-		self.track_scroll_velocity = 1
+		self.track_scroll_velocity = 3
 		if fmuglobals.RUN_ON_RASPBERRY_PI == True:
 			self.track_scroll_velocity = 3
 		self.main_active = False
@@ -28,7 +34,8 @@ class NowPlayingScene(PiScene):
 			self.image_directory = os.path.dirname(__file__) + '/' + self.image_directory
 		self.default_cover_image_directory = self.image_directory + 'default_covers'
 		self.cover_image_directory = self.image_directory + 'covers'
-
+		self.track_left = 0
+		
 		self.make_labels()
 
 		#self.scroller = TrackScroller(self.components['track'], 1, self.frame.right)
@@ -48,27 +55,19 @@ class NowPlayingScene(PiScene):
 	make_labels
 	"""
 	def make_labels(self):
-		comp_labels = {
-			'artist': [
-				ui.Rect( 0,0, self.main.frame.width,self.label_height ),
-				mpd.now_playing.artist
-			],
-			'album': [
-				ui.Rect( 0, self.label_height + self.margins, self.main.frame.width, self.label_height ),
-				mpd.now_playing.album
-			],
-			'track': [
-				ui.Rect( 0, self.label_height * 2 + self.margins * 3 + self.cover_size, self.main.frame.width, self.label_height ),
-				mpd.now_playing.title
-			]
-		}
-
-
-		for key, val in comp_labels.iteritems():
-			label = ui.Label( val[0], val[1], halign=ui.CENTER )
-			self.main.add_child(label)
-			self.components[key] = label
-
+		artist = tk.Label(self.frame, text=mpd.now_playing.artist)
+		album = tk.Label(self.frame, text=mpd.now_playing.album)
+		track = tk.Label(self.frame, text=mpd.now_playing.title)
+		
+		artist.pack(fill=tk.X, expand=tk.YES)
+		album.pack(fill=tk.X, expand=tk.YES)
+		track.place(x=self.track_left)
+		
+		self.components['artist'] = artist
+		self.components['album'] = album
+		self.components['track'] = track
+		
+		"""
 		cover = CoverView(
 			ui.Rect(
 				0,
@@ -87,24 +86,28 @@ class NowPlayingScene(PiScene):
 		cover.updated = True
 		self.main.add_child(cover)
 		self.components['album_cover'] = cover
-
+		"""
+		
 	"""
 	entered
 	"""
 	def entered(self):
 
-		print 'NowPlaying::entered'
+		logger.debug('NowPlaying::entered')
+		
 		#print mpd.now_playing.title
-
+		
 		PiScene.entered(self)
-
+		
 		playing = mpd.now_playing
-
-		self.components['artist'].text = playing.artist
-		self.components['album'].text = playing.album
-		self.components['album_cover'].image = self.get_cover_image()
-		self.components['album_cover'].updated = True
-		self.components['track'].text = playing.title
+		
+		logger.debug('now playing artist %s album %s track %s' % (playing.artist, playing.album, playing.title))
+		
+		self.components['artist'].config(text = playing.artist)
+		self.components['album'].config(text = playing.album)
+		#self.components['album_cover'].image = self.get_cover_image()
+		#self.components['album_cover'].updated = True
+		self.components['track'].config(text = playing.title)
 		#self.labels.components['track'].shrink_wrap()
 
 		if mpd.now_playing.playing_type == 'radio':
@@ -114,7 +117,7 @@ class NowPlayingScene(PiScene):
 
 		#self.scroller.start()
 
-		self.stylize()
+		#self.stylize()
 
 		#PiScene.entered(self)
 
@@ -129,9 +132,9 @@ class NowPlayingScene(PiScene):
 	radio_track_settings
 	"""
 	def radio_track_settings(self, on_off):
-
+		
 		track = self.components['track']
-
+		"""
 		if on_off == True:
 			track.halign = ui.LEFT
 			self.resize_track()
@@ -139,9 +142,10 @@ class NowPlayingScene(PiScene):
 			track.halign = ui.CENTER
 			track.frame.left = 10
 			track.frame.width = self.main.frame.width
-
+		
 		self.stylize()
-
+		"""
+		
 	"""
 	resize_track
 	"""
@@ -157,15 +161,23 @@ class NowPlayingScene(PiScene):
 	"""
 	def update(self):
 		PiScene.update(self)
+		
 		if mpd.now_playing.playing_type == 'radio':
-		#if 1:
+			
 			track = self.components['track']
-			track.frame.left = track.frame.left - self.track_scroll_velocity
-			if track.frame.left < -( track.frame.width ):
+			
+			self.track_left = self.track_left - self.track_scroll_velocity
+			
+			track.update()
+			
+			track_width = track.winfo_width()
+			
+			if self.track_left < (0 - track_width):
 				#print 'looping scroller'
-				track.frame.left = self.main.frame.right
-			track.updated = True
-
+				self.track_left = 0
+			
+			track.place(x=self.track_left)
+			
 	"""
 	on_mpd_update
 	"""
@@ -227,8 +239,8 @@ class NowPlayingScene(PiScene):
 				return ui.get_image(self.image_directory + '/wfmu.png')
 			else:
 				return ui.get_image(self.get_default_cover_image())
-
-
+		
+		
 		file_dir = self.music_directory + os.path.dirname(mpd.now_playing.file)
 		file_name = file_dir + '/' + 'cover_art.jpg'
 
@@ -244,18 +256,18 @@ class NowPlayingScene(PiScene):
 					art_data = music_file.tags['APIC:'].data
 				else:
 					print '\t no cover art data'
-					return ui.get_image( self.get_default_cover_image() )
+					#return ui.get_image( self.get_default_cover_image() )
 
 				with open(file_name, 'wb') as img:
 					img.write(art_data)
 
 			except IOError, e:
 				print '\t no music file'
-				return ui.get_image( self.get_default_cover_image() )
-
+				#return ui.get_image( self.get_default_cover_image() )
+			
 		print '\t returning: ' + file_name
 
-		return ui.get_image( file_name )
+		return# ui.get_image( file_name )
 
 	"""
 	get_default_cover_image
@@ -268,9 +280,10 @@ class NowPlayingScene(PiScene):
 CoverView
  extend ui.ImageView
 """
-class CoverView(ui.ImageView):
+class CoverView():#ui.ImageView):
 	def __init__(self, frame, img, parent_frame, content_mode=1):
-
+		pass
+		"""
 		#ui.ImageView.__init__(self, frame, img)
 
 		if img == None:
@@ -329,13 +342,9 @@ class CoverView(ui.ImageView):
 		except:
 			pass
 
-	"""
-	layout
-	 override ui.ImageView
-	"""
 	def layout(self):
 		ui.View.layout(self)
-
+	"""
 """
 TrackScroller
 """
@@ -368,3 +377,5 @@ class TrackScroller():
 					self.scrollee.frame.left = self.right
 				self.scrollee.updated = True
 			time.sleep(.012)
+			
+
