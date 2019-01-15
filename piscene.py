@@ -173,7 +173,13 @@ class PiScene():
 	def entered(self):
 		pass
 		#ui.Scene.entered(self)
-
+	
+	"""
+	exited
+	"""
+	def exited(self):
+		pass
+	
 	"""
 	update
 	"""

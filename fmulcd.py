@@ -125,8 +125,9 @@ class FMU(object):
 		#btn.state = 'normal'
 		self.main_active = True
 		#self.on_main_active()
-		self.scenes[btn].on_nav_change()
-		
+		#self.scenes[btn].on_nav_change()
+		self.change_scene(btn)
+	
 	"""
 	init_pygame
 	"""
