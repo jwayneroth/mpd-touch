@@ -192,7 +192,7 @@ class ControlsScene(PiScene):
 	"""
 	def make_top_panel(self):
 		
-		panel = tk.Frame(self.frame)
+		panel = tk.Frame(self.inner, background=fmuglobals.COLORS['near_black'])
 		
 		btns = [
 			('play_pause', mpd.player_control_get()),
@@ -232,7 +232,7 @@ class ControlsScene(PiScene):
 	"""
 	def make_bottom_panel(self):
 		
-		panel = tk.Frame(self.frame)
+		panel = tk.Frame(self.inner, background=fmuglobals.COLORS['near_black'])
 		
 		btns = ['volume-off', 'volume-down', 'volume-up']
 		
@@ -265,7 +265,7 @@ class ControlsScene(PiScene):
 	make_volume_slider
 	"""
 	def make_volume_slider(self):
-		slider = tk.Scale(self.frame)
+		slider = tk.Scale(self.inner, background=fmuglobals.COLORS['near_black'])
 		#slider.on_value_changed.connect(self.volume_slider_changed)
 		#slider.on_state_changed.connect(self.volume_slider_focused)
 		slider.pack()

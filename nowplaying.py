@@ -1,9 +1,9 @@
-import fmuglobals
-import Tkinter as tk
-from piscene import *
-import thread
-import time
 import os
+import Tkinter as tk
+from PIL import Image, ImageTk
+import fmuglobals
+from piscene import *
+import resource as resource
 
 import logging
 logger = logging.getLogger('fmu_logger')
@@ -36,12 +36,10 @@ class NowPlayingScene(PiScene):
 		self.cover_image_directory = self.image_directory + 'covers'
 		self.track_left = 0
 		
-		self.make_labels()
-
-		#self.scroller = TrackScroller(self.components['track'], 1, self.frame.right)
-
-		#self.main.add_child(self.labels)
-
+		self.init_labels()
+		
+		self.init_cover()
+		
 	"""
 	key_down
 	"""
@@ -52,12 +50,12 @@ class NowPlayingScene(PiScene):
 			self.key_down_sidebar(key)
 
 	"""
-	make_labels
+	initialize the artist, album, and track label widgets
 	"""
-	def make_labels(self):
-		artist = tk.Label(self.frame, text=mpd.now_playing.artist)
-		album = tk.Label(self.frame, text=mpd.now_playing.album)
-		track = tk.Label(self.frame, text=mpd.now_playing.title)
+	def init_labels(self):
+		artist = tk.Label(self.inner, text=mpd.now_playing.artist, background=fmuglobals.COLORS['near_black'], foreground=fmuglobals.COLORS['slime'])
+		album = tk.Label(self.inner, text=mpd.now_playing.album, background=fmuglobals.COLORS['near_black'], foreground=fmuglobals.COLORS['slime'])
+		track = tk.Label(self.inner, text=mpd.now_playing.title, background=fmuglobals.COLORS['near_black'], foreground=fmuglobals.COLORS['slime'])
 		
 		artist.pack(fill=tk.X, expand=tk.YES)
 		album.pack(fill=tk.X, expand=tk.YES)
@@ -66,6 +64,20 @@ class NowPlayingScene(PiScene):
 		self.components['artist'] = artist
 		self.components['album'] = album
 		self.components['track'] = track
+	
+	"""
+	initialize the album cover photo widget
+	"""
+	def init_cover(self):
+		
+		ci = self.get_cover_image()
+		cover_image = ImageTk.PhotoImage(ci)
+		
+		cover = tk.Label(self.inner, image=cover_image, background=fmuglobals.COLORS['near_black'])
+		cover.image = cover_image
+		cover.pack(fill=tk.X, expand=tk.YES)
+		
+		self.components['album_cover'] = cover
 		
 		"""
 		cover = CoverView(
@@ -105,11 +117,15 @@ class NowPlayingScene(PiScene):
 		
 		self.components['artist'].config(text = playing.artist)
 		self.components['album'].config(text = playing.album)
-		#self.components['album_cover'].image = self.get_cover_image()
-		#self.components['album_cover'].updated = True
+		
+		ci = self.get_cover_image()
+		cover_image = ImageTk.PhotoImage(ci)
+		cover = self.components['album_cover']
+		cover.config(image = cover_image)
+		cover.image = cover_image
+		
 		self.components['track'].config(text = playing.title)
-		#self.labels.components['track'].shrink_wrap()
-
+		
 		if mpd.now_playing.playing_type == 'radio':
 			self.radio_track_settings(True)
 		else:
@@ -173,7 +189,6 @@ class NowPlayingScene(PiScene):
 			track_width = track.winfo_width()
 			
 			if self.track_left < (0 - track_width):
-				#print 'looping scroller'
 				self.track_left = 0
 			
 			track.place(x=self.track_left)
@@ -184,33 +199,36 @@ class NowPlayingScene(PiScene):
 	def on_mpd_update(self):
 		while True:
 			try:
-
 				event = mpd.events.popleft()
 
-				#print 'NowPlaying::on_mpd_update \t ' + event
-
 				if event == 'radio_mode_on':
-					print 'NowPlayingScene::on_mpd_update: \t radio_mode_on'
 					self.radio_track_settings(True)
+				
 				#elif event == 'time_elapsed':
 				#	 print 'NowPlayingScene::on_mpd_update: \t time_elapsed'
 				#	 break
+				
 				elif event == 'radio_mode_off':
-					print 'NowPlayingScene::on_mpd_update: \t radio_mode_off'
 					self.radio_track_settings(False)
+				
 				elif event == 'title_change':
-					print 'NowPlayingScene::on_mpd_update: \t title_change'
 					playing = mpd.now_playing
-					self.components['track'].text = playing.title
-					if playing.playing_type == 'radio':
-						self.resize_track()
+					self.components['track'].config(text = playing.title)
+					#if playing.playing_type == 'radio':
+					#	self.resize_track()
+				
 				elif event == 'album_change':
-					print 'NowPlayingScene::on_mpd_update: \t album_change'
 					playing = mpd.now_playing
-					self.components['artist'].text = playing.artist
-					self.components['album'].text = playing.album
-					self.components['album_cover'].image = self.get_cover_image()
-					self.stylize()
+					
+					self.components['artist'].config(text = playing.artist)
+					self.components['album'].config(text = playing.album)
+					
+					ci = self.get_cover_image()
+					cover_image = ImageTk.PhotoImage(ci)
+					cover = self.components['album_cover']
+					cover.config(image = cover_image)
+					cover.image = cover_image
+					
 				"""
 				elif event == 'volume':
 					print 'NowPlayingScene::on_mpd_update: \t volume: ' + str(mpd.volume)
@@ -231,21 +249,25 @@ class NowPlayingScene(PiScene):
 		#print 'on_mpd_update'
 
 	"""
-	get_cover_image
+	load a cover image (PIL Image) for the current album
 	"""
 	def get_cover_image(self):
+		
+		#cover_image = self.get_cover_image()
+		#cover_photo = ImageTK.PhotoImage(cover_image)
+		
 		if mpd.now_playing.playing_type == 'radio':
 			if mpd.now_playing.file.find('wfmu.org') != -1:
-				return ui.get_image(self.image_directory + '/wfmu.png')
+				return resource.get_image(self.image_directory + '/wfmu.png')
 			else:
-				return ui.get_image(self.get_default_cover_image())
+				return resource.get_image(self.get_default_cover_image())
 		
 		
 		file_dir = self.music_directory + os.path.dirname(mpd.now_playing.file)
 		file_name = file_dir + '/' + 'cover_art.jpg'
-
-		print 'NowPlaying::get_cover_image: ' + file_name
-
+		
+		logger.debug('NowPlaying::get_cover_image: ' + file_name)
+		
 		if os.path.isfile(file_name) == False:
 			print '\t no existing image'
 			try:
@@ -255,22 +277,20 @@ class NowPlayingScene(PiScene):
 				elif 'APIC:' in music_file:
 					art_data = music_file.tags['APIC:'].data
 				else:
-					print '\t no cover art data'
-					#return ui.get_image( self.get_default_cover_image() )
-
+					logger.debug('\t no cover art data')
+					return resource.get_image( self.get_default_cover_image() )
 				with open(file_name, 'wb') as img:
 					img.write(art_data)
-
 			except IOError, e:
-				print '\t no music file'
-				#return ui.get_image( self.get_default_cover_image() )
+				logger.debug('\t no music file')
+				return resource.get_image( self.get_default_cover_image() )
 			
-		print '\t returning: ' + file_name
-
-		return# ui.get_image( file_name )
+		logger.debug('\t returning: ' + file_name)
+		
+		return resource.get_image(file_name)
 
 	"""
-	get_default_cover_image
+	get the path of a random, default cover image
 	"""
 	def get_default_cover_image(self):
 		defaults = [name for name in os.listdir( self.default_cover_image_directory ) if os.path.isfile( self.default_cover_image_directory + '/' + name )]
@@ -334,7 +354,7 @@ class CoverView():#ui.ImageView):
 			pf = self.parent_frame
 
 			try:
-				f = self.frame
+				f = self.inner
 				if self._image.get_width() < pf.width:
 					f.left = (pf.width - self._image.get_width() ) / 2
 			except:
@@ -345,37 +365,4 @@ class CoverView():#ui.ImageView):
 	def layout(self):
 		ui.View.layout(self)
 	"""
-"""
-TrackScroller
-"""
-
-class TrackScroller():
-	def __init__(self, view, vel=2, right=100):
-		self.scrollee = view
-		self.vel = vel
-		self.right = right
-		self.scrolling = True
-		self.start_thread()
-
-	def stop(self):
-		self.scrolling = False
-
-	def start(self):
-		self.scrolling = True
-
-	def start_thread(self):
-		try:
-			self.thread = thread.start_new_thread( self.scroll, ())
-		except:
-			print 'TrackScroller unable to start thread'
-
-	def scroll(self):
-		while 1:
-			if self.scrolling == True:
-				self.scrollee.frame.left = self.scrollee.frame.left - self.vel
-				if self.scrollee.frame.left < -( self.scrollee.frame.width ):
-					self.scrollee.frame.left = self.right
-				self.scrollee.updated = True
-			time.sleep(.012)
-			
 

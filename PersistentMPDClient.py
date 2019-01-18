@@ -7,12 +7,15 @@ logger = logging.getLogger('fmu_logger')
 class PersistentMPDClient(mpd.MPDClient):
 	def __init__(self, socket=None, host=None, port=None):
 		logger.debug('PersistentMPDClient::init')
+		
 		super(PersistentMPDClient, self).__init__()
+		
 		self.socket = socket
-		self.host	= host
-		self.port	= port
+		self.host = host
+		self.port = port
 		
 		self.do_connect()
+		
 		# get list of available commands from client
 		self.command_list = self.commands()
 		

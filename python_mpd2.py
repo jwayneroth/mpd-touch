@@ -503,7 +503,7 @@ class MPDClient(object):
 	timeout = property(_gettimeout, _settimeout)
 	_timeout = None
 	idletimeout = None
-
+	
 	def connect(self, host, port, timeout=None):
 		logger.debug("Calling MPD connect(%r, %r, timeout=%r)", host, port, timeout)
 		

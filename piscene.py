@@ -1,4 +1,5 @@
 import Tkinter as tk
+import fmuglobals
 from mpd_client import *
 #import pygameui as ui
 import callback
@@ -9,12 +10,13 @@ PiScene
  parent class for all fmulcd scenes
 """
 class PiScene():
-	def __init__(self, frame=None, name='PiScene'):
+	def __init__(self, frame, name='PiScene'):
 		
-		#ui.Scene.__init__(self, frame)
-		self.frame = tk.Frame(frame)
-		#self.frame.pack(anchor=tk.N, fill=tk.BOTH, expand=tk.YES)#frame
-		self.frame.grid(row=0, column=0, sticky=tk.N+tk.S+tk.E+tk.W)
+		self.frame = tk.Frame(frame, background=fmuglobals.COLORS['near_black'])
+		self.frame.grid(row=0, column=0, sticky=tk.W+tk.E+tk.N+tk.S)
+		self.inner = tk.Frame(self.frame, background=fmuglobals.COLORS['near_black'])
+		self.inner.pack(anchor=tk.N, fill=tk.BOTH, expand=tk.YES)
+		#self.inner.grid(row=0, column=0, sticky=tk.N+tk.S+tk.E+tk.W)
 		self.name = name
 		self.margins = 15
 		self.btn_size = 45

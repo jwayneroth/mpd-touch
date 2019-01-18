@@ -30,7 +30,7 @@ import fmuglobals
 #import pygameui as ui
 import Tkinter as tk
 import ttk as ttk
-
+from PIL import Image, ImageTk
 from mpd_client import *
 
 #from albumlist import *
@@ -39,6 +39,8 @@ from nowplaying import *
 #from radio import *
 #from settings import *
 #from screensaver import *
+
+import resource as resource
 
 class FMU(object):
 	def __init__(self):
@@ -51,7 +53,7 @@ class FMU(object):
 		self.ss_delay = 60000
 		
 		self.root = tk.Tk()
-		self.container = tk.Frame(self.root, width=320, height=480)
+		self.container = tk.Frame(self.root, width=320, height=480, background=fmuglobals.COLORS['near_black'])
 		#self.container.grid()
 		self.container.pack(side=tk.TOP, fill=tk.BOTH, expand=tk.YES)
 		self.toolbar = self.make_toolbar()
@@ -88,10 +90,10 @@ class FMU(object):
 		self.make_current_scene(self.scenes['NowPlaying'])
 		
 		#self.ab = buttons.AnalogButtons()
-		
+	
 	def make_toolbar(self):
 		
-		toolbar = tk.Frame(self.container)
+		toolbar = tk.Frame(self.container, background=fmuglobals.COLORS['near_black'])
 		
 		btns = [
 			('NowPlaying','cd'),
@@ -102,14 +104,19 @@ class FMU(object):
 		]
 		
 		for btn_data in btns:
-			btn_img = tk.PhotoImage(file='images/icon.gif', width=20, height=20)# + btn_data[1])
-			btn = tk.Button(toolbar, image=btn_img, width=50, height=50)
+			
+			src_img = Image.open('images/icons/cog.gif')
+			src_img = src_img.resize((35, 35))
+			
+			btn_img = ImageTk.PhotoImage(src_img)
+			
+			btn = tk.Label(toolbar, image=btn_img, bg=fmuglobals.COLORS['light_purple'], borderwidth=0)
 			btn.image = btn_img
 			def cb(evt, self=self, btn_data=btn_data):
 				return self.toolbar_btn_clicked(evt, btn_data[0])
 			btn.bind('<Button-1>', cb)
 			btn.pack(side=tk.LEFT, expand=tk.YES)
-		
+			
 		toolbar.pack(side=tk.TOP, anchor=tk.W, fill=tk.X, expand=tk.YES)
 		
 		return toolbar
@@ -118,6 +125,8 @@ class FMU(object):
 		main = tk.Frame(self.container)
 		#main.grid(row=1, column=0, sticky=tk.N+tk.E+tk.W)
 		main.pack(side=tk.TOP, anchor=tk.W, fill=tk.X, expand=tk.YES)
+		main.grid_columnconfigure(0, weight=1)
+		main.grid_rowconfigure(0, weight=1)
 		return main
 		
 	def toolbar_btn_clicked(self, evt, btn):
