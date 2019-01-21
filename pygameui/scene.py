@@ -32,7 +32,7 @@ class Scene(view.View):
 
         if self.updated or force:
             self.updated = False
-           
+
             if self.background_color is not None:
                 render.fillrect(self.surface, (self.background_color), rect=pygame.Rect((0, 0), self.frame.size))
 

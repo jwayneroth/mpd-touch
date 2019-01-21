@@ -93,9 +93,6 @@ class NowPlayingScene(PiScene):
     """
     def entered(self):
 
-        print 'NowPlaying::entered'
-        #print mpd.now_playing.title
-
         PiScene.entered(self)
 
         playing = mpd.now_playing
@@ -122,7 +119,7 @@ class NowPlayingScene(PiScene):
     exited
     """
     def exited(self):
-        print 'NowPlaying exited'
+        logger.debug('NowPlaying exited')
         #self.scroller.stop()
 
     """
@@ -239,10 +236,16 @@ class NowPlayingScene(PiScene):
             try:
                 music_file = File(self.music_directory + mpd.now_playing.file)
                 if 'covr' in music_file:
-                    art_data = music_file.tags['covr'].data
-                elif 'APIC:' in music_file:
-                    art_data = music_file.tags['APIC:'].data
-                else:
+                    try:
+			art_data = music_file.tags['covr'].data
+                    except:
+			return ui.get_image( self.get_default_cover_image() )		
+		elif 'APIC:' in music_file:
+                    try:
+			art_data = music_file.tags['APIC:'].data
+                    except:
+			return ui.get_image( self.get_default_cover_image() )
+		else:
                     print '\t no cover art data'
                     return ui.get_image( self.get_default_cover_image() )
 

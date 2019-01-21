@@ -54,7 +54,8 @@ class ScreensaverScene(PiScene):
     mouse_down
     """
     def hit(self, pt):
-        self.on_nav_change('NowPlaying', from_screensaver=True)
+        pass
+        #self.on_nav_change('NowPlaying', from_screensaver=True)
 
     """
     key_down
@@ -92,8 +93,6 @@ class ScreensaverScene(PiScene):
     """
     def entered(self):
 
-        print 'Screensaver::entered'
-
         PiScene.entered(self)
 
         self.stylize()
@@ -102,7 +101,7 @@ class ScreensaverScene(PiScene):
     exited
     """
     def exited(self):
-        print 'Screensaver exited'
+        logger.debug('Screensaver exited')
 
     """
     update

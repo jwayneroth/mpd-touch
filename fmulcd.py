@@ -19,21 +19,15 @@ from radio import *
 from settings import *
 from screensaver import *
 
-#if fmuglobals.RUN_ON_RASPBERRY_PI:
-#    import RPi.GPIO as GPIO
-#    GPIO.setmode(GPIO.BCM)
-#    GPIO.setup(18, GPIO.OUT)
-#    GPIO.output(18, GPIO.HIGH)
-
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 
 logger = logging.getLogger('fmu_logger')
 logger.setLevel(logging.DEBUG)
 ch = logging.StreamHandler()
 ch.setLevel(logging.DEBUG)
-fh = logging.FileHandler(fmuglobals.HOME_DIR + '/fmulcd.log','a')
+fh = logging.FileHandler('/var/log/fmulcd.log', 'a')
 fh.setLevel(logging.DEBUG)
-formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+formatter = logging.Formatter('%(asctime)s_%(name)s_%(levelname)s - %(message)s')
 ch.setFormatter(formatter)
 fh.setFormatter(formatter)
 logger.addHandler(ch)
@@ -46,18 +40,8 @@ class FMU(object):
         self.screen_dimensions = (320,480)
         self.screen = False
         self.ss_timer = 0
-        self.ss_timer_on = True
-        self.ss_delay = 12000
-
-        if not mpd.connect():
-            print 'failed to connect to mpd once'
-            cmd = 'service mpd start'
-            p = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE)
-            print p.communicate()[0]
-            
-            if not mpd.connect():
-                print("Couldn't connect to the mpd server " + mpd.host + " on port " + str(mpd.port) + "! Check settings in file pi-jukebox.conf or check is server is running 'sudo service mpd status'.")
-                sys.exit()
+        self.ss_timer_on = False
+        self.ss_delay = 60000
 
         if fmuglobals.RUN_ON_RASPBERRY_PI:
             os.environ['SDL_FBDEV'] = '/dev/fb1'
@@ -66,15 +50,15 @@ class FMU(object):
             os.environ['SDL_MOUSEDRV'] = 'TSLIB'
 
         self.init_pygame()
-        
+
         ui.theme.init()
         ui.theme.use_theme(ui.theme.dark_theme)
 
         rect = pygame.Rect((0,0),self.screen_dimensions)
 
-        self.scenes = { 
-            'NowPlaying': NowPlayingScene(rect), 
-            'Albums': AlbumListScene(rect), 
+        self.scenes = {
+            'NowPlaying': NowPlayingScene(rect),
+            'Albums': AlbumListScene(rect),
             'Radio': RadioScene(rect),
             'Settings': SettingsScene(rect),
             'Controls': ControlsScene(rect),
@@ -98,14 +82,14 @@ class FMU(object):
         # needs a keyboardinterrupt to initialise in some limited circs (second time running)
         class Alarm(Exception):
             pass
-        
+
         def alarm_handler(signum, frame):
             raise Alarm
-        
+
         signal(SIGALRM, alarm_handler)
-        
+
         alarm(3)
-        
+
         try:
             pygame.init()
 
@@ -121,7 +105,7 @@ class FMU(object):
         except Alarm:
             raise KeyboardInterrupt
 
-        logger.debug('paygame inited on rpi?: %s' % fmuglobals.RUN_ON_RASPBERRY_PI)
+        logger.debug('pygame inited on rpi?: %s' % fmuglobals.RUN_ON_RASPBERRY_PI)
 
         pygame.key.set_repeat(300,180)
         pygame.display.set_caption('Raspberry Pi UI')
@@ -132,7 +116,7 @@ class FMU(object):
     signal_handler
     """
     def signal_handler(self, signal, frame):
-        print '\nFMULCD::signal_handler: {}'.format(signal)
+        print '\FMU::signal_handler: {}'.format(signal)
         time.sleep(1)
         pygame.display.quit()
         fmu.kill_app()
@@ -142,7 +126,7 @@ class FMU(object):
     make_current_scene
     """
     def make_current_scene(self, scene):
-        print 'FMULCD::make_current_scene \t' + scene.name
+        logger.debug('FMU::make_current_scene \t' + scene.name)
         #if self.current == scene:
         #    return
         if self.current:
@@ -202,11 +186,11 @@ if __name__ == '__main__':
         user_active = False
 
         for e in pygame.event.get():
-            
+
             if e.type == pygame.QUIT:
                 fmu.kill_app()
                 break
-            
+
             mousepoint = pygame.mouse.get_pos()
 
             if e.type == pygame.KEYDOWN:
@@ -216,12 +200,13 @@ if __name__ == '__main__':
                 else:
                     fmu.current.key_down(e.key, e.unicode)
                     break
-           
+
             elif e.type == pygame.MOUSEBUTTONDOWN:
                 user_active = True
+
                 hit_view = fmu.current.hit(mousepoint)
-                
-                logger.debug('hit %s at %s' % (hit_view, mousepoint))
+
+                #logger.debug('hit %s at %s' % (hit_view, mousepoint))
 
                 if (hit_view is not None and
                     not isinstance(hit_view, ui.Scene)
@@ -232,10 +217,16 @@ if __name__ == '__main__':
                     hit_view.mouse_down(e.button, pt)
                 else:
                     ui.focus.set(None)
-            
+
             elif e.type == pygame.MOUSEBUTTONUP:
                 user_active = True
                 hit_view = fmu.current.hit(mousepoint)
+                logger.debug('click %s at %s' % (hit_view, mousepoint))
+
+                if fmu.current == fmu.scenes['Screensaver']:
+                    fmu.change_scene('NowPlaying', False, True)
+                    break
+
                 if hit_view is not None:
                     if down_in_view and hit_view != down_in_view:
                         down_in_view.blurred()
@@ -243,7 +234,7 @@ if __name__ == '__main__':
                     pt = hit_view.from_window(mousepoint)
                     hit_view.mouse_up(e.button, pt)
                 down_in_view = None
-            
+
             elif e.type == pygame.MOUSEMOTION:
                 user_active = True
                 if down_in_view and down_in_view.draggable:
@@ -254,14 +245,13 @@ if __name__ == '__main__':
 
         if fmu.ss_timer_on:
             fmu.screensaver_tick(ticks, user_active)
-        
+
         fmu.current.update()
-        
+
         if fmu.current.draw():
-        
+
             fmu.screen.blit(fmu.current.surface, (0, 0))
-        
+
             pygame.display.flip()
-        
+
         #time.sleep(.05)
-    

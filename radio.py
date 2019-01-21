@@ -10,7 +10,7 @@ RadioScene
 """
 class RadioScene(PiScene):
     def __init__(self, frame):
-        
+
         PiScene.__init__(self, frame, 'Radio')
 
         self.sidebar_index = 2
@@ -20,7 +20,7 @@ class RadioScene(PiScene):
         self.page_nav_active = False
 
         self.stations = [
-            {'title':'WFMU','url':'http://stream0.wfmu.org/freeform-128k'}, 
+            {'title':'WFMU','url':'http://stream0.wfmu.org/freeform-128k'},
             {'title':'GtDR','url':'http://stream0.wfmu.org:80/drummer'},
             {'title':'Ichiban','url':'http://stream0.wfmu.org/ichiban'},
             {'title':'Ubu','url':'http://stream0.wfmu.org/ubu'},
@@ -68,7 +68,7 @@ class RadioScene(PiScene):
         self.active_btn_index = 0
         self.active_btn = False
         self.sibling_active = False
-    
+
     """
     on_main_active
     """
@@ -77,7 +77,7 @@ class RadioScene(PiScene):
         self.active_btn = self.child_btns[self.current_child_index][0]
         self.active_btn.state = 'focused'
 
-    
+
     """
     key_down_main
     """
@@ -87,7 +87,7 @@ class RadioScene(PiScene):
         # up
         #
         if key == pygame.K_UP:
-            
+
             if self.active_btn_index == 0:
                 self.active_btn.state = 'normal'
                 self.main_active = False
@@ -99,7 +99,7 @@ class RadioScene(PiScene):
 
             self.active_btn.state = 'normal'
             self.active_btn = self.child_btns[self.current_child_index][new_index]
-            
+
             btn_y = self.active_btn.frame.top
             offset = self.current_child.content_view.frame.top
             btn_vy = btn_y + offset
@@ -114,14 +114,14 @@ class RadioScene(PiScene):
 
         #
         # down
-        #  
+        #
         elif key == pygame.K_DOWN:
-            
+
             new_index = self.active_btn_index + 1
-            
+
             if new_index >= len(self.child_btns[self.current_child_index]):
                 return
-            
+
             if new_index == 2 and self.current_child.scrolled:
                 new_index = self.get_first_visible()
 
@@ -191,13 +191,13 @@ class RadioScene(PiScene):
 
                 self.active_btn = current_btn.sibling
                 self.sibling_active = True
-            
+
 
         #
         # return
         #
         elif key == pygame.K_RETURN:
-            
+
             self.active_btn.on_clicked(self.active_btn, False)
 
     """
@@ -212,10 +212,10 @@ class RadioScene(PiScene):
                 self.main.frame.height
             )
         )
-        
+
         del self.station_btns[:]
 
-        scr_y = 0   
+        scr_y = 0
         row_count = len(self.stations)
 
         for station in self.stations:
@@ -260,64 +260,67 @@ class RadioScene(PiScene):
                 self.main.frame.height
             )
         )
-        
+
         refresh_icon = ui.IconButton(ui.Rect(0,0,self.btn_size,self.btn_size),'refresh')
         refresh_icon.on_clicked.connect(self.refresh_archives_click)
-        
+
         refresh_btn = ui.Button(ui.Rect(self.btn_size,0,self.main.frame.width - ui.SCROLLBAR_SIZE - self.btn_size - self.margins,self.btn_size),'refresh',halign=ui.LEFT,valign=ui.CENTER)
         refresh_btn.on_clicked.connect(self.refresh_archives_click)
-        
+
         refresh_btn.sibling = False
 
         scroll_contents.add_child(refresh_icon)
         scroll_contents.add_child(refresh_btn)
 
-        full = feedparser.parse('http://www.wfmu.org/archivefeed/mp3.xml')
-        archives = []
-        for entry in full.entries:
-            archive = dict()
-            archive['title'] = self.filter_stream_name(entry.title)
-            archive['url'] = entry.link
-            archives.append(archive)
+        try:
+            full = feedparser.parse('http://www.wfmu.org/archivefeed/mp3.xml')
+            archives = []
+            for entry in full.entries:
+                archive = dict()
+                archive['title'] = self.filter_stream_name(entry.title)
+                archive['url'] = entry.link
+                archives.append(archive)
 
-        del self.archive_btns[:]
+            del self.archive_btns[:]
 
-        #self.archive_btns.append(self.streams_btn)
-        self.archive_btns.append(refresh_btn)
+            #self.archive_btns.append(self.streams_btn)
+            self.archive_btns.append(refresh_btn)
 
-        scr_y = self.btn_size + self.margins 
-        row_count = len(archives)
+            scr_y = self.btn_size + self.margins
+            row_count = len(archives)
 
-        for archive in archives:
+            for archive in archives:
 
-            btn = ui.Button(
-                ui.Rect( 0, scr_y, self.main.frame.width - ui.SCROLLBAR_SIZE, self.label_height ),
-                archive['title'],
-                halign=ui.LEFT,
-                valign=ui.CENTER
-            )
+                btn = ui.Button(
+                    ui.Rect( 0, scr_y, self.main.frame.width - ui.SCROLLBAR_SIZE, self.label_height ),
+                    archive['title'],
+                    halign=ui.LEFT,
+                    valign=ui.CENTER
+                )
 
-            btn.url = archive['url']
-            btn.on_clicked.connect(self.on_archive_clicked)
-            btn.sibling = False
+                btn.url = archive['url']
+                btn.on_clicked.connect(self.on_archive_clicked)
+                btn.sibling = False
 
-            self.archive_btns.append(btn)
+                self.archive_btns.append(btn)
 
-            scroll_contents.add_child(btn)
+                scroll_contents.add_child(btn)
 
-            scr_y = scr_y + self.label_height
+                scr_y = scr_y + self.label_height
 
-        scroll_contents.frame.height = row_count * self.label_height + self.btn_size + self.margins
+            scroll_contents.frame.height = row_count * self.label_height + self.btn_size + self.margins
 
-        self.archives_view.update_content_view(scroll_contents)
+            self.archives_view.update_content_view(scroll_contents)
 
-        if self.archives_view.scrollable:
-            self.archive_btns.insert(0,self.page_down)
-            self.archive_btns.insert(0,self.streams_btn)
-            self.activate_page_nav()
-        else:
-            self.deactivate_page_nav()
-    
+            if self.archives_view.scrollable:
+                self.archive_btns.insert(0,self.page_down)
+                self.archive_btns.insert(0,self.streams_btn)
+                self.activate_page_nav()
+            else:
+                self.deactivate_page_nav()
+        except:
+            pass
+
     """
     filter_stream_name
     """
@@ -339,24 +342,24 @@ class RadioScene(PiScene):
     on_station_clicked
     """
     def on_station_clicked(self, btn, mouse_btn):
-        
+
         self.deselect_all(self.station_btns)
         btn.state = 'selected'
-        
+
         mpd.radio_station_start(btn.url)
 
     """
     on_archive_clicked
     """
     def on_archive_clicked(self, btn, mouse_btn):
-        
+
         #print 'RadioScene::on_archive_clicked \t ' + btn.url
-        
+
         self.deselect_all(self.archive_btns)
         btn.state = 'selected'
 
         url = btn.url
-        
+
         try:
             f = self.url_opener.open( url )
             stream = f.read()
@@ -364,7 +367,7 @@ class RadioScene(PiScene):
             return
 
         #print '\t stream: ' + stream
-        
+
         mpd.radio_station_start(stream.strip())
 
     """
@@ -403,9 +406,9 @@ class RadioScene(PiScene):
     def make_scroll_view(self):
         scroll_list = ui.ScrollList(
             ui.Rect(
-                0,self.btn_size*2,
+                0,self.btn_size * 2,
                 self.main.frame.width - ui.SCROLLBAR_SIZE,
-                self.main.frame.height - self.btn_size - self.btn_size - self.margins * 2 - 10
+                self.main.frame.height - self.btn_size - self.btn_size - self.btn_size - self.margins * 2 - 10
             ),
             ui.Rect(
                 0,0,
@@ -419,17 +422,33 @@ class RadioScene(PiScene):
     make_page_nav
     """
     def make_page_nav(self):
-        icon_down = ui.IconButton(ui.Rect(0,self.btn_size,self.btn_size,self.btn_size),'chevron-down',12)
-        btn_down = ui.Button(ui.Rect(icon_down.frame.right,self.btn_size,60,self.btn_size),'Page',halign=ui.CENTER,valign=ui.CENTER)
-        
-        icon_up = ui.IconButton(ui.Rect(btn_down.frame.right+self.margins,self.btn_size,self.btn_size,self.btn_size),'chevron-up',12)
-        btn_up = ui.Button(ui.Rect(icon_up.frame.right,self.btn_size,60,self.btn_size),'Page',halign=ui.CENTER,valign=ui.CENTER)
+        btn_down = ui.Button(ui.Rect(0,
+                                     self.btn_size,
+                                     self.frame.width - self.btn_size,
+                                     self.btn_size),'Page Down',halign=ui.RIGHT,valign=ui.CENTER)
+
+        icon_down = ui.IconButton(ui.Rect(self.frame.width - self.btn_size,
+                                          self.btn_size,
+                                          self.btn_size,
+                                          self.btn_size),'chevron-down')
+
+        btn_up = ui.Button(ui.Rect(0,
+                                   self.main.frame.height - self.btn_size - self.margins,
+                                   self.frame.width - self.btn_size,
+                                   self.btn_size),'Page Up',halign=ui.RIGHT,valign=ui.CENTER)
+
+        icon_up = ui.IconButton(ui.Rect(self.frame.width - self.btn_size,
+                                        self.main.frame.height - self.btn_size- self.margins,
+                                        self.btn_size,
+                                        self.btn_size),'chevron-up')
 
         btn_down.tag_name = 'Down'
         btn_up.tag_name ='Up'
 
         btn_down.on_clicked.connect(self.on_page_nav_clicked)
+        icon_down.on_clicked.connect(self.on_page_nav_clicked)
         btn_up.on_clicked.connect(self.on_page_nav_clicked)
+        icon_up.on_clicked.connect(self.on_page_nav_clicked)
 
         btn_down.sibling = btn_up
 
@@ -456,7 +475,7 @@ class RadioScene(PiScene):
         self.page_up.state = 'normal'
         self.icon_down.state = 'normal'
         self.icon_up.state = 'normal'
-    
+
     """
     deactivate_page_nav
     """
@@ -472,7 +491,7 @@ class RadioScene(PiScene):
     """
     def on_page_nav_clicked(self, btn, mouse_btn):
         idx = 1
-        if btn == self.page_down:
+        if btn == self.page_down or btn == self.icon_down:
             for button in self.child_btns[self.current_child_index][idx:]:
                 btn_y = button.frame.top + self.label_height
                 offset = self.current_child.content_view.frame.top

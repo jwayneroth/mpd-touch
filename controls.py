@@ -6,7 +6,7 @@ from piscene import *
 """
 class ControlsScene(PiScene):
     def __init__(self, frame=None):
-    
+
         PiScene.__init__(self, frame, 'Controls')
 
         self.is_mpd_listener = True
@@ -32,12 +32,12 @@ class ControlsScene(PiScene):
 
         self.btns = [
             [ self.buttons['play_pause'], self.buttons['prev'],  self.buttons['next'], self.buttons['play_mode'] ],
-            [ self.volume_slider ], 
+            [ self.volume_slider ],
             [ self.buttons['volume-off'],  self.buttons['volume-down'],  self.buttons['volume-up'] ]
         ]
 
         self.volume_slider.value = mpd.volume
-        
+
         self.main.add_child(self.top_panel)
         self.main.add_child(self.volume_slider)
         self.main.add_child(self.bottom_panel)
@@ -81,13 +81,13 @@ class ControlsScene(PiScene):
 
         #
         # down
-        #  
+        #
         elif key == pygame.K_DOWN:
             new_index = self.active_btn_index + 1
-            
+
             if new_index >= len(self.btns):
                 return
-                
+
             self.active_btn.state = 'normal'
             self.sibling_index = 0
             self.active_btn = self.btns[new_index][self.sibling_index]
@@ -107,7 +107,7 @@ class ControlsScene(PiScene):
                     self.main_active = False
                     self.active_sidebar_btn = 0
                     self.sidebar_btns[self.active_sidebar_btn].state = 'focused'
-                
+
                 else :
                     if len(self.btns[self.active_btn_index]) > 1:
                         self.sibling_index = self.sibling_index - 1
@@ -134,7 +134,7 @@ class ControlsScene(PiScene):
         # return
         #
         elif key == pygame.K_RETURN:
-            
+
             if self.active_btn == self.volume_slider:
                 return
 
@@ -145,16 +145,14 @@ class ControlsScene(PiScene):
     """
     def entered(self):
 
-        print 'ControlsScene::entered'
-
         PiScene.entered(self)
 
         self.volume_slider.value = mpd.volume
-        
+
         state = mpd.player_control_get()
-        
+
         play_btn = self.buttons['play_pause']
-        
+
         if play_btn.icon_class != 'play' and state == 'play':
             play_btn.icon_class = 'play'
         if play_btn.icon_class != 'pause' and state == 'pause':
@@ -168,12 +166,12 @@ class ControlsScene(PiScene):
     on_mpd_update
     """
     def on_mpd_update(self):
-        
+
         while True:
             try:
-                
+
                 event = mpd.events.popleft()
-                
+
                 #print 'Controls::on_mpd_update \t ' + event
 
                 if event == 'volume':
@@ -186,7 +184,7 @@ class ControlsScene(PiScene):
                     if play_btn.icon_class != 'pause' and state == 'pause':
                         play_btn.icon_class = 'pause'
                     break
-            
+
             except IndexError:
                 break
 
@@ -201,14 +199,14 @@ class ControlsScene(PiScene):
             ('next','forward'),
             ('play_mode', self.play_modes[self.current_play_mode][1])
         ]
-        
+
         panel = ui.View(ui.Rect(
             self.padding,
             self.padding + 10,
             self.main.frame.width - self.padding * 2,
             self.btn_size
         ))
-        
+
         btn_x = panel.frame.width / 2 - self.btn_size * 2 - self.padding * 1.5
 
         for btn_data in btns:
@@ -219,7 +217,7 @@ class ControlsScene(PiScene):
             btn.sibling = False
 
             panel.add_child(btn)
-             
+
             self.buttons[btn_data[0]] = btn
 
         return panel
@@ -230,14 +228,14 @@ class ControlsScene(PiScene):
     def make_bottom_panel(self):
 
         btns = ['volume-off', 'volume-down', 'volume-up']
-        
+
         panel = ui.View(ui.Rect(
             self.padding,
             self.padding * 3 + self.btn_size + self.volume_slider.frame.height,
             self.main.frame.width - self.padding * 2,
             self.btn_size
         ))
-        
+
         btn_x = panel.frame.width / 2 - self.btn_size * 1.5 - self.padding
 
         for btn_class in btns:
@@ -246,9 +244,9 @@ class ControlsScene(PiScene):
             btn.on_clicked.connect(self.on_button_click)
             btn.tag_name = btn_class
             btn.sibling = False;
-            
+
             panel.add_child(btn)
-            
+
             self.buttons[btn_class] = btn
 
         return panel
@@ -276,12 +274,12 @@ class ControlsScene(PiScene):
             self.volume_slider.thumb.state = 'focused'
         else:
             self.volume_slider.thumb.state = 'normal'
-    
+
     """
     on_button_click
     """
     def on_button_click(self, btn, mouse_btn):
-        
+
         tag_name = btn.tag_name
 
         #print tag_name
@@ -353,7 +351,7 @@ class Overlay(ui.Button):
 """
 class PiControls(ui.DialogView):
     def __init__(self, frame):
-    
+
         ui.DialogView.__init__(self, frame)
 
         self.top_margin = 30
@@ -394,14 +392,14 @@ class PiControls(ui.DialogView):
             ('prev','backward'),
             ('next','forward')
         ]
-        
+
         panel = ui.View(ui.Rect(
             self.padding,
             self.padding + 10,
             self.content.frame.width - self.padding * 2,
             self.btn_size
         ))
-        
+
         btn_x = panel.frame.width / 2 - self.btn_size * 1.5 - self.padding #self.btnsself.padding
 
         for btn_data in btns:
@@ -425,14 +423,14 @@ class PiControls(ui.DialogView):
     def make_bottom_panel(self):
 
         btns = ['volume-off', 'volume-down', 'volume-up']
-        
+
         panel = ui.View(ui.Rect(
             self.padding,
             self.padding * 3 + self.btn_size + self.volume_slider.frame.height,
             self.content.frame.width - self.padding * 2,
             self.btn_size
         ))
-        
+
         btn_x = panel.frame.width / 2 - self.btn_size * 1.5 - self.padding #self.btnsself.padding
 
         for btn_class in btns:
@@ -462,9 +460,9 @@ class PiControls(ui.DialogView):
                 self.top_panel.frame.bottom+self.padding,
                 self.content.frame.width-self.padding*2,
                 ui.SCROLLBAR_SIZE
-            ), 
-            ui.HORIZONTAL, 
-            0, 
+            ),
+            ui.HORIZONTAL,
+            0,
             100
         )
         slider.on_value_changed.connect(self.volume_slider_changed)
@@ -479,7 +477,7 @@ class PiControls(ui.DialogView):
         self.dismiss()
 
     def on_button_click(self, btn, mouse_btn):
-        
+
         tag_name = btn.tag_name
 
         #print tag_name
