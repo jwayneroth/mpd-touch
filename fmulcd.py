@@ -174,7 +174,11 @@ main
 """
 if __name__ == '__main__':
     logger.debug('fmulcd started')
+    
     fmu = FMU()
+    
+    mpd.radio_station_start('http://stream0.wfmu.org/freeform-128k')
+    
     clock = pygame.time.Clock()
     fps = 12 if fmuglobals.RUN_ON_RASPBERRY_PI else 30
     ticks = 0
