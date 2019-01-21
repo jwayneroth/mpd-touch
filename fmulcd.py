@@ -40,7 +40,7 @@ class FMU(object):
         self.screen_dimensions = (320,480)
         self.screen = False
         self.ss_timer = 0
-        self.ss_timer_on = False
+        self.ss_timer_on = True
         self.ss_delay = 60000
 
         if fmuglobals.RUN_ON_RASPBERRY_PI:

@@ -346,11 +346,9 @@ class IconButton(Button):
         Button.__init__(self, frame, caption)
 
     def __repr__(self):
-        if hasattr(self, 'tag_name'):
-            return self.tag_name + ' icon'
         if self._icon_class is None:
             return ''
-        return self._icon_class + ' icon'
+        return self._icon_class
 
 
     @property

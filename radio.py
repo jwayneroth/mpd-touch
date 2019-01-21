@@ -286,8 +286,8 @@ class RadioScene(PiScene):
             #self.archive_btns.append(self.streams_btn)
             self.archive_btns.append(refresh_btn)
 
-            scr_y = self.btn_size + self.margins
-            row_count = len(archives)
+        scr_y = self.btn_size + self.margins
+        row_count = len(archives)
 
             for archive in archives:
 
@@ -320,6 +320,13 @@ class RadioScene(PiScene):
                 self.deactivate_page_nav()
         except:
             pass
+
+        if self.archives_view.scrollable:
+            self.archive_btns.insert(0,self.page_down)
+            self.archive_btns.insert(0,self.streams_btn)
+            self.activate_page_nav()
+        else:
+            self.deactivate_page_nav()
 
     """
     filter_stream_name
