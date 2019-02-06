@@ -21,7 +21,7 @@ class NowPlayingScene(PiScene):
 		self.heading_height = 32
 		self.track_scroll_velocity = 3
 		if fmuglobals.RUN_ON_RASPBERRY_PI == True:
-			self.track_scroll_velocity = 3
+			self.track_scroll_velocity = 6
 		self.main_active = False
 		self.components = {}
 		self.image_directory = 'images/'
@@ -29,9 +29,9 @@ class NowPlayingScene(PiScene):
 			self.image_directory = os.path.dirname(__file__) + '/' + self.image_directory
 		self.default_cover_image_directory = self.image_directory + 'default_covers'
 		self.cover_image_directory = self.image_directory + 'covers'
-		
+
 		self.init_labels()
-		
+
 		self.init_cover()
 		#self.scroller = TrackScroller(self.components['track'], 1, self.frame.right)
 
@@ -64,7 +64,7 @@ class NowPlayingScene(PiScene):
 				mpd.now_playing.title
 			]
 		}
-		
+
 		for key, val in comp_labels.iteritems():
 			if key == 'track':
 				label = ui.HeadingOne( val[0], val[1], halign=ui.CENTER )
@@ -72,7 +72,7 @@ class NowPlayingScene(PiScene):
 				label = ui.Label( val[0], val[1], halign=ui.CENTER )
 			self.main.add_child(label)
 			self.components[key] = label
-		
+
 	"""
 	initialize cover image for current album
 	"""

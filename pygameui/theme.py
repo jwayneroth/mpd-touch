@@ -104,10 +104,11 @@ def init_dark_theme():
 	dark_theme.set(class_name='Label', state='normal', key='font', value=resource.get_font(20, use_bold=True))
 
 	dark_theme.label_height = 16 + 6 * 2
-	
+
 	#HeadingOne
 	dark_theme.set(class_name='HeadingOne', state='normal', key='font', value=resource.get_font(32, use_bold=True))
-	
+	dark_theme.set(class_name='HeadingOne', state='normal', key='text_color', value=light_gray)
+
 	#Button
 	dark_theme.set(class_name='Button', state='normal', key='background_color', value=near_black)
 	dark_theme.set(class_name='Button', state='focused', key='background_color', value=near_black)
@@ -119,7 +120,7 @@ def init_dark_theme():
 	dark_theme.set(class_name='Button', state='normal', key='font', value=resource.get_font(19, use_bold=False))
 	dark_theme.set(class_name='Button', state='normal', key='border_widths', value=None)
 	dark_theme.set(class_name='Button', state='normal', key='border_color', value=None)
-	
+
 	dark_theme.set(class_name='Overlay', state='normal', key='background_color', value=(0,0,0,179))
 
 	dark_theme.button_height = 16 + 6 * 2
