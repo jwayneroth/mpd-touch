@@ -40,7 +40,7 @@ class FMU(object):
         self.screen_dimensions = (320,480)
         self.screen = False
         self.ss_timer = 0
-        self.ss_timer_on = True
+        self.ss_timer_on = False
         self.ss_delay = 60000
 
         if fmuglobals.RUN_ON_RASPBERRY_PI:
@@ -175,6 +175,7 @@ main
 if __name__ == '__main__':
     logger.debug('fmulcd started')
     fmu = FMU()
+    mpd.radio_station_start('http://stream0.wfmu.org/freeform-128k')
     clock = pygame.time.Clock()
     fps = 12 if fmuglobals.RUN_ON_RASPBERRY_PI else 30
     ticks = 0
