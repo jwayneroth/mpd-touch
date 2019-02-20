@@ -44,10 +44,11 @@ class FMU(object):
         self.ss_delay = 60000
 
         if fmuglobals.RUN_ON_RASPBERRY_PI:
-            os.environ['SDL_FBDEV'] = '/dev/fb1'
-            os.environ["SDL_NOMOUSE"] = "1"
-            os.environ['SDL_MOUSEDEV'] = '/dev/input/touchscreen'
-            os.environ['SDL_MOUSEDRV'] = 'TSLIB'
+            #os.environ['SDL_FBDEV'] = '/dev/fb1'
+            #os.environ["SDL_NOMOUSE"] = "1"
+            #os.environ['SDL_MOUSEDEV'] = '/dev/input/touchscreen'
+            os.environ['SDL_MOUSEDEV'] = '/dev/input/event0'
+            #os.environ['SDL_MOUSEDRV'] = 'TSLIB'
 
         self.init_pygame()
 
@@ -94,7 +95,7 @@ class FMU(object):
             pygame.init()
 
             if fmuglobals.RUN_ON_RASPBERRY_PI:
-                pygame.mouse.set_visible(False)
+                #pygame.mouse.set_visible(False)
                 display_flags = pygame.FULLSCREEN | pygame.DOUBLEBUF | pygame.ANYFORMAT
                 self.screen = pygame.display.set_mode( (self.screen_dimensions), display_flags )
             else:

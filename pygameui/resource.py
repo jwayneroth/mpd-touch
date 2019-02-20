@@ -1,5 +1,5 @@
 import pygame
-#import pkg_resources
+import pkg_resources
 import os
 import weakref
 import logging
@@ -20,8 +20,8 @@ def get_font(size=16, use_bold=False, name='regular'):
     try:
         font = font_cache[key]
     except KeyError:
-        path = 'pygameui/resources/fonts/%s.ttf' % filename
-        #path = pkg_resources.resource_filename(package_name, path)
+        #path = 'pygameui/resources/fonts/%s.ttf' % filename
+        path = pkg_resources.resource_filename(package_name, 'resources/fonts/%s.ttf' % filename)
         print 'resource::get_font \t font: ' + path
         try:
             logger.debug('loading font %s' % path)
