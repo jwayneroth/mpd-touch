@@ -37,7 +37,7 @@ class FMU(object):
     def __init__(self):
         self.current = False
         self.last = False
-        self.screen_dimensions = (320,480)
+        self.screen_dimensions = (800,480)
         self.screen = False
         self.ss_timer = 0
         self.ss_timer_on = False
@@ -175,7 +175,7 @@ main
 """
 if __name__ == '__main__':
     logger.debug('fmulcd started')
-    
+
     fmu = FMU()
     mpd.radio_station_start('http://stream0.wfmu.org/freeform-128k')
     clock = pygame.time.Clock()
