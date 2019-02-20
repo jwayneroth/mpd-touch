@@ -2,3 +2,4 @@
 pygameui/*.pyc
 *.log
 .git
+*.AppleDouble

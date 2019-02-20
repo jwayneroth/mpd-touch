@@ -274,102 +274,102 @@ CoverView
  extend ui.ImageView
 """
 class CoverView(ui.ImageView):
-    def __init__(self, frame, img, parent_frame, content_mode=1):
+	def __init__(self, frame, img, parent_frame, content_mode=1):
 
-        #ui.ImageView.__init__(self, frame, img)
+		#ui.ImageView.__init__(self, frame, img)
 
-        if img == None:
-            img = resource.get_image( self.image_directory + 'defaults_covers/1.png')
+		if img == None:
+			img = resource.get_image( self.image_directory + 'defaults_covers/1.png')
 
-        assert img is not None
+		assert img is not None
 
-        if frame is None:
-            frame = pygame.Rect((0, 0), img.get_size())
-        elif frame.w == 0 and frame.h == 0:
-            frame.size = img.get_size()
+		if frame is None:
+			frame = pygame.Rect((0, 0), img.get_size())
+		elif frame.w == 0 and frame.h == 0:
+			frame.size = img.get_size()
 
-        self._max_frame = frame
+		self._max_frame = frame
 
-        self._enabled = False
-        self.content_mode = content_mode
-        self.image = img
-        self.parent_frame = parent_frame
+		self._enabled = False
+		self.content_mode = content_mode
+		self.image = img
+		self.parent_frame = parent_frame
 
-        #assert self.padding[0] == 0 and self.padding[1] == 0
+		#assert self.padding[0] == 0 and self.padding[1] == 0
 
-        if self.content_mode == 0:
-            self._image = ui.resource.scale_image(self.image, frame.size)
-        elif self.content_mode == 1:
-            self._image = ui.resource.scale_to_fit(self.image, frame.size)
-        else:
-            assert False, "Unknown content_mode"
+		if self.content_mode == 0:
+			self._image = ui.resource.scale_image(self.image, frame.size)
+		elif self.content_mode == 1:
+			self._image = ui.resource.scale_to_fit(self.image, frame.size)
+		else:
+			assert False, "Unknown content_mode"
 
-        if self._image.get_width() < self.parent_frame.width:
-            frame.left = (self.parent_frame.width - self._image.get_width()) / 2
+		if self._image.get_width() < self.parent_frame.width:
+			frame.left = (self.parent_frame.width - self._image.get_width()) / 2
 
-        frame.size = self._image.get_size()
+		frame.size = self._image.get_size()
 
-        ui.View.__init__(self, frame)
+		ui.View.__init__(self, frame)
 
-    @property
-    def image(self):
-        return self._image
+	@property
+	def image(self):
+		return self._image
 
-    @image.setter
-    def image(self, new_image):
-        try:
-            self._image = ui.resource.scale_to_fit(new_image, self._max_frame.size)
-        except:
-            self._image = new_image
+	@image.setter
+	def image(self, new_image):
+		try:
+			self._image = ui.resource.scale_to_fit(new_image, self._max_frame.size)
+		except:
+			self._image = new_image
 
-        try:
-            pf = self.parent_frame
+		try:
+			pf = self.parent_frame
 
-            try:
-                f = self.frame
-                if self._image.get_width() < pf.width:
-                    f.left = (pf.width - self._image.get_width() ) / 2
-            except:
-                pass
-        except:
-            pass
+			try:
+				f = self.frame
+				if self._image.get_width() < pf.width:
+					f.left = (pf.width - self._image.get_width() ) / 2
+			except:
+				pass
+		except:
+			pass
 
-    """
-    layout
-     override ui.ImageView
-    """
-    def layout(self):
-        ui.View.layout(self)
+	"""
+	layout
+	 override ui.ImageView
+	"""
+	def layout(self):
+		ui.View.layout(self)
 
 """
 TrackScroller
 """
 
 class TrackScroller():
-    def __init__(self, view, vel=2, right=100):
-        self.scrollee = view
-        self.vel = vel
-        self.right = right
-        self.scrolling = True
-        self.start_thread()
+	def __init__(self, view, vel=2, right=100):
+		self.scrollee = view
+		self.vel = vel
+		self.right = right
+		self.scrolling = True
+		self.start_thread()
 
-    def stop(self):
-        self.scrolling = False
+	def stop(self):
+		self.scrolling = False
 
-    def start(self):
-        self.scrolling = True
+	def start(self):
+		self.scrolling = True
 
-    def start_thread(self):
-        try:
-            self.thread = thread.start_new_thread( self.scroll, ())
-        except:
-            print 'TrackScroller unable to start thread'
+	def start_thread(self):
+		try:
+			self.thread = thread.start_new_thread( self.scroll, ())
+		except:
+			print 'TrackScroller unable to start thread'
 
-    def scroll(self):
-        while 1:
-            if self.scrolling == True:
-                self.scrollee.frame.left = self.scrollee.frame.left - self.vel
-                if self.scrollee.frame.left < -( self.scrollee.frame.width ):
-                    self.scrollee.frame.left = self.right
-                self.scrollee.updated = True
-            time.sleep(.012)
+	def scroll(self):
+		while 1:
+			if self.scrolling == True:
+				self.scrollee.frame.left = self.scrollee.frame.left - self.vel
+				if self.scrollee.frame.left < -( self.scrollee.frame.width ):
+					self.scrollee.frame.left = self.right
+				self.scrollee.updated = True
+			time.sleep(.012)

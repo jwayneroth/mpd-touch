@@ -237,3 +237,7 @@ class Label(view.View):
         if self._text is None:
             return ''
         return self._text
+        
+class HeadingOne(Label):
+	def __init__(self, frame, text, halign=CENTER, valign=CENTER, wrap=CLIP):
+		Label.__init__(self, frame, text, halign, valign, wrap)

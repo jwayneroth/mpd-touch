@@ -22,10 +22,10 @@ class AnalogButtons:
 			#self.encoder = RotaryEncoder(4,15,callback=self.encoder_event)
 
 		self.buttons = [
-			{ 'pin': 23, 'key': pygame.K_UP, 'callback': self.on_up_click},
-			{ 'pin': 22, 'key': pygame.K_RIGHT, 'callback': self.on_right_click},
-			{ 'pin': 14, 'key': pygame.K_DOWN, 'callback': self.on_down_click},
-			{ 'pin': 17, 'key': pygame.K_LEFT, 'callback': self.on_left_click},
+			{ 'pin': 22, 'key': pygame.K_UP, 'callback': self.on_up_click},
+			{ 'pin': 23, 'key': pygame.K_RIGHT, 'callback': self.on_right_click},
+			{ 'pin': 17, 'key': pygame.K_DOWN, 'callback': self.on_down_click},
+			{ 'pin': 14, 'key': pygame.K_LEFT, 'callback': self.on_left_click},
 			{ 'pin': 27, 'key': pygame.K_RETURN, 'callback': self.on_return_click},
 		]
                                                            

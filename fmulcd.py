@@ -40,14 +40,15 @@ class FMU(object):
         self.screen_dimensions = (320,480)
         self.screen = False
         self.ss_timer = 0
-        self.ss_timer_on = True
+        self.ss_timer_on = False
         self.ss_delay = 60000
 
         if fmuglobals.RUN_ON_RASPBERRY_PI:
-            os.environ['SDL_FBDEV'] = '/dev/fb1'
-            os.environ["SDL_NOMOUSE"] = "1"
-            os.environ['SDL_MOUSEDEV'] = '/dev/input/touchscreen'
-            os.environ['SDL_MOUSEDRV'] = 'TSLIB'
+            #os.environ['SDL_FBDEV'] = '/dev/fb1'
+            #os.environ["SDL_NOMOUSE"] = "1"
+            #os.environ['SDL_MOUSEDEV'] = '/dev/input/touchscreen'
+            os.environ['SDL_MOUSEDEV'] = '/dev/input/event0'
+            #os.environ['SDL_MOUSEDRV'] = 'TSLIB'
 
         self.init_pygame()
 
@@ -94,7 +95,7 @@ class FMU(object):
             pygame.init()
 
             if fmuglobals.RUN_ON_RASPBERRY_PI:
-                pygame.mouse.set_visible(False)
+                #pygame.mouse.set_visible(False)
                 display_flags = pygame.FULLSCREEN | pygame.DOUBLEBUF | pygame.ANYFORMAT
                 self.screen = pygame.display.set_mode( (self.screen_dimensions), display_flags )
             else:
@@ -174,7 +175,9 @@ main
 """
 if __name__ == '__main__':
     logger.debug('fmulcd started')
+    
     fmu = FMU()
+    mpd.radio_station_start('http://stream0.wfmu.org/freeform-128k')
     clock = pygame.time.Clock()
     fps = 12 if fmuglobals.RUN_ON_RASPBERRY_PI else 30
     ticks = 0
