@@ -11,7 +11,7 @@ from mpd_client import *
 import fmuglobals
 import buttons
 import pygameui as ui
-from ft5406 import Touchscreen
+from ft5406 import Touchscreen, TS_PRESS, TS_RELEASE, TS_MOVE
 
 from albumlist import *
 from controls import *
@@ -170,7 +170,6 @@ class FMU(object):
 		pygame.quit()
 		sys.exit(0)
 
-
 """
 main
 """
@@ -179,20 +178,33 @@ if __name__ == '__main__':
 	
 	fmu = FMU()
 	mpd.radio_station_start('http://stream0.wfmu.org/freeform-128k')
+	
+	def release_handler(event, touch):
+		print("Got release", touch)
+	
 	ts = Touchscreen()
+	for touch in ts.touches:
+		#touch.on_press = touch_handler
+		touch.on_release = release_handler
+		#touch.on_move = touch_handler
+	
 	clock = pygame.time.Clock()
 	fps = 12 if fmuglobals.RUN_ON_RASPBERRY_PI else 30
 	ticks = 0
 	
+	down_in_view = None
+	user_active = False
+		
 	while True:
 		ticks = clock.tick(fps)
 		
 		down_in_view = None
 		user_active = False
 		
-		for touch in ts.poll():
-			print('ts:', touch.slot, touch.id, touch.valid, touch.x, touch.y)
-		
+		ts.poll()
+		#for touch in ts.poll():
+			#print('ts:', touch.slot, touch.id, touch.valid, touch.x, touch.y)
+			
 		for e in pygame.event.get():
 
 			if e.type == pygame.QUIT:
@@ -241,6 +253,7 @@ if __name__ == '__main__':
 						ui.focus.set(None)
 					pt = hit_view.from_window(mousepoint)
 					hit_view.mouse_up(e.button, pt)
+				
 				down_in_view = None
 
 			elif e.type == pygame.MOUSEMOTION:
