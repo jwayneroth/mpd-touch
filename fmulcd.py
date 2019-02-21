@@ -179,9 +179,28 @@ if __name__ == '__main__':
 	fmu = FMU()
 	mpd.radio_station_start('http://stream0.wfmu.org/freeform-128k')
 	
-	def release_handler(event, touch):
-		print("Got release", touch)
+	down_in_view = None
+	user_active = False
 	
+	def release_handler(event, touch):
+		#print("Got release", touch.x, touch.y)
+		user_active = True
+		hit_view = fmu.current.hit(mousepoint)
+		logger.debug('click %s at %s, %s' % (hit_view, touch.x, touch.y))
+		
+		if fmu.current == fmu.scenes['Screensaver']:
+			fmu.change_scene('NowPlaying', False, True)
+			break
+		
+		if hit_view is not None:
+			if down_in_view and hit_view != down_in_view:
+				down_in_view.blurred()
+				ui.focus.set(None)
+			pt = hit_view.from_window(mousepoint)
+			hit_view.mouse_up(e.button, pt)
+		
+		down_in_view = None
+		
 	ts = Touchscreen()
 	for touch in ts.touches:
 		#touch.on_press = touch_handler
@@ -191,9 +210,6 @@ if __name__ == '__main__':
 	clock = pygame.time.Clock()
 	fps = 12 if fmuglobals.RUN_ON_RASPBERRY_PI else 30
 	ticks = 0
-	
-	down_in_view = None
-	user_active = False
 		
 	while True:
 		ticks = clock.tick(fps)
@@ -237,7 +253,8 @@ if __name__ == '__main__':
 					hit_view.mouse_down(e.button, pt)
 				else:
 					ui.focus.set(None)
-
+			
+			"""
 			elif e.type == pygame.MOUSEBUTTONUP:
 				user_active = True
 				hit_view = fmu.current.hit(mousepoint)
@@ -255,7 +272,8 @@ if __name__ == '__main__':
 					hit_view.mouse_up(e.button, pt)
 				
 				down_in_view = None
-
+			"""
+			
 			elif e.type == pygame.MOUSEMOTION:
 				user_active = True
 				if down_in_view and down_in_view.draggable:
