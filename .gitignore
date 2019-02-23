@@ -3,3 +3,4 @@ pygameui/*.pyc
 *.log
 .git
 *.AppleDouble
+*.DS_Store

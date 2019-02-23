@@ -12,7 +12,7 @@ from lib.mpd_client import *
 import fmuglobals
 #import gpio.buttons
 import pygameui as ui
-from python-multitouch.ft5406 import Touchscreen, TS_PRESS, TS_RELEASE, TS_MOVE
+from lib.ft5406 import Touchscreen, TS_PRESS, TS_RELEASE, TS_MOVE
 from scenes import *
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
