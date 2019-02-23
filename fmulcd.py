@@ -36,16 +36,16 @@ class Fmulcd(object):
 		self.screen_dimensions = (800,480)
 		self.screen = False
 		self.ss_timer = 0
-		self.ss_timer_on = False
+		self.ss_timer_on = True
 		self.ss_delay = 60000
-		
+
 		self.init_pygame()
-		
+
 		ui.theme.init()
 		ui.theme.use_theme(ui.theme.dark_theme)
-		
+
 		rect = pygame.Rect((0,0),self.screen_dimensions)
-		
+
 		self.scenes = {
 			'NowPlaying': NowPlayingScene(rect),
 			'Albums': AlbumListScene(rect),
@@ -54,16 +54,16 @@ class Fmulcd(object):
 			'Controls': ControlsScene(rect),
 			'Screensaver': ScreensaverScene(rect)
 		}
-		
+
 		for name,scene in self.scenes.iteritems():
 			scene.on_nav_change.connect(self.change_scene)
-		
+
 		print 'created scenes'
-		
+
 		self.make_current_scene(self.scenes['NowPlaying'])
-		
+
 		#self.ab = buttons.AnalogButtons()
-	
+
 	"""
 	init_pygame
 	"""
@@ -72,35 +72,35 @@ class Fmulcd(object):
 		# needs a keyboardinterrupt to initialise in some limited circs (second time running)
 		class Alarm(Exception):
 			pass
-		
+
 		def alarm_handler(signum, frame):
 			raise Alarm
-		
+
 		signal(SIGALRM, alarm_handler)
-		
+
 		alarm(3)
-		
+
 		try:
 			pygame.init()
-			
+
 			if fmuglobals.RUN_ON_RASPBERRY_PI:
 				pygame.mouse.set_visible(False)
 				self.screen = pygame.display.set_mode((self.screen_dimensions), pygame.FULLSCREEN)
 			else:
 				self.screen = pygame.display.set_mode(self.screen_dimensions)
-			
+
 			alarm(0)
-		
+
 		except Alarm:
 			raise KeyboardInterrupt
-		
+
 		logger.debug('pygame inited on rpi?: %s' % fmuglobals.RUN_ON_RASPBERRY_PI)
-		
+
 		pygame.key.set_repeat(300,180)
 		pygame.display.set_caption('Raspberry Pi UI')
 		#pygame.event.set_allowed(None)
 		#pygame.event.set_allowed(( pygame.QUIT, pygame.KEYDOWN ))
-	
+
 	"""
 	make_current_scene
 	"""
@@ -171,14 +171,14 @@ def ts_move_handler(event, touch):
 mousedown handler
 """
 def _press_handler(mousepoint):
-	
+
 	global user_active
 	global down_in_view
-	
+
 	user_active = True
-		
+
 	hit_view = fmu.current.hit(mousepoint)
-	
+
 	if (hit_view is not None and not isinstance(hit_view, ui.Scene)):
 		ui.focus.set(hit_view)
 		down_in_view = hit_view
@@ -191,77 +191,77 @@ def _press_handler(mousepoint):
 mouseup handler
 """
 def _release_handler(mousepoint):
-	
+
 	global user_active
 	global down_in_view
-	
+
 	user_active = True
-	
+
 	hit_view = fmu.current.hit(mousepoint)
-	
+
 	if fmu.current == fmu.scenes['Screensaver']:
 		fmu.change_scene('NowPlaying', False, True)
 		return
-	
+
 	if hit_view is not None:
 		if down_in_view and hit_view != down_in_view:
 			down_in_view.blurred()
 			ui.focus.set(None)
 		pt = hit_view.from_window(mousepoint)
 		hit_view.mouse_up('FOO', pt)
-	
+
 	down_in_view = None
 
 """
 mousemove handler
 """
 def _move_handler(mousepoint):
-	
+
 	global user_active
 	global down_in_view
-	
+
 	user_active = True
-	
+
 	if down_in_view and down_in_view.draggable:
 		pt = down_in_view.from_window(mousepoint)
 		down_in_view.mouse_drag(pt, e.rel)
 	else:
 		fmu.current.mouse_motion(mousepoint)
-		
+
 """
 main
 """
 if __name__ == '__main__':
 	logger.debug('fmulcd started')
-	
+
 	fmu = Fmulcd()
-	
+
 	mpd.radio_station_start('http://stream0.wfmu.org/freeform-128k')
-	
+
 	down_in_view = None
 	user_active = False
-	
+
 	if fmuglobals.RUN_ON_RASPBERRY_PI:
 		ts = Touchscreen()
-		
+
 		for touch in ts.touches:
 			touch.on_press = ts_press_handler
 			touch.on_release = ts_release_handler
 			#touch.on_move = ts_move_handler
-	
+
 	clock = pygame.time.Clock()
 	fps = 12 if fmuglobals.RUN_ON_RASPBERRY_PI else 30
 	ticks = 0
-		
+
 	while True:
 		ticks = clock.tick(fps)
-		
+
 		down_in_view = None
 		user_active = False
-		
+
 		if fmuglobals.RUN_ON_RASPBERRY_PI:
 			ts.poll()
-		
+
 		for e in pygame.event.get():
 			if e.type == pygame.QUIT:
 				fmu.kill_app()
@@ -273,7 +273,7 @@ if __name__ == '__main__':
 				else:
 					fmu.current.key_down(e.key, e.unicode)
 					break
-			
+
 			if not fmuglobals.RUN_ON_RASPBERRY_PI:
 				mousepoint = pygame.mouse.get_pos()
 				if e.type == pygame.MOUSEBUTTONDOWN:
@@ -282,16 +282,16 @@ if __name__ == '__main__':
 					_release_handler(mousepoint)
 				#elif e.type == pygame.MOUSEMOTION:
 				#	_move_handler(mousepoint, e.rel)
-		
+
 		if fmu.ss_timer_on:
 			fmu.screensaver_tick(ticks, user_active)
-		
+
 		fmu.current.update()
-		
+
 		if fmu.current.draw():
-			
+
 			fmu.screen.blit(fmu.current.surface, (0, 0))
-			
+
 			pygame.display.flip()
-			
+
 		#time.sleep(.05)

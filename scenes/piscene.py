@@ -13,7 +13,7 @@ class PiScene(ui.Scene):
 
         self.name = name
         self.margins = 15
-        self.btn_size = 45
+        self.btn_size = 50
         self.margins_bottom = 10
         self.has_nav = False
         self.is_mpd_listener = False
@@ -46,8 +46,8 @@ class PiScene(ui.Scene):
             ui.Rect(
                 self.margins,
                 self.margins,
-                self.frame.width,
-                self.btn_size
+                self.btn_size + self.margins * 2, #self.frame.width,
+                self.frame.height #self.btn_size
             )
         )
 
@@ -61,16 +61,20 @@ class PiScene(ui.Scene):
 
         btn_x = 0
 
+        btn_y = 0
+
         for btn_data in btns:
             btn = ui.IconButton(
                 ui.Rect(
-                    btn_x,0,
+                    btn_x,
+                    btn_y,
                     self.btn_size,
                     self.btn_size
                 ),
                 btn_data[1]
             )
-            btn_x = btn_x + self.btn_size + self.margins
+            #btn_x = btn_x + self.btn_size + self.margins
+            btn_y = btn_y + self.btn_size + self.margins
             btn.on_clicked.connect(self.sidebar_btn_clicked)
             btn.tag_name = btn_data[0]
 
@@ -88,10 +92,10 @@ class PiScene(ui.Scene):
 
         main = PiMain( #ui.View(
             ui.Rect(
-                0,
-                self.sidebar.frame.bottom,
-                self.frame.width,
-                self.frame.height - self.sidebar.frame.height # - self.margins - self.margins
+                self.sidebar.frame.width, #0,
+                0, #self.sidebar.frame.bottom,
+                self.frame.width - self.sidebar.frame.width, #self.frame.width,
+                self.frame.height #self.frame.height - self.sidebar.frame.height # - self.margins - self.margins
             )
         )
 

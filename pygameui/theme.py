@@ -107,7 +107,7 @@ def init_dark_theme():
 
 	#HeadingOne
 	dark_theme.set(class_name='HeadingOne', state='normal', key='font', value=resource.get_font(32, use_bold=True))
-	dark_theme.set(class_name='HeadingOne', state='normal', key='text_color', value=light_gray)
+	dark_theme.set(class_name='HeadingOne', state='normal', key='text_color', value=mid_gray)
 
 	#Button
 	dark_theme.set(class_name='Button', state='normal', key='background_color', value=near_black)
@@ -129,7 +129,7 @@ def init_dark_theme():
 	dark_theme.set(class_name='IconButton', state='disabled', key='text_color', value=mid_gray)
 	dark_theme.set(class_name='IconButton', state='focused', key='text_color', value=orange)
 	dark_theme.set(class_name='IconButton', state='selected', key='text_color', value=lemon)
-	dark_theme.set(class_name='IconButton', state='normal', key='font', value=resource.get_font(24, use_bold=False, name='glyphicons-halflings-regular'))
+	dark_theme.set(class_name='IconButton', state='normal', key='font', value=resource.get_font(34, use_bold=False, name='glyphicons-halflings-regular'))
 
 	dark_theme.set(class_name='ImageButton', state='normal', key='background_color', value=None)
 	dark_theme.set(class_name='ImageButton', state='focused', key='background_color', value=None)

@@ -189,7 +189,7 @@ class Label(view.View):
                            self.text_size[1] + self.padding[1] * 2)
 
         print 'Label::shrink_wrap \t size: ' + str(self.frame.size)
-        
+
     def _determine_top(self):
         if self.valign == TOP:
             y = self.padding[1]
@@ -210,7 +210,7 @@ class Label(view.View):
         return x
 
     def draw(self, force=False):
-        
+
 
         if not view.View.draw(self, force) or not self._text:
             return False
@@ -237,7 +237,7 @@ class Label(view.View):
         if self._text is None:
             return ''
         return self._text
-        
+
 class HeadingOne(Label):
 	def __init__(self, frame, text, halign=CENTER, valign=CENTER, wrap=CLIP):
 		Label.__init__(self, frame, text, halign, valign, wrap)

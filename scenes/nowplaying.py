@@ -16,8 +16,8 @@ class NowPlayingScene(PiScene):
 
         self.has_nav = True
         self.is_mpd_listener = True
-        self.cover_size = 160
-        self.label_height = 20
+        self.cover_size = 220 #160
+        self.label_height = 36
         self.track_scroll_velocity = 1
         if fmuglobals.RUN_ON_RASPBERRY_PI == True:
             self.track_scroll_velocity = 3
@@ -30,10 +30,6 @@ class NowPlayingScene(PiScene):
         self.cover_image_directory = self.image_directory + 'covers'
 
         self.make_labels()
-
-        #self.scroller = TrackScroller(self.components['track'], 1, self.frame.right)
-
-        #self.main.add_child(self.labels)
 
     """
     key_down
@@ -50,7 +46,7 @@ class NowPlayingScene(PiScene):
     def make_labels(self):
         comp_labels = {
             'artist': [
-                ui.Rect( 0,0, self.main.frame.width,self.label_height ),
+                ui.Rect( 0, 0, self.main.frame.width,self.label_height ),
                 mpd.now_playing.artist
             ],
             'album': [
@@ -65,7 +61,7 @@ class NowPlayingScene(PiScene):
 
 
         for key, val in comp_labels.iteritems():
-            label = ui.Label( val[0], val[1], halign=ui.CENTER )
+            label = ui.HeadingOne( val[0], val[1], halign=ui.CENTER )
             self.main.add_child(label)
             self.components[key] = label
 
@@ -158,12 +154,12 @@ class NowPlayingScene(PiScene):
 
         track = self.components['track']
 
-        if track.frame.width > self.main.frame.width:
+        if True:
+        #if track.frame.width > self.main.frame.width:
         #if mpd.now_playing.playing_type == 'radio':
 
             track.frame.left = track.frame.left - self.track_scroll_velocity
             if track.frame.left < -( track.frame.width ):
-                #print 'looping scroller'
                 track.frame.left = self.main.frame.right
             track.updated = True
 
