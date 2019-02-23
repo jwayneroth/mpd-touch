@@ -16,8 +16,8 @@ import random
 #import python_mpd2
 from PersistentMPDClient import PersistentMPDClient
 from collections import deque
-from .. mutagen import File
-from .. import pygameui.callback as callback
+from ..mutagen import File
+from ..pygameui.callback as callback
 
 import logging
 logger = logging.getLogger('fmu_logger')
