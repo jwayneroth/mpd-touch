@@ -1,7 +1,7 @@
 import time
 import os
 
-from .. import fmuglobals
+import fmuglobals
 from piscene import *
 
 """
@@ -30,7 +30,7 @@ class ScreensaverScene(PiScene):
         self.vx = random.randrange(-5, 5)
         self.vy = random.randrange(-5, 5)
         if os.path.dirname(__file__) != '':
-            self.image_directory = os.path.dirname(__file__) + '/' + self.image_directory
+            self.image_directory = os.path.dirname(__file__) + '/../' + self.image_directory
         self.screenaver_image_directory = self.image_directory + 'screensavers'
 
         self.make_screenaver()

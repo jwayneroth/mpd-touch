@@ -1,7 +1,7 @@
 import time
 import os
 
-from .. import fmuglobals
+import fmuglobals
 from piscene import *
 
 """
@@ -28,7 +28,7 @@ class NowPlayingScene(PiScene):
             self.image_directory = os.path.dirname(__file__) + '/../' + self.image_directory
         self.default_cover_image_directory = self.image_directory + 'default_covers'
         self.cover_image_directory = self.image_directory + 'covers'
-        
+
         self.make_labels()
 
         #self.scroller = TrackScroller(self.components['track'], 1, self.frame.right)
@@ -153,14 +153,14 @@ class NowPlayingScene(PiScene):
     update
     """
     def update(self):
-        
+
         PiScene.update(self)
-        
+
         track = self.components['track']
-        
+
         if track.frame.width > self.main.frame.width:
         #if mpd.now_playing.playing_type == 'radio':
-            
+
             track.frame.left = track.frame.left - self.track_scroll_velocity
             if track.frame.left < -( track.frame.width ):
                 #print 'looping scroller'

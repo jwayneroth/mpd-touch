@@ -1,7 +1,7 @@
 import socket
 import subprocess
 
-from .. import fmuglobals
+import fmuglobals
 from piscene import *
 
 #if fmuglobals.RUN_ON_RASPBERRY_PI:
