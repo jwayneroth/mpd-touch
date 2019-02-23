@@ -153,10 +153,14 @@ class NowPlayingScene(PiScene):
     update
     """
     def update(self):
+        
         PiScene.update(self)
-        if mpd.now_playing.playing_type == 'radio':
-        #if 1:
-            track = self.components['track']
+        
+        track = self.components['track']
+        
+        if track.frame.width > self.main.frame.width:
+        #if mpd.now_playing.playing_type == 'radio':
+            
             track.frame.left = track.frame.left - self.track_scroll_velocity
             if track.frame.left < -( track.frame.width ):
                 #print 'looping scroller'

@@ -168,7 +168,9 @@ def ts_release_handler(event, touch):
 ts mousemove handler
 """
 def ts_move_handler(event, touch):
-	move_handler((touch.x, touch.y))
+	lst = touch.last_position
+	delta = max(abs(lst[0] - touch.x), abs(lst[1] - touch.y))
+	move_handler((touch.x, touch.y), delta)
 
 """
 mousedown handler
@@ -186,7 +188,7 @@ def _press_handler(mousepoint):
 		ui.focus.set(hit_view)
 		down_in_view = hit_view
 		pt = hit_view.from_window(mousepoint)
-		hit_view.mouse_down(e.button, pt)
+		hit_view.mouse_down('FOO', pt)
 	else:
 		ui.focus.set(None)
 
@@ -283,8 +285,8 @@ if __name__ == '__main__':
 					_press_handler(mousepoint)
 				elif e.type == pygame.MOUSEBUTTONUP:
 					_release_handler(mousepoint)
-				elif e.type == pygame.MOUSEMOTION:
-					_move_handler(mousepoint)
+				#elif e.type == pygame.MOUSEMOTION:
+				#	_move_handler(mousepoint, e.rel)
 		
 		if fmu.ss_timer_on:
 			fmu.screensaver_tick(ticks, user_active)
