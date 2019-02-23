@@ -16,7 +16,7 @@ import random
 #import python_mpd2
 from PersistentMPDClient import PersistentMPDClient
 from collections import deque
-from ..mutagen import File
+#from ..mutagen import File
 from ..pygameui import callback as callback
 
 import logging
