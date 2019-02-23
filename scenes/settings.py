@@ -1,11 +1,11 @@
-from piscene import *
-
 import socket
 import subprocess
-import fmuglobals
 
-if fmuglobals.RUN_ON_RASPBERRY_PI:
-    import RPi.GPIO as GPIO
+from .. import fmuglobals
+from piscene import *
+
+#if fmuglobals.RUN_ON_RASPBERRY_PI:
+#    import RPi.GPIO as GPIO
 
 """
 SettingsScene

@@ -11,12 +11,13 @@ import time
 import subprocess
 import os
 import glob
+import random
+
 #import python_mpd2
 from PersistentMPDClient import PersistentMPDClient
 from collections import deque
-from mutagen import File
-import pygameui.callback as callback
-import random
+from .. mutagen import File
+from .. import pygameui.callback as callback
 
 import logging
 logger = logging.getLogger('fmu_logger')

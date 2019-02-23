@@ -1,7 +1,8 @@
-import fmuglobals
-from piscene import *
 import time
 import os
+
+from .. import fmuglobals
+from piscene import *
 
 """
 ScreensaverScene

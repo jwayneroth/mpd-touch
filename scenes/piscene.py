@@ -1,5 +1,5 @@
-from mpd_client import *
-import pygameui as ui
+from ..lib.mpd_client import *
+from .. import pygameui as ui
 
 """
 PiScene

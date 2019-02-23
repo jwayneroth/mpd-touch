@@ -1,8 +1,8 @@
-import fmuglobals
-from piscene import *
-import thread
 import time
 import os
+
+from .. import fmuglobals
+from piscene import *
 
 """
 NowPlayingScene
@@ -25,10 +25,10 @@ class NowPlayingScene(PiScene):
         self.components = {}
         self.image_directory = 'images/'
         if os.path.dirname(__file__) != '':
-            self.image_directory = os.path.dirname(__file__) + '/' + self.image_directory
+            self.image_directory = os.path.dirname(__file__) + '/../' + self.image_directory
         self.default_cover_image_directory = self.image_directory + 'default_covers'
         self.cover_image_directory = self.image_directory + 'covers'
-
+        
         self.make_labels()
 
         #self.scroller = TrackScroller(self.components['track'], 1, self.frame.right)
@@ -344,36 +344,3 @@ class CoverView(ui.ImageView):
 	"""
 	def layout(self):
 		ui.View.layout(self)
-
-"""
-TrackScroller
-"""
-
-class TrackScroller():
-	def __init__(self, view, vel=2, right=100):
-		self.scrollee = view
-		self.vel = vel
-		self.right = right
-		self.scrolling = True
-		self.start_thread()
-
-	def stop(self):
-		self.scrolling = False
-
-	def start(self):
-		self.scrolling = True
-
-	def start_thread(self):
-		try:
-			self.thread = thread.start_new_thread( self.scroll, ())
-		except:
-			print 'TrackScroller unable to start thread'
-
-	def scroll(self):
-		while 1:
-			if self.scrolling == True:
-				self.scrollee.frame.left = self.scrollee.frame.left - self.vel
-				if self.scrollee.frame.left < -( self.scrollee.frame.width ):
-					self.scrollee.frame.left = self.right
-				self.scrollee.updated = True
-			time.sleep(.012)

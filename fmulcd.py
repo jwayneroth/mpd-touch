@@ -7,18 +7,13 @@ import os
 import time
 import subprocess
 import logging
-from mpd_client import *
-import fmuglobals
-import buttons
-import pygameui as ui
-from ft5406 import Touchscreen, TS_PRESS, TS_RELEASE, TS_MOVE
 
-from albumlist import *
-from controls import *
-from nowplaying import *
-from radio import *
-from settings import *
-from screensaver import *
+from lib.mpd_client import *
+import fmuglobals
+#import gpio.buttons
+import pygameui as ui
+from python-multitouch.ft5406 import Touchscreen, TS_PRESS, TS_RELEASE, TS_MOVE
+from scenes import *
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 
@@ -34,7 +29,7 @@ fh.setFormatter(formatter)
 logger.addHandler(ch)
 logger.addHandler(fh)
 
-class FMU(object):
+class Fmulcd(object):
 	def __init__(self):
 		self.current = False
 		self.last = False
@@ -67,7 +62,7 @@ class FMU(object):
 		
 		self.make_current_scene(self.scenes['NowPlaying'])
 		
-		self.ab = buttons.AnalogButtons()
+		#self.ab = buttons.AnalogButtons()
 	
 	"""
 	init_pygame
@@ -110,7 +105,7 @@ class FMU(object):
 	make_current_scene
 	"""
 	def make_current_scene(self, scene):
-		logger.debug('FMU::make_current_scene \t' + scene.name)
+		logger.debug('Fmulcd::make_current_scene \t' + scene.name)
 		#if self.current == scene:
 		#	 return
 		if self.current:
@@ -239,7 +234,7 @@ main
 if __name__ == '__main__':
 	logger.debug('fmulcd started')
 	
-	fmu = FMU()
+	fmu = Fmulcd()
 	
 	mpd.radio_station_start('http://stream0.wfmu.org/freeform-128k')
 	
