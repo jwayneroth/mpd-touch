@@ -4,6 +4,7 @@ import fmuglobals
 class Fmutheme(ui.theme.Theme):
 	def __init__(self):
 		ui.theme.Theme.__init__(self)
+		self.debug = False
 		self.init_styles()
 
 	def init_styles(self):
@@ -24,7 +25,10 @@ class Fmutheme(ui.theme.Theme):
 		self.set(class_name='View', state='focused', key='background_color', value=None)
 		self.set(class_name='View', state='selected', key='background_color', value=None)
 		self.set(class_name='View', state='normal', key='border_color', value=light_gray) #value=None)
-		self.set(class_name='View', state='normal', key='border_widths', value=1) #value=None)
+		if self.debug:
+			self.set(class_name='View', state='normal', key='border_widths', value=1)
+		else:
+			self.set(class_name='View', state='normal', key='border_widths', value=None)
 		self.set(class_name='View', state='normal', key='margin', value=(6, 6))
 		self.set(class_name='View', state='normal', key='padding', value=(0, 0))
 		self.set(class_name='View', state='normal', key='shadowed', value=False)
