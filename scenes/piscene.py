@@ -1,5 +1,6 @@
 from mpd_client import *
 import pygameui as ui
+import fmuglobals
 
 """
 PiScene
@@ -60,9 +61,9 @@ class PiScene(ui.Scene):
 			('Controls','volume-down')
 		]
 
-		btn_x = 0
+		btn_x = 15
 
-		btn_y = 0
+		btn_y = 20
 
 		for btn_data in btns:
 			btn = ui.NavIconButton(
@@ -70,12 +71,12 @@ class PiScene(ui.Scene):
 					btn_x,
 					btn_y,
 					self.nav_btn_size,
-					self.nav_btn_size
+					self.nav_btn_size,
+					halign=ui.CENTER
 				),
 				btn_data[1]
 			)
-			#btn_x = btn_x + self.btn_size + self.margins
-			btn_y = btn_y + round(self.frame.height / 5 ) #self.nav_btn_size + self.margins
+			btn_y = btn_y + round(self.frame.height / 5 )
 			btn.on_clicked.connect(self.sidebar_btn_clicked)
 			btn.tag_name = btn_data[0]
 

@@ -244,7 +244,7 @@ class AlbumListScene(PiScene):
 				0,
 				0,
 				self.main.frame.width - ui.SCROLLBAR_SIZE - self.margins,
-				self.frame.height-self.btn_size
+				self.main.frame.height-self.btn_size
 			)
 		)
 		return scroll_list
@@ -255,20 +255,20 @@ class AlbumListScene(PiScene):
 	def make_page_nav(self):
 		btn_down = ui.Button(ui.Rect(0,
 									 0,
-									 self.frame.width - self.btn_size,
+									 self.main.frame.width - self.btn_size,
 									 self.btn_size),'Page Down',halign=ui.RIGHT,valign=ui.CENTER)
 
-		icon_down = ui.IconButton(ui.Rect(self.frame.width - self.btn_size,
+		icon_down = ui.IconButton(ui.Rect(self.main.frame.width - self.btn_size,
 										  0,
 										  self.btn_size,
 										  self.btn_size),'chevron-down')
 
 		btn_up = ui.Button(ui.Rect(0,
 								   self.main.frame.height - self.btn_size - self.margins,
-								   self.frame.width - self.btn_size,
+								   self.main.frame.width - self.btn_size,
 								   self.btn_size),'Page Up',halign=ui.RIGHT,valign=ui.CENTER)
 
-		icon_up = ui.IconButton(ui.Rect(self.frame.width - self.btn_size,
+		icon_up = ui.IconButton(ui.Rect(self.main.frame.width - self.btn_size,
 										self.main.frame.height - self.btn_size - self.margins,
 										self.btn_size,
 										self.btn_size),'chevron-up')

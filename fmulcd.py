@@ -10,7 +10,7 @@ import logging
 
 from lib.mpd_client import *
 import fmuglobals
-import fmutheme
+from fmutheme import Fmutheme
 #import gpio.buttons
 import pygameui as ui
 from lib.ft5406 import Touchscreen, TS_PRESS, TS_RELEASE, TS_MOVE
