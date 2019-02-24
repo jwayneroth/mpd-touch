@@ -83,8 +83,8 @@ def init_dark_theme():
 	dark_theme.set(class_name='View', state='normal', key='background_color', value=None)
 	dark_theme.set(class_name='View', state='focused', key='background_color', value=None)
 	dark_theme.set(class_name='View', state='selected', key='background_color', value=None)
-	dark_theme.set(class_name='View', state='normal', key='border_color', value=None)
-	dark_theme.set(class_name='View', state='normal', key='border_widths', value=None)
+	dark_theme.set(class_name='View', state='normal', key='border_color', value=light_gray) #value=None)
+	dark_theme.set(class_name='View', state='normal', key='border_widths', value=1) #value=None)
 	dark_theme.set(class_name='View', state='normal', key='margin', value=(6, 6))
 	dark_theme.set(class_name='View', state='normal', key='padding', value=(0, 0))
 	dark_theme.set(class_name='View', state='normal', key='shadowed', value=False)
@@ -129,7 +129,9 @@ def init_dark_theme():
 	dark_theme.set(class_name='IconButton', state='disabled', key='text_color', value=mid_gray)
 	dark_theme.set(class_name='IconButton', state='focused', key='text_color', value=orange)
 	dark_theme.set(class_name='IconButton', state='selected', key='text_color', value=lemon)
-	dark_theme.set(class_name='IconButton', state='normal', key='font', value=resource.get_font(34, use_bold=False, name='glyphicons-halflings-regular'))
+	dark_theme.set(class_name='IconButton', state='normal', key='font', value=resource.get_font(24, use_bold=False, name='glyphicons-halflings-regular'))
+
+	dark_theme.set(class_name='NavIconButton', state='normal', key='font', value=resource.get_font(34, use_bold=False, name='glyphicons-halflings-regular'))
 
 	dark_theme.set(class_name='ImageButton', state='normal', key='background_color', value=None)
 	dark_theme.set(class_name='ImageButton', state='focused', key='background_color', value=None)

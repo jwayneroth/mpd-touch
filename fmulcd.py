@@ -10,6 +10,7 @@ import logging
 
 from lib.mpd_client import *
 import fmuglobals
+import fmutheme
 #import gpio.buttons
 import pygameui as ui
 from lib.ft5406 import Touchscreen, TS_PRESS, TS_RELEASE, TS_MOVE
@@ -37,12 +38,12 @@ class Fmulcd(object):
 		self.screen = False
 		self.ss_timer = 0
 		self.ss_timer_on = True
-		self.ss_delay = 60000
+		self.ss_delay = 600000
 
 		self.init_pygame()
 
-		ui.theme.init()
-		ui.theme.use_theme(ui.theme.dark_theme)
+		fmutheme = Fmutheme()
+		ui.theme.use_theme(fmutheme)
 
 		rect = pygame.Rect((0,0),self.screen_dimensions)
 
@@ -281,7 +282,7 @@ if __name__ == '__main__':
 				elif e.type == pygame.MOUSEBUTTONUP:
 					_release_handler(mousepoint)
 				#elif e.type == pygame.MOUSEMOTION:
-				#	_move_handler(mousepoint, e.rel)
+				# _move_handler(mousepoint, e.rel)
 
 		if fmu.ss_timer_on:
 			fmu.screensaver_tick(ticks, user_active)
