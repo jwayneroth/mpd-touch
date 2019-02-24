@@ -60,3 +60,7 @@ class Theme(object):
 			return default_value
 
 current = None
+
+def use_theme(theme):
+	global current
+	current = theme
