@@ -251,11 +251,11 @@ if __name__ == '__main__':
 			#touch.on_move = ts_move_handler
 
 	clock = pygame.time.Clock()
-	fps = 12 if fmuglobals.RUN_ON_RASPBERRY_PI else 30
+	fps = 32 if fmuglobals.RUN_ON_RASPBERRY_PI else 30
 	ticks = 0
 
 	while True:
-		ticks = clock.tick(fps)
+		ticks = clock.tick()#(fps)
 
 		down_in_view = None
 		user_active = False

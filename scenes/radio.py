@@ -348,6 +348,8 @@ class RadioScene(PiScene):
 
 		mpd.radio_station_start(btn.url)
 
+		self.on_nav_change('NowPlaying')
+
 	"""
 	on_archive_clicked
 	"""
@@ -369,6 +371,8 @@ class RadioScene(PiScene):
 		#print '\t stream: ' + stream
 
 		mpd.radio_station_start(stream.strip())
+
+		self.on_nav_change('NowPlaying')
 
 	"""
 	on_submenu_btn_clicked

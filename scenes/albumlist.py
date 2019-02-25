@@ -559,8 +559,10 @@ class AlbumListScene(PiScene):
 		#	 mpd.mpd_client.connect('localhost',6600)
 		#	 mpd.mpd_client.play(0)
 
-			#mpd.playlist_add('artist', btn.artist_name, True, True)
+		#mpd.playlist_add('artist', btn.artist_name, True, True)
 
+		self.on_nav_change('NowPlaying')
+		
 	"""
 	album_clicked
 	"""
@@ -615,6 +617,8 @@ class AlbumListScene(PiScene):
 
 		#ui.scene.push(scenes['NowPlaying'])
 
+		self.on_nav_change('NowPlaying')
+
 	"""
 	track_clicked
 	"""
@@ -630,6 +634,8 @@ class AlbumListScene(PiScene):
 		#except mpd.mpd_client.ConnectionError:
 		#	 mpd.mpd_client.connect('localhost',6600)
 		#	 mpd.mpd_client.play(0)
+
+		self.on_nav_change('NowPlaying')
 
 	"""
 	on_back_btn_clicked

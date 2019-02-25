@@ -10,264 +10,268 @@ NowPlayingScene
  and playback controls
 """
 class NowPlayingScene(PiScene):
-    def __init__(self, frame=None):
+	def __init__(self, frame=None):
 
-        PiScene.__init__(self, frame, 'NowPlaying')
+		PiScene.__init__(self, frame, 'NowPlaying')
 
-        self.has_nav = True
-        self.is_mpd_listener = True
-        self.cover_size = 220 #160
-        self.label_height = 36
-        self.track_scroll_velocity = 1
-        if fmuglobals.RUN_ON_RASPBERRY_PI == True:
-            self.track_scroll_velocity = 3
-        self.main_active = False
-        self.components = {}
-        self.image_directory = 'images/'
-        if os.path.dirname(__file__) != '':
-            self.image_directory = os.path.dirname(__file__) + '/../' + self.image_directory
-        self.default_cover_image_directory = self.image_directory + 'default_covers'
-        self.cover_image_directory = self.image_directory + 'covers'
+		self.has_nav = True
+		self.is_mpd_listener = True
+		self.cover_size = 290 #160
+		self.label_height = 36
+		self.track_scroll_velocity = 1
+		if fmuglobals.RUN_ON_RASPBERRY_PI == True:
+			self.track_scroll_velocity = 3
+		self.main_active = False
+		self.components = {}
+		self.image_directory = 'images/'
+		if os.path.dirname(__file__) != '':
+			self.image_directory = os.path.dirname(__file__) + '/../' + self.image_directory
+		self.default_cover_image_directory = self.image_directory + 'default_covers'
+		self.cover_image_directory = self.image_directory + 'covers'
 
-        self.make_labels()
+		self.make_labels()
 
-    """
-    key_down
-    """
-    def key_down(self, key, code):
-        ui.Scene.key_down(self,key,code)
+	"""
+	key_down
+	"""
+	def key_down(self, key, code):
+		ui.Scene.key_down(self,key,code)
 
-        if key == pygame.K_RIGHT or  key == pygame.K_LEFT or key == pygame.K_RETURN:
-            self.key_down_sidebar(key)
+		if key == pygame.K_RIGHT or	 key == pygame.K_LEFT or key == pygame.K_RETURN:
+			self.key_down_sidebar(key)
 
-    """
-    make_labels
-    """
-    def make_labels(self):
-        comp_labels = {
-            'artist': [
-                ui.Rect( 0, 0, self.main.frame.width,self.label_height ),
-                mpd.now_playing.artist
-            ],
-            'album': [
-                ui.Rect( 0, self.label_height + self.margins, self.main.frame.width, self.label_height ),
-                mpd.now_playing.album
-            ],
-            'track': [
-                ui.Rect( 0, self.label_height * 2 + self.margins * 3 + self.cover_size, self.main.frame.width, self.label_height ),
-                mpd.now_playing.title
-            ]
-        }
-
-
-        for key, val in comp_labels.iteritems():
-            label = ui.HeadingOne( val[0], val[1], halign=ui.CENTER )
-            self.main.add_child(label)
-            self.components[key] = label
-
-        cover = CoverView(
-            ui.Rect(
-                0,
-                self.label_height * 2 + self.margins * 2,
-                self.main.frame.width,
-                self.cover_size
-            ),
-            self.get_cover_image(),
-            ui.Rect(
-                0,
-                self.label_height * 2 + self.margins * 2,
-                self.main.frame.width,
-                self.cover_size
-            )
-        )
-        cover.updated = True
-        self.main.add_child(cover)
-        self.components['album_cover'] = cover
-
-    """
-    entered
-    """
-    def entered(self):
-
-        PiScene.entered(self)
-
-        playing = mpd.now_playing
-
-        self.components['artist'].text = playing.artist
-        self.components['album'].text = playing.album
-        self.components['album_cover'].image = self.get_cover_image()
-        self.components['album_cover'].updated = True
-        self.components['track'].text = playing.title
-        #self.labels.components['track'].shrink_wrap()
-
-        if mpd.now_playing.playing_type == 'radio':
-            self.radio_track_settings(True)
-        else:
-            self.radio_track_settings(False)
-
-        #self.scroller.start()
-
-        self.stylize()
-
-        #PiScene.entered(self)
-
-    """
-    exited
-    """
-    def exited(self):
-        logger.debug('NowPlaying exited')
-        #self.scroller.stop()
-
-    """
-    radio_track_settings
-    """
-    def radio_track_settings(self, on_off):
-
-        track = self.components['track']
-
-        if on_off == True:
-            track.halign = ui.LEFT
-            self.resize_track()
-        else:
-            track.halign = ui.CENTER
-            track.frame.left = 10
-            track.frame.width = self.main.frame.width
-
-        self.stylize()
-
-    """
-    resize_track
-    """
-    def resize_track(self):
-        track = self.components['track']
-        track.frame.width = track.text_size[0] + 10 # + self.margins
-        track.frame.left = 0
-        print 'NowPlayingScene::resize_track \t w: ' + str(track.frame.width)
-        self.stylize()
-
-    """
-    update
-    """
-    def update(self):
-
-        PiScene.update(self)
-
-        track = self.components['track']
-
-        if True:
-        #if track.frame.width > self.main.frame.width:
-        #if mpd.now_playing.playing_type == 'radio':
-
-            track.frame.left = track.frame.left - self.track_scroll_velocity
-            if track.frame.left < -( track.frame.width ):
-                track.frame.left = self.main.frame.right
-            track.updated = True
-
-    """
-    on_mpd_update
-    """
-    def on_mpd_update(self):
-        while True:
-            try:
-
-                event = mpd.events.popleft()
-
-                #print 'NowPlaying::on_mpd_update \t ' + event
-
-                if event == 'radio_mode_on':
-                    print 'NowPlayingScene::on_mpd_update: \t radio_mode_on'
-                    self.radio_track_settings(True)
-                #elif event == 'time_elapsed':
-                #    print 'NowPlayingScene::on_mpd_update: \t time_elapsed'
-                #    break
-                elif event == 'radio_mode_off':
-                    print 'NowPlayingScene::on_mpd_update: \t radio_mode_off'
-                    self.radio_track_settings(False)
-                elif event == 'title_change':
-                    print 'NowPlayingScene::on_mpd_update: \t title_change'
-                    playing = mpd.now_playing
-                    self.components['track'].text = playing.title
-                    if playing.playing_type == 'radio':
-                        self.resize_track()
-                elif event == 'album_change':
-                    print 'NowPlayingScene::on_mpd_update: \t album_change'
-                    playing = mpd.now_playing
-                    self.components['artist'].text = playing.artist
-                    self.components['album'].text = playing.album
-                    self.components['album_cover'].image = self.get_cover_image()
-                    self.stylize()
-                """
-                elif event == 'volume':
-                    print 'NowPlayingScene::on_mpd_update: \t volume: ' + str(mpd.volume)
-                    self.controls.volume_slider.value = mpd.volume
-                elif event == 'player_control':
-                    state = mpd.player_control_get()
-                    play_btn = self.controls.buttons['play_pause']
-                    print 'NowPlayingScene::on_mpd_update: \t state: ' + state
-                    if play_btn.icon_class != 'play' and state == 'play':
-                        play_btn.icon_class = 'play'
-                    if play_btn.icon_class != 'pause' and state == 'pause':
-                        play_btn.icon_class = 'pause'
-                    break
-                """
-            except IndexError:
-                break
-
-        #print 'on_mpd_update'
-
-    """
-    get_cover_image
-    """
-    def get_cover_image(self):
-        if mpd.now_playing.playing_type == 'radio':
-            if mpd.now_playing.file.find('wfmu.org') != -1:
-                return ui.get_image(self.image_directory + '/wfmu.png')
-            else:
-                return ui.get_image(self.get_default_cover_image())
+	"""
+	make_labels
+	"""
+	def make_labels(self):
+		comp_labels = {
+			'artist': [
+				ui.Rect( 0, self.margins, self.main.frame.width,self.label_height ),
+				mpd.now_playing.artist
+			],
+			'album': [
+				ui.Rect( 0, self.label_height + self.margins * 2, self.main.frame.width, self.label_height ),
+				mpd.now_playing.album
+			],
+			'track': [
+				ui.Rect( 0, self.label_height * 2 + self.margins * 4 + self.cover_size, self.main.frame.width, self.label_height ),
+				mpd.now_playing.title
+			]
+		}
 
 
-        file_dir = self.music_directory + os.path.dirname(mpd.now_playing.file)
-        file_name = file_dir + '/' + 'cover_art.jpg'
+		for key, val in comp_labels.iteritems():
+			label = ui.HeadingOne( val[0], val[1], halign=ui.CENTER )
+			self.main.add_child(label)
+			self.components[key] = label
 
-        print 'NowPlaying::get_cover_image: ' + file_name
+		cover = CoverView(
+			ui.Rect(
+				0,
+				self.label_height * 2 + self.margins * 3,
+				self.main.frame.width,
+				self.cover_size
+			),
+			self.get_cover_image(),
+			ui.Rect(
+				0,
+				self.label_height * 2 + self.margins * 2,
+				self.main.frame.width,
+				self.cover_size
+			)
+		)
+		cover.updated = True
+		self.main.add_child(cover)
+		self.components['album_cover'] = cover
 
-        if os.path.isfile(file_name) == False:
-            print '\t no existing image'
-            try:
-                music_file = File(self.music_directory + mpd.now_playing.file)
-                if 'covr' in music_file:
-                    print 'has covr'
-                    try:
-                        art_data = music_file.tags['covr'].data
-                    except:
-                        return ui.get_image( self.get_default_cover_image() )
-                elif 'APIC:' in music_file:
-                    print 'has APIC'
-                    try:
-                        art_data = music_file.tags['APIC:'].data
-                    except:
-                        return ui.get_image( self.get_default_cover_image() )
-                else:
-                    print '\t no cover art data'
-                    return ui.get_image( self.get_default_cover_image() )
+	"""
+	entered
+	"""
+	def entered(self):
 
-                with open(file_name, 'wb') as img:
-                    img.write(art_data)
+		PiScene.entered(self)
 
-            except IOError, e:
-                print '\t no music file'
-                return ui.get_image( self.get_default_cover_image() )
+		playing = mpd.now_playing
 
-        print '\t returning: ' + file_name
+		self.components['artist'].text = playing.artist
+		self.components['album'].text = playing.album
+		self.components['album_cover'].image = self.get_cover_image()
+		self.components['album_cover'].updated = True
+		self.components['track'].text = playing.title
+		
+		self.resize_track()
+		
+		#if mpd.now_playing.playing_type == 'radio':
+		#	 self.radio_track_settings(True)
+		#else:
+		#	 self.radio_track_settings(False)
 
-        return ui.get_image( file_name )
+		self.stylize()
 
-    """
-    get_default_cover_image
-    """
-    def get_default_cover_image(self):
-        defaults = [name for name in os.listdir( self.default_cover_image_directory ) if os.path.isfile( self.default_cover_image_directory + '/' + name )]
-        return self.default_cover_image_directory + '/' + defaults[random.randrange(0, len(defaults))]
+
+	"""
+	exited
+	"""
+	def exited(self):
+		logger.debug('NowPlaying exited')
+		#self.scroller.stop()
+
+	"""
+	radio_track_settings
+	"""
+	def radio_track_settings(self, on_off):
+
+		track = self.components['track']
+
+		if on_off == True:
+			track.halign = ui.LEFT
+			self.resize_track()
+		else:
+			track.halign = ui.CENTER
+			track.frame.left = 10
+			track.frame.width = self.main.frame.width
+
+		self.stylize()
+
+	"""
+	resize_track
+	"""
+	def resize_track(self):
+		track = self.components['track']
+		track.frame.width = track.text_size[0] + 10 # + self.margins
+		track.frame.left = 0
+		#print 'NowPlayingScene::resize_track \t w: ' + str(track.frame.width)
+		self.stylize()
+
+	"""
+	update
+	"""
+	def update(self):
+
+		PiScene.update(self)
+
+		track = self.components['track']
+
+		if True:
+		#if track.frame.width > self.main.frame.width:
+		#if mpd.now_playing.playing_type == 'radio':
+
+			track.frame.left = track.frame.left - self.track_scroll_velocity
+			if track.frame.left < -( track.frame.width ):
+				track.frame.left = self.main.frame.right
+			track.updated = True
+
+	"""
+	on_mpd_update
+	"""
+	def on_mpd_update(self):
+		while True:
+			try:
+
+				event = mpd.events.popleft()
+
+				#print 'NowPlaying::on_mpd_update \t ' + event
+
+				if event == 'radio_mode_on':
+					print 'NowPlayingScene::on_mpd_update: \t radio_mode_on'
+					#self.radio_track_settings(True)
+				#elif event == 'time_elapsed':
+					#	 print 'NowPlayingScene::on_mpd_update: \t time_elapsed'
+					#	 break
+					self.resize_track()
+					self.stylize()
+				elif event == 'radio_mode_off':
+					print 'NowPlayingScene::on_mpd_update: \t radio_mode_off'
+					#self.radio_track_settings(False)
+					self.resize_track()
+					self.stylize()
+				elif event == 'title_change':
+					print 'NowPlayingScene::on_mpd_update: \t title_change'
+					playing = mpd.now_playing
+					self.components['track'].text = playing.title
+					#if playing.playing_type == 'radio':
+					self.resize_track()
+					self.stylize()
+				elif event == 'album_change':
+					print 'NowPlayingScene::on_mpd_update: \t album_change'
+					playing = mpd.now_playing
+					self.components['artist'].text = playing.artist
+					self.components['album'].text = playing.album
+					self.components['album_cover'].image = self.get_cover_image()
+					self.resize_track()
+					self.stylize()
+				"""
+				elif event == 'volume':
+					print 'NowPlayingScene::on_mpd_update: \t volume: ' + str(mpd.volume)
+					self.controls.volume_slider.value = mpd.volume
+				elif event == 'player_control':
+					state = mpd.player_control_get()
+					play_btn = self.controls.buttons['play_pause']
+					print 'NowPlayingScene::on_mpd_update: \t state: ' + state
+					if play_btn.icon_class != 'play' and state == 'play':
+						play_btn.icon_class = 'play'
+					if play_btn.icon_class != 'pause' and state == 'pause':
+						play_btn.icon_class = 'pause'
+					break
+				"""
+			except IndexError:
+				break
+
+		#print 'on_mpd_update'
+
+	"""
+	get_cover_image
+	"""
+	def get_cover_image(self):
+		if mpd.now_playing.playing_type == 'radio':
+			if mpd.now_playing.file.find('wfmu.org') != -1:
+				return ui.get_image(self.image_directory + '/wfmu.png')
+			else:
+				return ui.get_image(self.get_default_cover_image())
+
+
+		file_dir = self.music_directory + os.path.dirname(mpd.now_playing.file)
+		file_name = file_dir + '/' + 'cover_art.jpg'
+
+		print 'NowPlaying::get_cover_image: ' + file_name
+
+		if os.path.isfile(file_name) == False:
+			print '\t no existing image'
+			try:
+				music_file = File(self.music_directory + mpd.now_playing.file)
+				if 'covr' in music_file:
+					print 'has covr'
+					try:
+						art_data = music_file.tags['covr'].data
+					except:
+						return ui.get_image( self.get_default_cover_image() )
+				elif 'APIC:' in music_file:
+					print 'has APIC'
+					try:
+						art_data = music_file.tags['APIC:'].data
+					except:
+						return ui.get_image( self.get_default_cover_image() )
+				else:
+					print '\t no cover art data'
+					return ui.get_image( self.get_default_cover_image() )
+
+				with open(file_name, 'wb') as img:
+					img.write(art_data)
+
+			except IOError, e:
+				print '\t no music file'
+				return ui.get_image( self.get_default_cover_image() )
+
+		print '\t returning: ' + file_name
+
+		return ui.get_image( file_name )
+
+	"""
+	get_default_cover_image
+	"""
+	def get_default_cover_image(self):
+		defaults = [name for name in os.listdir( self.default_cover_image_directory ) if os.path.isfile( self.default_cover_image_directory + '/' + name )]
+		return self.default_cover_image_directory + '/' + defaults[random.randrange(0, len(defaults))]
 
 """
 CoverView
