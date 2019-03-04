@@ -88,13 +88,6 @@ class RadioScene(PiScene):
 		#
 		if key == pygame.K_UP:
 
-			if self.active_btn_index == 0:
-				self.active_btn.state = 'normal'
-				self.main_active = False
-				self.active_sidebar_btn = 0
-				self.sidebar_btns[self.active_sidebar_btn].state = 'focused'
-				return
-
 			new_index = self.active_btn_index - 1
 
 			self.active_btn.state = 'normal'
@@ -143,6 +136,12 @@ class RadioScene(PiScene):
 		# left
 		#
 		elif key == pygame.K_LEFT:
+			if self.active_btn_index == 0:
+				self.active_btn.state = 'normal'
+				self.main_active = False
+				self.active_sidebar_btn = 0
+				self.sidebar_btns[self.active_sidebar_btn].state = 'focused'
+				return
 			if self.sibling_active == True:
 				#focus to sibling
 				self.active_btn.state = 'normal'

@@ -160,7 +160,7 @@ class PiScene(ui.Scene):
 	key_down_sidebar
 	"""
 	def key_down_sidebar(self, key):
-		if key == pygame.K_LEFT:
+		if key == pygame.K_UP:
 			if self.active_sidebar_btn > 0:
 				if self.sidebar_btns[self.active_sidebar_btn].tag_name == self.name:
 					self.sidebar_btns[self.active_sidebar_btn].state = 'selected'
@@ -169,7 +169,7 @@ class PiScene(ui.Scene):
 				self.active_sidebar_btn = self.active_sidebar_btn - 1
 				self.sidebar_btns[self.active_sidebar_btn].state = 'focused'
 
-		elif key == pygame.K_RIGHT:
+		elif key == pygame.K_DOWN:
 			if self.active_sidebar_btn < (len(self.sidebar_btns) - 1):
 				if self.sidebar_btns[self.active_sidebar_btn].tag_name == self.name:
 					self.sidebar_btns[self.active_sidebar_btn].state = 'selected'
@@ -178,10 +178,10 @@ class PiScene(ui.Scene):
 				self.active_sidebar_btn = self.active_sidebar_btn + 1
 				self.sidebar_btns[self.active_sidebar_btn].state = 'focused'
 
-		elif key == pygame.K_UP:
+		elif key == pygame.K_LEFT:
 			pass
 
-		elif key == pygame.K_DOWN:
+		elif key == pygame.K_RIGHT:
 			self.main_active = True
 			if self.sidebar_btns[self.active_sidebar_btn].tag_name == self.name:
 				self.sidebar_btns[self.active_sidebar_btn].state = 'selected'

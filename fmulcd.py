@@ -59,8 +59,6 @@ class Fmulcd(object):
 		for name,scene in self.scenes.iteritems():
 			scene.on_nav_change.connect(self.change_scene)
 
-		print 'created scenes'
-
 		self.make_current_scene(self.scenes['NowPlaying'])
 
 		#self.ab = buttons.AnalogButtons()
@@ -237,8 +235,6 @@ if __name__ == '__main__':
 
 	fmu = Fmulcd()
 
-	mpd.radio_station_start('http://stream0.wfmu.org/freeform-128k')
-
 	down_in_view = None
 	user_active = False
 
@@ -253,6 +249,10 @@ if __name__ == '__main__':
 	clock = pygame.time.Clock()
 	fps = 32 if fmuglobals.RUN_ON_RASPBERRY_PI else 30
 	ticks = 0
+
+	time.sleep(0.3)
+
+	mpd.radio_station_start('http://stream0.wfmu.org/freeform-128k')
 
 	while True:
 		ticks = clock.tick()#(fps)

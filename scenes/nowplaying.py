@@ -37,7 +37,7 @@ class NowPlayingScene(PiScene):
 	def key_down(self, key, code):
 		ui.Scene.key_down(self,key,code)
 
-		if key == pygame.K_RIGHT or	 key == pygame.K_LEFT or key == pygame.K_RETURN:
+		if key == pygame.K_DOWN or	 key == pygame.K_UP or key == pygame.K_RETURN:
 			self.key_down_sidebar(key)
 
 	"""
@@ -91,6 +91,8 @@ class NowPlayingScene(PiScene):
 
 		PiScene.entered(self)
 
+		self.active_sibar_btn = 0
+
 		playing = mpd.now_playing
 
 		self.components['artist'].text = playing.artist
@@ -98,9 +100,9 @@ class NowPlayingScene(PiScene):
 		self.components['album_cover'].image = self.get_cover_image()
 		self.components['album_cover'].updated = True
 		self.components['track'].text = playing.title
-		
+
 		self.resize_track()
-		
+
 		#if mpd.now_playing.playing_type == 'radio':
 		#	 self.radio_track_settings(True)
 		#else:
