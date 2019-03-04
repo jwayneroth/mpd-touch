@@ -37,7 +37,7 @@ class Fmulcd(object):
 		self.screen_dimensions = (800,480)
 		self.screen = False
 		self.ss_timer = 0
-		self.ss_timer_on = True
+		self.ss_timer_on = False
 		self.ss_delay = 600000
 
 		self.init_pygame()
