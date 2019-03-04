@@ -6,18 +6,8 @@ from signal import alarm, signal, SIGALRM, SIGKILL
 import os
 import time
 import subprocess
+
 import logging
-
-from lib.mpd_client import *
-import fmuglobals
-from fmutheme import Fmutheme
-#import gpio.buttons
-import pygameui as ui
-from lib.ft5406 import Touchscreen, TS_PRESS, TS_RELEASE, TS_MOVE
-from scenes import *
-
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
-
 logger = logging.getLogger('fmu_logger')
 logger.setLevel(logging.DEBUG)
 ch = logging.StreamHandler()
@@ -29,6 +19,16 @@ ch.setFormatter(formatter)
 fh.setFormatter(formatter)
 logger.addHandler(ch)
 logger.addHandler(fh)
+
+from lib.mpd_client import *
+import fmuglobals
+from fmutheme import Fmutheme
+#import gpio.buttons
+import pygameui as ui
+from lib.ft5406 import Touchscreen, TS_PRESS, TS_RELEASE, TS_MOVE
+from scenes import *
+
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 
 class Fmulcd(object):
 	def __init__(self):
