@@ -37,7 +37,7 @@ class NowPlayingScene(PiScene):
 	def key_down(self, key, code):
 		ui.Scene.key_down(self,key,code)
 
-		if key == pygame.K_DOWN or	 key == pygame.K_UP or key == pygame.K_RETURN:
+		if key == pygame.K_DOWN or key == 'KEY_DOWN' or key == pygame.K_UP or key == 'KEY_UP' or key == pygame.K_RETURN or key == 'KEY_ENTER':
 			self.key_down_sidebar(key)
 
 	"""

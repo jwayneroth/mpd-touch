@@ -26,6 +26,7 @@ from fmutheme import Fmutheme
 #import gpio.buttons
 import pygameui as ui
 from lib.ft5406 import Touchscreen, TS_PRESS, TS_RELEASE, TS_MOVE
+from lib.lircpoll import Irw
 from scenes import *
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
@@ -248,12 +249,8 @@ if __name__ == '__main__':
 
 	if fmuglobals.RUN_ON_RASPBERRY_PI:
 		ts = Touchscreen()
-
-		for touch in ts.touches:
-			touch.on_press = ts_press_handler
-			touch.on_release = ts_release_handler
-			#touch.on_move = ts_move_handler
-
+		irw = Irw()
+		irw.run()
 	clock = pygame.time.Clock()
 	fps = 32 if fmuglobals.RUN_ON_RASPBERRY_PI else 30
 	ticks = 0
@@ -270,7 +267,16 @@ if __name__ == '__main__':
 
 		if fmuglobals.RUN_ON_RASPBERRY_PI:
 			ts.poll()
-
+			irwlast = irw.last()
+		
+		for touch in ts.touches:
+			touch.on_press = ts_press_handler
+			touch.on_release = ts_release_handler
+			#touch.on_move = ts_move_handler
+		
+		if irwlast is not None:
+			fmu.current.key_down(irwlast, '')
+		
 		for e in pygame.event.get():
 			if e.type == pygame.QUIT:
 				fmu.kill_app()
