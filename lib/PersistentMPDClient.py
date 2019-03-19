@@ -1,8 +1,8 @@
 import python_mpd2 as mpd
 import socket
 
-#import logging
-#logger = logging.getLogger('fmu_logger')
+import logging
+logger = logging.getLogger('fmu_logger')
 
 class PersistentMPDClient(mpd.MPDClient):
     def __init__(self, socket=None, host=None, port=None):
