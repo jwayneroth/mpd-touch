@@ -235,6 +235,23 @@ def _move_handler(mousepoint):
 		fmu.current.mouse_motion(mousepoint)
 
 """
+translate lirc key to pygame key
+"""
+def lirc_key_translate(key):
+	if key == 'KEY_LEFT':
+		return pygame.K_LEFT
+	elif key == 'KEY_RIGHT':
+		return pygame.K_RIGHT
+	elif key == 'KEY_UP':
+		return pygame.K_UP
+	elif key == 'KEY_DOWN':
+		return pygame.K_DOWN
+	elif key == 'KEY_ENTER':
+		return pygame.K_RETURN
+	
+	return key
+	
+"""
 main
 """
 if __name__ == '__main__':
@@ -275,7 +292,7 @@ if __name__ == '__main__':
 			#touch.on_move = ts_move_handler
 		
 		if irwlast is not None:
-			fmu.current.key_down(irwlast, '')
+			fmu.current.key_down(lirc_key_translate(irwlast), '')
 		
 		for e in pygame.event.get():
 			if e.type == pygame.QUIT:
