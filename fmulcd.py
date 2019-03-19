@@ -141,10 +141,16 @@ class Fmulcd(object):
 				self.change_scene('Screensaver')
 
 	def kill_app(self):
-		#if fmuglobals.RUN_ON_RASPBERRY_PI:
-		#	 GPIO.output(18, GPIO.LOW)
-		pygame.quit()
-		sys.exit(0)
+		if fmuglobals.RUN_ON_RASPBERRY_PI:
+			#GPIO.output(18, GPIO.LOW)
+			try:
+				subprocess.Popen('sudo service fmulcd stop', shell=True, stdout=subprocess.PIPE)
+			except:
+				pygame.quit()
+				sys.exit(0)
+		else:
+			pygame.quit()
+			sys.exit(0)
 
 """
 ts mousedown handler
@@ -232,7 +238,9 @@ main
 """
 if __name__ == '__main__':
 	logger.debug('fmulcd started')
-
+	
+	time.sleep(1)
+	
 	fmu = Fmulcd()
 
 	down_in_view = None
