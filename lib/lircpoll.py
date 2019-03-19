@@ -11,6 +11,9 @@ import socket
 import threading
 import time
 
+import logging
+logger = logging.getLogger('fmu_logger')
+
 SOCKPATH = "/var/run/lirc/lircd"
 
 class Irw:
