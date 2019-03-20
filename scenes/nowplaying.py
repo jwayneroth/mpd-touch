@@ -3,7 +3,7 @@ import os
 
 import fmuglobals
 from piscene import *
-
+from mutagen import File
 """
 NowPlayingScene
  displays cover art, if available

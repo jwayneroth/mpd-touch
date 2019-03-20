@@ -1,4 +1,4 @@
-from mpd_client import *
+from lib.mpd_client import *
 import pygameui as ui
 import fmuglobals
 
