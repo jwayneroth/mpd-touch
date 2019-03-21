@@ -46,7 +46,7 @@ class NowPlayingScene(PiScene):
 	def make_labels(self):
 		comp_labels = {
 			'artist': [
-				ui.Rect( 0, self.margins, self.main.frame.width,self.label_height ),
+				ui.Rect( 0, self.margins, self.main.frame.width, self.label_height ),
 				mpd.now_playing.artist
 			],
 			'album': [

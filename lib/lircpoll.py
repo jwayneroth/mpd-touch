@@ -23,8 +23,8 @@ class Irw:
 		self.sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
 		logger.debug('lircpoll starting on %s' % SOCKPATH)
 		self.sock.connect(SOCKPATH)
-		self.last_poll = (None, None)
-		self.last_key = (None, None)
+		self.last_poll = (None, '00')
+		self.last_key = (None, '00')
 		
 	def _run(self):
 		self._running = True
@@ -40,9 +40,17 @@ class Irw:
 		self._thread.start()
 	
 	def last(self):
-		if self.last_key is self.last_poll:
-			self.last_key = (None, None)
-			self.last_poll = (None, None)
+		lkk, lkr = self.last_key
+		lpk, lpr = self.last_poll
+		
+		# if no change since previous call, empty vars
+		if lkk == lpk and lkr == lpr:
+			self.last_key = (None, '00')
+			self.last_poll = (None, '00')
+		
+		# if last key has been repeated only once, ignore
+		elif lkk == lpk and (int(lpr, 16) - int(lkr, 16) <= 1):
+			return none
 		else:
 			self.last_key = self.last_poll
 		return self.last_key[0]
