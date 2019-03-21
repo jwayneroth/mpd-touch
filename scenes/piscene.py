@@ -15,11 +15,11 @@ class PiScene(ui.Scene):
 		self.name = name
 		self.margins = 15
 		self.nav_btn_size = 50
-		self.btn_size = 45
+		self.btn_size = 57 #45
 		self.margins_bottom = 10
 		self.has_nav = False
 		self.is_mpd_listener = False
-		self.label_height = 45
+		self.label_height = 57 #45
 		self.controls_on = False
 		self.modal_left_right_margin = 0
 		self.modal_top_bottom_margin = 0

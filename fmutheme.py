@@ -45,7 +45,7 @@ class Fmutheme(ui.theme.Theme):
 		self.set(class_name='Label', state='normal', key='padding', value=(6, 6))
 		self.set(class_name='Label', state='normal', key='border_color', value=None)
 		self.set(class_name='Label', state='normal', key='border_widths', value=None)
-		self.set(class_name='Label', state='normal', key='font', value=ui.resource.get_font(20, use_bold=True))
+		self.set(class_name='Label', state='normal', key='font', value=ui.resource.get_font(32, use_bold=True)) #20, use_bold=True))
 
 		self.label_height = 16 + 6 * 2
 
@@ -61,7 +61,7 @@ class Fmutheme(ui.theme.Theme):
 		self.set(class_name='Button', state='selected', key='text_color', value=lemon)
 		self.set(class_name='Button', state='focused', key='text_color', value=orange)
 		self.set(class_name='Button', state='disabled', key='text_color', value=mid_gray)
-		self.set(class_name='Button', state='normal', key='font', value=ui.resource.get_font(19, use_bold=False))
+		self.set(class_name='Button', state='normal', key='font', value=ui.resource.get_font(32, use_bold=False)) #19, use_bold=False))
 		self.set(class_name='Button', state='normal', key='border_widths', value=None)
 		self.set(class_name='Button', state='normal', key='border_color', value=None)
 
