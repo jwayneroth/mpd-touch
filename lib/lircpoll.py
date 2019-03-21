@@ -50,7 +50,7 @@ class Irw:
 		
 		# if last key has been repeated only once, ignore
 		elif lkk == lpk and (int(lpr, 16) - int(lkr, 16) <= 1):
-			return none
+			return None
 		else:
 			self.last_key = self.last_poll
 		return self.last_key[0]
