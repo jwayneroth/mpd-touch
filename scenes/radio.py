@@ -35,7 +35,7 @@ class RadioScene(PiScene):
 		self.url_opener = urllib.FancyURLopener({})
 
 		self.streams_btn = ui.Button(ui.Rect(0,0,165,self.btn_size),'Streams',halign=ui.CENTER,valign=ui.CENTER)
-		self.archives_btn = ui.Button(ui.Rect(100,0,165,self.btn_size),'Archives',halign=ui.CENTER,valign=ui.CENTER)
+		self.archives_btn = ui.Button(ui.Rect(self.streams_btn.frame.right,0,165,self.btn_size),'Archives',halign=ui.CENTER,valign=ui.CENTER)
 
 		self.streams_btn.tag_name = 'Streams'
 		self.archives_btn.tag_name = 'Archive'
