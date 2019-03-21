@@ -361,7 +361,7 @@ class AlbumListScene(PiScene):
 		add_all_icon.artist_name = artist
 		add_all_icon.on_clicked.connect(self.on_artist_add_clicked)
 
-		add_all_btn = ui.Button(ui.Rect(add_all_icon.frame.right,0,45,self.label_height),'All',halign=ui.LEFT,valign=ui.CENTER,wrap=ui.CLIP)
+		add_all_btn = ui.Button(ui.Rect(add_all_icon.frame.right,0,65,self.label_height),'All',halign=ui.LEFT,valign=ui.CENTER,wrap=ui.CLIP)
 		add_all_btn.artist_name = artist
 		add_all_btn.on_clicked.connect(self.on_artist_add_clicked)
 
@@ -453,7 +453,7 @@ class AlbumListScene(PiScene):
 		add_all_icon.album_name = album
 		add_all_icon.on_clicked.connect(self.album_add_clicked)
 
-		add_all_btn = ui.Button(ui.Rect(add_all_icon.frame.right,0,45,self.label_height),'All',halign=ui.LEFT,valign=ui.CENTER,wrap=ui.CLIP)
+		add_all_btn = ui.Button(ui.Rect(add_all_icon.frame.right,0,65,self.label_height),'All',halign=ui.LEFT,valign=ui.CENTER,wrap=ui.CLIP)
 		add_all_btn.album_name = album
 		add_all_btn.on_clicked.connect(self.album_add_clicked)
 
