@@ -17,7 +17,8 @@ logger = logging.getLogger('fmu_logger')
 SOCKPATH = "/var/run/lirc/lircd"
 
 class Irw:
-	def __init__(self):
+	def __init__(self, throttle=1):
+		self.throttle = throttle
 		self._running = False
 		self._thread = None
 		self.sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
@@ -49,7 +50,7 @@ class Irw:
 			self.last_poll = (None, '00')
 		
 		# if last key has been repeated only once, ignore
-		elif lkk == lpk and (int(lpr, 16) - int(lkr, 16) <= 1):
+		elif lkk == lpk and (int(lpr, 16) - int(lkr, 16) <= self.throttle):
 			return None
 		else:
 			self.last_key = self.last_poll
@@ -72,7 +73,7 @@ class Irw:
 if __name__ == "__main__":
 	import signal
 
-	irw = Irw()
+	irw = Irw(3)
 	
 	irw.run()
 	

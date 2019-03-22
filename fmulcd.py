@@ -266,7 +266,7 @@ if __name__ == '__main__':
 
 	if fmuglobals.RUN_ON_RASPBERRY_PI:
 		ts = Touchscreen()
-		irw = Irw()
+		irw = Irw(4)
 		irw.run()
 	clock = pygame.time.Clock()
 	fps = 32 if fmuglobals.RUN_ON_RASPBERRY_PI else 30
