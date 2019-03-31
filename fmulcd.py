@@ -248,17 +248,17 @@ def lirc_key_translate(key):
 		return pygame.K_DOWN
 	elif key == 'KEY_ENTER':
 		return pygame.K_RETURN
-	
+
 	return key
-	
+
 """
 main
 """
 if __name__ == '__main__':
 	logger.debug('fmulcd started')
-	
+
 	time.sleep(1)
-	
+
 	fmu = Fmulcd()
 
 	down_in_view = None
@@ -285,15 +285,15 @@ if __name__ == '__main__':
 		if fmuglobals.RUN_ON_RASPBERRY_PI:
 			ts.poll()
 			irwlast = irw.last()
-		
-		for touch in ts.touches:
-			touch.on_press = ts_press_handler
-			touch.on_release = ts_release_handler
-			#touch.on_move = ts_move_handler
-		
-		if irwlast is not None:
-			fmu.current.key_down(lirc_key_translate(irwlast), '')
-		
+
+			for touch in ts.touches:
+				touch.on_press = ts_press_handler
+				touch.on_release = ts_release_handler
+				#touch.on_move = ts_move_handler
+
+			if irwlast is not None:
+				fmu.current.key_down(lirc_key_translate(irwlast), '')
+
 		for e in pygame.event.get():
 			if e.type == pygame.QUIT:
 				fmu.kill_app()
