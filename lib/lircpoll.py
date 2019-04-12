@@ -44,6 +44,7 @@ class Irw:
 		lkk, lkr = self.last_key
 		lpk, lpr = self.last_poll
 		
+		# TODO: consecutive clicks will not trigger (lpr will be less than or equal to lpkr)
 		# if no change since previous call, empty vars
 		if lkk == lpk and lkr == lpr:
 			self.last_key = (None, '00')
