@@ -194,18 +194,17 @@ class SettingsScene(PiScene):
 				sys.exit()
 		elif btn.name == 'quit':
 			logger.debug('quitting fmulcd')
-			"""
 			if fmuglobals.RUN_ON_RASPBERRY_PI:
+				import pygame
+				pygame.quit()
 				try:
 					subprocess.Popen('sudo service fmulcd stop', shell=True, stdout=subprocess.PIPE)
 				except:
-					import pygame
-					pygame.quit()
-					import sys
-					sys.exit(0)
+					pass
+				import sys
+				sys.exit(0)
 			else:
-			"""
-			import pygame
-			pygame.quit()
-			import sys
-			sys.exit(0)
+				import pygame
+				pygame.quit()
+				import sys
+				sys.exit(0)

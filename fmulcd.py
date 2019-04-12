@@ -142,7 +142,6 @@ class Fmulcd(object):
 				self.change_scene('Screensaver')
 
 	def kill_app(self):
-		"""
 		if fmuglobals.RUN_ON_RASPBERRY_PI:
 			#GPIO.output(18, GPIO.LOW)
 			pygame.quit()
@@ -152,9 +151,8 @@ class Fmulcd(object):
 				pass
 			sys.exit(0)
 		else:
-		"""
-		pygame.quit()
-		sys.exit(0)
+			pygame.quit()
+			sys.exit(0)
 
 """
 ts mousedown handler
