@@ -270,55 +270,55 @@ class RadioScene(PiScene):
 
 		scroll_contents.add_child(refresh_icon)
 		scroll_contents.add_child(refresh_btn)
-
+		
+		archives = []
+		
 		try:
 			full = feedparser.parse('http://www.wfmu.org/archivefeed/mp3.xml')
-			archives = []
 			for entry in full.entries:
 				archive = dict()
 				archive['title'] = self.filter_stream_name(entry.title)
 				archive['url'] = entry.link
 				archives.append(archive)
-
-			del self.archive_btns[:]
-
-			#self.archive_btns.append(self.streams_btn)
-			self.archive_btns.append(refresh_btn)
-
-			scr_y = self.btn_size + self.margins
-			row_count = len(archives)
-
-			for archive in archives:
-
-				btn = ui.Button(
-					ui.Rect( 0, scr_y, self.main.frame.width - ui.SCROLLBAR_SIZE, self.label_height ),
-					archive['title'],
-					halign=ui.LEFT,
-					valign=ui.CENTER
-				)
-
-				btn.url = archive['url']
-				btn.on_clicked.connect(self.on_archive_clicked)
-				btn.sibling = False
-
-				self.archive_btns.append(btn)
-
-				scroll_contents.add_child(btn)
-
-				scr_y = scr_y + self.label_height
-
-			scroll_contents.frame.height = row_count * self.label_height + self.btn_size + self.margins
-
-			self.archives_view.update_content_view(scroll_contents)
-
-			if self.archives_view.scrollable:
-				self.archive_btns.insert(0,self.page_down)
-				self.archive_btns.insert(0,self.streams_btn)
-				self.activate_page_nav()
-			else:
-				self.deactivate_page_nav()
 		except:
 			pass
+
+		del self.archive_btns[:]
+
+		self.archive_btns.append(refresh_btn)
+
+		scr_y = self.btn_size + self.margins
+		row_count = len(archives)
+
+		for archive in archives:
+
+			btn = ui.Button(
+				ui.Rect( 0, scr_y, self.main.frame.width - ui.SCROLLBAR_SIZE, self.label_height ),
+				archive['title'],
+				halign=ui.LEFT,
+				valign=ui.CENTER
+			)
+
+			btn.url = archive['url']
+			btn.on_clicked.connect(self.on_archive_clicked)
+			btn.sibling = False
+
+			self.archive_btns.append(btn)
+
+			scroll_contents.add_child(btn)
+
+			scr_y = scr_y + self.label_height
+
+		scroll_contents.frame.height = row_count * self.label_height + self.btn_size + self.margins
+
+		self.archives_view.update_content_view(scroll_contents)
+
+		if self.archives_view.scrollable:
+			self.archive_btns.insert(0,self.page_down)
+			self.archive_btns.insert(0,self.streams_btn)
+			self.activate_page_nav()
+		else:
+			self.deactivate_page_nav()
 
 	"""
 	filter_stream_name
