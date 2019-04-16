@@ -62,8 +62,8 @@ class ScreensaverScene(PiScene):
     key_down
     """
     def key_down(self, key, code):
-        #self.on_nav_change('NowPlaying', from_screensaver=True)
-        pass
+        if key == pygame.K_RETURN:
+            self.on_nav_change('NowPlaying', from_screensaver=True)
 
     """
     make_screenaver

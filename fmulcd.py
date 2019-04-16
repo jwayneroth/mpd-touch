@@ -294,6 +294,7 @@ if __name__ == '__main__':
 				#touch.on_move = ts_move_handler
 
 			if irwlast is not None:
+				user_active = True
 				fmu.current.key_down(lirc_key_translate(irwlast), '')
 
 		for e in pygame.event.get():
