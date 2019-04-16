@@ -38,8 +38,8 @@ class Fmulcd(object):
 		self.screen_dimensions = (800,480)
 		self.screen = False
 		self.ss_timer = 0
-		self.ss_timer_on = False
-		self.ss_delay = 600000
+		self.ss_timer_on = True
+		self.ss_delay = 60000
 
 		self.init_pygame()
 
@@ -122,6 +122,7 @@ class Fmulcd(object):
 	"""
 	def change_scene(self, scene_name, refresh=False, from_screensaver=False):
 		if from_screensaver:
+			logger.debug('exiting screensaver, going to %s' % self.last.name)
 			self.ss_timer_on = True
 			if self.last:
 				self.make_current_scene(self.last)
