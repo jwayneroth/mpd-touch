@@ -24,7 +24,7 @@ class RadioScene(PiScene):
 			{'title':'GtDR','url':'http://stream0.wfmu.org:80/drummer'},
 			{'title':'Ichiban','url':'http://stream0.wfmu.org/ichiban'},
 			{'title':'Ubu','url':'http://stream0.wfmu.org/ubu'},
-			{'title':'DIY','url':'http://stream0.wfmu.org/do-or-diy'},
+			{'title':'Sheena','url':'http://stream0.wfmu.org/sheena'},
 			{'title':'FMU32','url':'http://stream0.wfmu.org/freeform-32k.mp3'},
 			{'title':'wnyc','url':'http://fm939.wnyc.org/wnycfm'},
 			{'title':'bbc','url':'http://am820.wnyc.org/wnycam'},
@@ -270,9 +270,9 @@ class RadioScene(PiScene):
 
 		scroll_contents.add_child(refresh_icon)
 		scroll_contents.add_child(refresh_btn)
-		
+
 		archives = []
-		
+
 		try:
 			full = feedparser.parse('http://www.wfmu.org/archivefeed/mp3.xml')
 			for entry in full.entries:

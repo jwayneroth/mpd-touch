@@ -15,8 +15,9 @@ class ScreensaverScene(PiScene):
         self.btn_size = 45
         self.margins_bottom = 10
         self.has_nav = False
-        self.is_mpd_listener = False
-        self.label_height = 45
+        self.is_mpd_listener = True
+        self.cover_size = 290 #160
+        self.label_height = 36
         self.music_directory = '/var/lib/mpd/music/'
         self.main_active = False
         self.sidebar_index = 0
@@ -32,6 +33,14 @@ class ScreensaverScene(PiScene):
         if os.path.dirname(__file__) != '':
             self.image_directory = os.path.dirname(__file__) + '/../' + self.image_directory
         self.screenaver_image_directory = self.image_directory + 'screensavers'
+
+        self.track_scroll_velocity = 1
+        if fmuglobals.RUN_ON_RASPBERRY_PI == True:
+            self.track_scroll_velocity = 3
+
+        self.track_y = self.label_height * 2 + self.margins * 4 + self.cover_size
+
+        self.track = self.make_track()
 
         self.make_screenaver()
 
@@ -62,20 +71,14 @@ class ScreensaverScene(PiScene):
     key_down
     """
     def key_down(self, key, code):
-        #self.on_nav_change('NowPlaying', from_screensaver=True)
-        pass
+        if key == pygame.K_RETURN:
+            self.on_nav_change('NowPlaying', from_screensaver=True)
 
     """
     make_screenaver
     """
     def make_screenaver(self):
         img = ScreensaverImageView(
-            #ui.Rect(
-            #    0,
-            #    self.label_height * 2 + self.margins * 2,
-            #    self.main.frame.width,
-            #    self.img_size
-            #),
             None,
             ui.get_image(self.get_random_screensaver_image()),
             ui.Rect(
@@ -90,12 +93,39 @@ class ScreensaverScene(PiScene):
         self.main.add_child(img)
 
     """
+    make_track
+    """
+    def make_track(self):
+        track_x = 0
+        track_y = self.track_y
+        track_rect = ui.Rect(track_x, track_y, self.main.frame.width, self.label_height)
+        track = ui.HeadingOne(track_rect, mpd.now_playing.title, halign=ui.CENTER)
+        self.main.add_child(track)
+        return track
+
+    """
     entered
     """
     def entered(self):
 
         PiScene.entered(self)
 
+        playing = mpd.now_playing
+
+        self.track.text = playing.title
+
+        self.resize_track()
+
+        self.stylize()
+
+    """
+    resize_track
+    """
+    def resize_track(self):
+        track = self.track
+        track.frame.width = track.text_size[0] + 10 # + self.margins
+        track.frame.left = 0
+        #print 'NowPlayingScene::resize_track \t w: ' + str(track.frame.width)
         self.stylize()
 
     """
@@ -120,10 +150,45 @@ class ScreensaverScene(PiScene):
         if self.img.frame.top < 0:
             self.img.frame.top = 0
             self.vy *= -1
-        elif self.img.frame.bottom > self.main.frame.bottom:
-            self.img.frame.bottom = self.main.frame.bottom
+        elif self.img.frame.bottom > self.track_y: #self.main.frame.bottom
+            self.img.frame.bottom = self.track_y #self.main.frame.bottom
             self.vy *= -1
+
+        track = self.track
+
+        track.frame.left = track.frame.left - self.track_scroll_velocity
+        if track.frame.left < -( track.frame.width ):
+            track.frame.left = self.main.frame.right
+            track.updated = True
+
         self.stylize()
+
+    """
+    on_mpd_update
+    """
+    def on_mpd_update(self):
+        while True:
+            try:
+
+                event = mpd.events.popleft()
+
+                if event == 'radio_mode_on':
+                    self.resize_track()
+                    self.stylize()
+                elif event == 'radio_mode_off':
+                    self.resize_track()
+                    self.stylize()
+                elif event == 'title_change':
+                    playing = mpd.now_playing
+                    self.track.text = playing.title
+                    self.resize_track()
+                    self.stylize()
+                elif event == 'album_change':
+                    playing = mpd.now_playing
+                    self.resize_track()
+                    self.stylize()
+            except IndexError:
+                break
 
     """
     get_random_screensaver_image
