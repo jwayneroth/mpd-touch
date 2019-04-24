@@ -4,3 +4,4 @@ pygameui/*.pyc
 .git
 *.AppleDouble
 *.DS_Store
+images/default_covers/*
