@@ -42,7 +42,7 @@ class ControlsScene(PiScene):
         ]
 
         self.volume_slider.value = mpd.volume
-        self.brightness_slider.value = self.get_brightness()
+        self.brightness_slider.value = int(self.get_brightness() / 255) * 100
 
         self.main.add_child(self.top_panel)
         self.main.add_child(self.volume_slider)
@@ -327,9 +327,11 @@ class ControlsScene(PiScene):
 
     """
     brightness_slider_changed
+    value will be between 0 and 100
     """
     def brightness_slider_changed(self, slider_view, value):
-        self.set_brightness(int(value))
+        v = int(value) / 100 * 255
+        self.set_brightness(int(v))
 
     """
     brightness_slider_focused
