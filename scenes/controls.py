@@ -1,3 +1,4 @@
+import fmuglobals
 from piscene import *
 
 """
@@ -28,19 +29,26 @@ class ControlsScene(PiScene):
 
         self.top_panel = self.make_top_panel()
         self.volume_slider = self.make_volume_slider()
-        self.bottom_panel = self.make_bottom_panel()
+        self.volume_panel = self.make_volume_panel()
+        self.brightness_slider = self.make_brightness_slider()
+        self.brightness_panel = self.make_brightness_panel()
 
         self.btns = [
-            [ self.buttons['play_pause'], self.buttons['prev'],  self.buttons['next'], self.buttons['play_mode'] ],
+            [ self.buttons['play_pause'], self.buttons['prev'], self.buttons['next'], self.buttons['play_mode'] ],
             [ self.volume_slider ],
-            [ self.buttons['volume-off'],  self.buttons['volume-down'],  self.buttons['volume-up'] ]
+            [ self.buttons['volume-off'], self.buttons['volume-down'], self.buttons['volume-up'] ],
+            [ self.brightness_slider ],
+            [ self.buttons['minus'], self.buttons['plus'] ]
         ]
 
         self.volume_slider.value = mpd.volume
+        self.brightness_slider.value = self.get_brightness()
 
         self.main.add_child(self.top_panel)
         self.main.add_child(self.volume_slider)
-        self.main.add_child(self.bottom_panel)
+        self.main.add_child(self.volume_panel)
+        self.main.add_child(self.brightness_slider)
+        self.main.add_child(self.brightness_panel)
 
         mpd.mpd_client.random(0)
         mpd.mpd_client.single(0)
@@ -100,6 +108,8 @@ class ControlsScene(PiScene):
         elif key == pygame.K_LEFT:
             if self.active_btn == self.volume_slider:
                 self.volume_slider.value = self.volume_slider.value - 2
+            elif self.active_btn == self.brightness_slider:
+                self.brightness_slider.value = self.brightness_slider.value - 2
             else:
                 if self.sibling_index == 0:
                     self.active_btn.state = 'normal'
@@ -121,6 +131,8 @@ class ControlsScene(PiScene):
         elif key == pygame.K_RIGHT:
             if self.active_btn == self.volume_slider:
                 self.volume_slider.value = self.volume_slider.value + 2
+            elif self.active_btn == self.brightness_slider:
+                self.brightness_slider.value = self.brightness_slider.value + 2
             else:
                 if self.sibling_index + 1 >= len(self.btns[self.active_btn_index]):
                     return
@@ -210,7 +222,7 @@ class ControlsScene(PiScene):
         btn_x = panel.frame.width / 2 - self.btn_size * 2 - self.padding * 1.5
 
         for btn_data in btns:
-            btn = ui.IconButton( ui.Rect( btn_x, 0, self.btn_size, self.btn_size ), btn_data[1] )
+            btn = ui.NavIconButton( ui.Rect( btn_x, 0, self.btn_size, self.btn_size ), btn_data[1] )
             btn_x = btn_x + self.btn_size + self.padding
             btn.on_clicked.connect(self.on_button_click)
             btn.tag_name = btn_data[0]
@@ -223,9 +235,9 @@ class ControlsScene(PiScene):
         return panel
 
     """
-    make_bottom_panel
+    make_volume_panel
     """
-    def make_bottom_panel(self):
+    def make_volume_panel(self):
 
         btns = ['volume-off', 'volume-down', 'volume-up']
 
@@ -239,7 +251,7 @@ class ControlsScene(PiScene):
         btn_x = panel.frame.width / 2 - self.btn_size * 1.5 - self.padding
 
         for btn_class in btns:
-            btn = ui.IconButton( ui.Rect( btn_x, 0, self.btn_size, self.btn_size ), btn_class )
+            btn = ui.NavIconButton( ui.Rect( btn_x, 0, self.btn_size, self.btn_size ), btn_class )
             btn_x = btn_x + self.btn_size + self.padding
             btn.on_clicked.connect(self.on_button_click)
             btn.tag_name = btn_class
@@ -276,6 +288,59 @@ class ControlsScene(PiScene):
             self.volume_slider.thumb.state = 'normal'
 
     """
+    make_brightness_panel
+    """
+    def make_brightness_panel(self):
+
+        btns = ['minus', 'plus']
+
+        panel = ui.View(ui.Rect(
+            self.padding,
+            self.brightness_slider.frame.bottom,
+            self.main.frame.width - self.padding * 2,
+            self.btn_size
+        ))
+
+        btn_x = panel.frame.width / 2 - self.btn_size * 1.5 - self.padding
+
+        for btn_class in btns:
+            btn = ui.NavIconButton( ui.Rect( btn_x, 0, self.btn_size, self.btn_size ), btn_class )
+            btn_x = btn_x + self.btn_size + self.padding
+            btn.on_clicked.connect(self.on_button_click)
+            btn.tag_name = btn_class
+            btn.sibling = False
+
+            panel.add_child(btn)
+
+            self.buttons[btn_class] = btn
+
+        return panel
+
+    """
+    make_brightness_slider
+    """
+    def make_brightness_slider(self):
+        slider = ui.SliderView( ui.Rect( self.padding, self.volume_panel.frame.bottom + self.padding, self.main.frame.width - self.padding * 2, ui.SCROLLBAR_SIZE ), ui.HORIZONTAL, 0, 100, show_thumb=False )
+        slider.on_value_changed.connect(self.brightness_slider_changed)
+        slider.on_state_changed.connect(self.brightness_slider_focused)
+        return slider
+
+    """
+    brightness_slider_changed
+    """
+    def brightness_slider_changed(self, slider_view, value):
+        self.set_brightness(int(value))
+
+    """
+    brightness_slider_focused
+    """
+    def brightness_slider_focused(self):
+        if self.brightness_slider.state == 'focused':
+            self.brightness_slider.thumb.state = 'focused'
+        else:
+            self.brightness_slider.thumb.state = 'normal'
+
+    """
     on_button_click
     """
     def on_button_click(self, btn, mouse_btn):
@@ -299,6 +364,10 @@ class ControlsScene(PiScene):
             self.volume_slider.value = self.volume_slider.value - 10
         elif tag_name == 'volume-up':
             self.volume_slider.value = self.volume_slider.value + 10
+        elif tag_name == 'minus':
+            self.brightness_slider.value = self.brightness_slider.value - 10
+        elif tag_name == 'plus':
+            self.brightness_slider.value = self.brightness_slider.value + 10
         elif tag_name == 'prev':
             mpd.player_control_set('previous')
         elif tag_name == 'next':
@@ -320,6 +389,31 @@ class ControlsScene(PiScene):
             elif play_mode == "shuffle":
                 mpd.mpd_client.repeat(0)
                 mpd.mpd_client.random(1)
+
+    """
+    get_brightness
+    """
+    def get_brightness(self):
+        if not fmuglobals.RUN_ON_RASPBERRY_PI:
+            return 100
+        f = open("/sys/class/backlight/rpi_backlight/brightness","r")
+        val = f.read()
+        f.close()
+        return int(val)
+
+    """
+    set_brightness
+    """
+    def set_brightness(self, val=100):
+        if not fmuglobals.RUN_ON_RASPBERRY_PI:
+            return
+        if val < 0:
+            val = 0
+        elif val > 255:
+            val = 255
+        f = open("/sys/class/backlight/rpi_backlight/brightness","w")
+        f.write(val)
+        f.close()
 
 """
 def make_close_btn(self):
@@ -365,7 +459,7 @@ class PiControls(ui.DialogView):
         self.content = DialogContent(ui.Rect(self.left_margin,self.top_margin,self.frame.width-self.left_margin*2,self.frame.height-self.top_margin*2))
         self.top_panel = self.make_top_panel()
         self.volume_slider = self.make_volume_slider()
-        self.bottom_panel = self.make_bottom_panel()
+        self.volume_panel = self.make_volume_panel()
         self.close_btn = self.make_close_btn()
 
         self.volume_slider.value = mpd.volume
@@ -374,7 +468,7 @@ class PiControls(ui.DialogView):
         self.add_child(self.content)
         self.content.add_child(self.top_panel)
         self.content.add_child(self.volume_slider)
-        self.content.add_child(self.bottom_panel)
+        self.content.add_child(self.volume_panel)
         self.content.add_child(self.close_btn)
 
     def make_close_btn(self):
@@ -420,7 +514,7 @@ class PiControls(ui.DialogView):
 
         return panel
 
-    def make_bottom_panel(self):
+    def make_volume_panel(self):
 
         btns = ['volume-off', 'volume-down', 'volume-up']
 
