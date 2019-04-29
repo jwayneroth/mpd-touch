@@ -15,7 +15,7 @@ class ControlsScene(PiScene):
         self.active_sidebar_btn = 4
 
         self.top_margin = 30
-        self.left_margin = 50
+        self.left_margin = 75
         self.padding = 25
         self.btn_size = 45
         self.play_modes = [["normal","unchecked"], ["single_repeat","expand"], ["repeat_all","repeat"], ["shuffle","random"]]
@@ -243,7 +243,7 @@ class ControlsScene(PiScene):
 
         panel = ui.View(ui.Rect(
             self.padding,
-            self.padding * 3 + self.btn_size + self.volume_slider.frame.height,
+            self.volume_slider.frame.bottom + self.padding, #self.padding * 3 + self.btn_size + self.volume_slider.frame.height,
             self.main.frame.width - self.padding * 2,
             self.btn_size
         ))
@@ -267,7 +267,21 @@ class ControlsScene(PiScene):
     make_volume_slider
     """
     def make_volume_slider(self):
-        slider = ui.SliderView( ui.Rect( self.padding, self.top_panel.frame.bottom + self.padding, self.main.frame.width - self.padding * 2, ui.SCROLLBAR_SIZE ), ui.HORIZONTAL, 0, 100, show_thumb=False )
+
+        title = ui.HeadingOne(
+            ui.Rect(
+                0,
+                self.top_panel.frame.bottom + self.padding,
+                self.main.frame.width,
+                self.label_height
+            ),
+            'Volume',
+            halign=ui.CENTER
+        )
+
+        self.main.add_child(title)
+
+        slider = ui.SliderView( ui.Rect( self.left_margin, title.frame.bottom + self.padding, self.main.frame.width - self.left_margin * 2, ui.SCROLLBAR_SIZE ), ui.HORIZONTAL, 0, 100, show_thumb=False )
         slider.on_value_changed.connect(self.volume_slider_changed)
         slider.on_state_changed.connect(self.volume_slider_focused)
         return slider
@@ -305,7 +319,7 @@ class ControlsScene(PiScene):
 
         for btn_class in btns:
             btn = ui.NavIconButton( ui.Rect( btn_x, 0, self.btn_size, self.btn_size ), btn_class )
-            btn_x = btn_x + self.btn_size + self.padding
+            btn_x = btn_x + (self.btn_size + self.padding) * 2
             btn.on_clicked.connect(self.on_button_click)
             btn.tag_name = btn_class
             btn.sibling = False
@@ -320,7 +334,21 @@ class ControlsScene(PiScene):
     make_brightness_slider
     """
     def make_brightness_slider(self):
-        slider = ui.SliderView( ui.Rect( self.padding, self.volume_panel.frame.bottom + self.padding, self.main.frame.width - self.padding * 2, ui.SCROLLBAR_SIZE ), ui.HORIZONTAL, 0, 100, show_thumb=False )
+
+        title = ui.HeadingOne(
+            ui.Rect(
+                0,
+                self.volume_panel.frame.bottom + self.padding,
+                self.main.frame.width,
+                self.label_height
+            ),
+            'Brightness',
+            halign=ui.CENTER
+        )
+
+        self.main.add_child(title)
+
+        slider = ui.SliderView( ui.Rect( self.left_margin, title.frame.bottom + self.padding, self.main.frame.width - self.left_margin * 2, ui.SCROLLBAR_SIZE ), ui.HORIZONTAL, 0, 100, show_thumb=False )
         slider.on_value_changed.connect(self.brightness_slider_changed)
         slider.on_state_changed.connect(self.brightness_slider_focused)
         return slider
