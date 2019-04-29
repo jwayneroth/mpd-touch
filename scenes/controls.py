@@ -412,7 +412,7 @@ class ControlsScene(PiScene):
         elif val > 255:
             val = 255
         f = open("/sys/class/backlight/rpi_backlight/brightness","w")
-        f.write(val)
+        f.write(str(val))
         f.close()
 
 """
