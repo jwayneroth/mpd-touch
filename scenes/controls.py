@@ -42,7 +42,7 @@ class ControlsScene(PiScene):
         ]
 
         self.volume_slider.value = mpd.volume
-        self.brightness_slider.value = int(self.get_brightness() / 255 * 100)
+        self.brightness_slider.value = int(float(self.get_brightness() / 255. * 100.))
 
         self.main.add_child(self.top_panel)
         self.main.add_child(self.volume_slider)
@@ -330,7 +330,8 @@ class ControlsScene(PiScene):
     value will be between 0 and 100
     """
     def brightness_slider_changed(self, slider_view, value):
-        v = int(value) / 100 * 255
+        v = float(value / 100. * 255.)
+        logger.debug('brightness_slider_changed %s %s' % (value, int(v)))
         self.set_brightness(int(v))
 
     """
@@ -409,8 +410,8 @@ class ControlsScene(PiScene):
     def set_brightness(self, val=100):
         if not fmuglobals.RUN_ON_RASPBERRY_PI:
             return
-        if val < 10:
-            val = 10
+        if val < 20:
+            val = 20
         elif val > 255:
             val = 255
         f = open("/sys/class/backlight/rpi_backlight/brightness","w")
