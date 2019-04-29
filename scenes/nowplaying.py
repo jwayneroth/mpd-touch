@@ -30,6 +30,8 @@ class NowPlayingScene(PiScene):
 		self.default_cover_image_directory = self.image_directory + 'default_covers'
 		self.cover_image_directory = self.image_directory + 'covers'
 
+		self.current_default_cover = False
+
 		self.make_labels()
 
 	"""
@@ -273,8 +275,11 @@ class NowPlayingScene(PiScene):
 	get_default_cover_image
 	"""
 	def get_default_cover_image(self):
+		if self.current_default_cover is not False:
+			return self.current_default_cover
 		defaults = [name for name in os.listdir( self.default_cover_image_directory ) if os.path.isfile( self.default_cover_image_directory + '/' + name )]
-		return self.default_cover_image_directory + '/' + defaults[random.randrange(0, len(defaults))]
+		self.current_default_cover = self.default_cover_image_directory + '/' + defaults[random.randrange(0, len(defaults))]
+		return self.current_default_cover
 
 """
 CoverView
