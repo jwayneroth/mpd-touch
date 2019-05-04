@@ -30,6 +30,8 @@ class NowPlayingScene(PiScene):
 		self.default_cover_image_directory = self.image_directory + 'default_covers'
 		self.cover_image_directory = self.image_directory + 'covers'
 
+		#logger.debug('nowplaying image_directory: ' + self.image_directory)
+
 		self.current_default_cover = False
 
 		self.make_labels()
@@ -75,7 +77,7 @@ class NowPlayingScene(PiScene):
 				self.main.frame.width,
 				self.cover_size
 			),
-			self.get_cover_image(),
+			self.update_cover_image(), #self.get_cover_image(),
 			ui.Rect(
 				0,
 				self.label_height * 2 + self.margins * 2,
@@ -100,7 +102,7 @@ class NowPlayingScene(PiScene):
 
 		self.components['artist'].text = playing.artist
 		self.components['album'].text = playing.album
-		self.components['album_cover'].image = self.get_cover_image()
+		self.components['album_cover'].image = self.update_cover_image() #self.get_cover_image()
 		self.components['album_cover'].updated = True
 		self.components['track'].text = playing.title
 
@@ -202,7 +204,7 @@ class NowPlayingScene(PiScene):
 					playing = mpd.now_playing
 					self.components['artist'].text = playing.artist
 					self.components['album'].text = playing.album
-					self.components['album_cover'].image = self.get_cover_image()
+					self.components['album_cover'].image = self.update_cover_image() #self.get_cover_image()
 					self.resize_track()
 					self.stylize()
 				"""
@@ -225,6 +227,15 @@ class NowPlayingScene(PiScene):
 		#print 'on_mpd_update'
 
 	"""
+	update_cover_image
+	"""
+	def update_cover_image(self):
+		img = self.get_cover_image()
+		logger.debug('NowPlaying::update_cover_image: current: %s new: %s' % (fmuglobals.current_cover_image, img))
+		fmuglobals.current_cover_image = img
+		return img
+
+	"""
 	get_cover_image
 	"""
 	def get_cover_image(self):
@@ -238,7 +249,7 @@ class NowPlayingScene(PiScene):
 		file_dir = self.music_directory + os.path.dirname(mpd.now_playing.file)
 		file_name = file_dir + '/' + 'cover_art.jpg'
 
-		print 'NowPlaying::get_cover_image: ' + file_name
+		print 'NowPlaying::get_cover_image for %s: %s' % (mpd.now_playing.file, file_name)
 
 		if os.path.isfile(file_name) == False:
 			print '\t no existing image'
@@ -280,75 +291,3 @@ class NowPlayingScene(PiScene):
 		defaults = [name for name in os.listdir( self.default_cover_image_directory ) if os.path.isfile( self.default_cover_image_directory + '/' + name )]
 		self.current_default_cover = self.default_cover_image_directory + '/' + defaults[random.randrange(0, len(defaults))]
 		return self.current_default_cover
-
-"""
-CoverView
- extend ui.ImageView
-"""
-class CoverView(ui.ImageView):
-	def __init__(self, frame, img, parent_frame, content_mode=1):
-
-		#ui.ImageView.__init__(self, frame, img)
-
-		if img == None:
-			img = resource.get_image( self.image_directory + 'defaults_covers/1.png')
-
-		assert img is not None
-
-		if frame is None:
-			frame = pygame.Rect((0, 0), img.get_size())
-		elif frame.w == 0 and frame.h == 0:
-			frame.size = img.get_size()
-
-		self._max_frame = frame
-
-		self._enabled = False
-		self.content_mode = content_mode
-		self.image = img
-		self.parent_frame = parent_frame
-
-		#assert self.padding[0] == 0 and self.padding[1] == 0
-
-		if self.content_mode == 0:
-			self._image = ui.resource.scale_image(self.image, frame.size)
-		elif self.content_mode == 1:
-			self._image = ui.resource.scale_to_fit(self.image, frame.size)
-		else:
-			assert False, "Unknown content_mode"
-
-		if self._image.get_width() < self.parent_frame.width:
-			frame.left = (self.parent_frame.width - self._image.get_width()) / 2
-
-		frame.size = self._image.get_size()
-
-		ui.View.__init__(self, frame)
-
-	@property
-	def image(self):
-		return self._image
-
-	@image.setter
-	def image(self, new_image):
-		try:
-			self._image = ui.resource.scale_to_fit(new_image, self._max_frame.size)
-		except:
-			self._image = new_image
-
-		try:
-			pf = self.parent_frame
-
-			try:
-				f = self.frame
-				if self._image.get_width() < pf.width:
-					f.left = (pf.width - self._image.get_width() ) / 2
-			except:
-				pass
-		except:
-			pass
-
-	"""
-	layout
-	 override ui.ImageView
-	"""
-	def layout(self):
-		ui.View.layout(self)

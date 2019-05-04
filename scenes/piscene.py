@@ -268,3 +268,82 @@ class PiMain(ui.View):
 								pygame.draw.rect(self.surface, child.border_color, child.frame, child.border_widths)
 
 			return drawn
+
+"""
+CoverView
+ extend ui.ImageView
+"""
+class CoverView(ui.ImageView):
+	def __init__(self, frame, img, parent_frame, content_mode=1):
+
+		#ui.ImageView.__init__(self, frame, img)
+
+		self.image_directory = 'images/'
+		if os.path.dirname(__file__) != '':
+			self.image_directory = os.path.dirname(__file__) + '/../' + self.image_directory
+
+		#self.default_cover_image_directory = self.image_directory + 'default_covers'
+
+		if img is None:
+			logger.debug('CoverView img is None, find default ' + self.image_directory + 'default_covers/1.png')
+			img = ui.get_image( self.image_directory + 'default_covers/1.png')
+			print(img)
+		assert img is not None
+
+		if frame is None:
+			frame = pygame.Rect((0, 0), img.get_size())
+		elif frame.w == 0 and frame.h == 0:
+			frame.size = img.get_size()
+
+		self._max_frame = frame
+
+		self._enabled = False
+		self.content_mode = content_mode
+		self.image = img
+		self.parent_frame = parent_frame
+
+		#assert self.padding[0] == 0 and self.padding[1] == 0
+
+		if self.content_mode == 0:
+			self._image = ui.resource.scale_image(self.image, frame.size)
+		elif self.content_mode == 1:
+			self._image = ui.resource.scale_to_fit(self.image, frame.size)
+		else:
+			assert False, "Unknown content_mode"
+
+		if self._image.get_width() < self.parent_frame.width:
+			frame.left = (self.parent_frame.width - self._image.get_width()) / 2
+
+		frame.size = self._image.get_size()
+
+		ui.View.__init__(self, frame)
+
+	@property
+	def image(self):
+		return self._image
+
+	@image.setter
+	def image(self, new_image):
+		try:
+			self._image = ui.resource.scale_to_fit(new_image, self._max_frame.size)
+		except:
+			self._image = new_image
+
+		try:
+			pf = self.parent_frame
+
+			try:
+				f = self.frame
+				if self._image.get_width() < pf.width:
+					f.left = (pf.width - self._image.get_width() ) / 2
+			except:
+				pass
+		except:
+			pass
+
+	"""
+	layout
+	 override ui.ImageView
+	"""
+	def layout(self):
+		ui.View.layout(self)

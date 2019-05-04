@@ -42,6 +42,8 @@ class ScreensaverScene(PiScene):
 
         self.track = self.make_track()
 
+        self.cover = self.make_cover()
+
         self.make_screenaver()
 
     """
@@ -73,6 +75,29 @@ class ScreensaverScene(PiScene):
     def key_down(self, key, code):
         if key == pygame.K_RETURN:
             self.on_nav_change('NowPlaying', from_screensaver=True)
+
+    """
+    make_cover
+    """
+    def make_cover(self):
+        cover = CoverView(
+            ui.Rect(
+                0,
+                self.label_height * 2 + self.margins * 3,
+                self.main.frame.width,
+                self.cover_size
+            ),
+            fmuglobals.current_cover_image,
+            ui.Rect(
+                0,
+                self.label_height * 2 + self.margins * 2,
+                self.main.frame.width,
+                self.cover_size
+            )
+        )
+        cover.updated = True
+        self.main.add_child(cover)
+        return cover
 
     """
     make_screenaver
@@ -111,6 +136,14 @@ class ScreensaverScene(PiScene):
         PiScene.entered(self)
 
         playing = mpd.now_playing
+
+        current_cover = fmuglobals.current_cover_image
+
+        logger.debug('ss entered %s' % self.cover.image)
+
+        if self.cover.image is not current_cover:
+            logger.debug('does not match %s' % fmuglobals.current_cover_image)
+            self.cover.image = current_cover
 
         self.track.text = playing.title
 

@@ -4,7 +4,7 @@ import os
 import weakref
 import logging
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger('fmu_logger')
 
 font_cache = weakref.WeakValueDictionary()
 image_cache = weakref.WeakValueDictionary()
@@ -22,7 +22,7 @@ def get_font(size=16, use_bold=False, name='regular'):
     except KeyError:
         #path = 'pygameui/resources/fonts/%s.ttf' % filename
         path = pkg_resources.resource_filename(package_name, 'resources/fonts/%s.ttf' % filename)
-        print 'resource::get_font \t font: ' + path
+        logger.debug('resource::get_font \t font: ' + path)
         try:
             logger.debug('loading font %s' % path)
             font = pygame.font.Font(path, size)
@@ -63,8 +63,8 @@ def get_image(fullpath):
     #print 'get_image: ' + fullpath
 
     path_file = os.path.split(fullpath)       # ( path, filename )
-    name_ext = os.path.splitext(path_file[1]) # ( name, ext ) 
-        
+    name_ext = os.path.splitext(path_file[1]) # ( name, ext )
+
     try:
         img = image_cache[ path_file[0] + '_'  + name_ext[0] ]
         #print 'got cache ' + path_file[0] + '_'  + name_ext[0]
@@ -85,7 +85,7 @@ def scale_image(image, size):
     return pygame.transform.smoothscale(image, size)
 
 def scale_to_fit(image, size):
-    
+
     iw = image.get_width()
     ih = image.get_height()
 
