@@ -124,9 +124,9 @@ class Fmulcd(object):
 		if from_screensaver:
 			logger.debug('exiting screensaver, going to %s' % self.last.name)
 			self.ss_timer_on = True
-			if self.last:
-				self.make_current_scene(self.last)
-				return
+			#if self.last:
+			#	self.make_current_scene(self.last)
+			#	return
 		if refresh == True:
 			self.scenes['Albums'].populate_artists_view()
 		self.make_current_scene(self.scenes[scene_name])
