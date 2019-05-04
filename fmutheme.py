@@ -8,17 +8,17 @@ class Fmutheme(ui.theme.Theme):
 		self.init_styles()
 
 	def init_styles(self):
-		near_black = (10,5,0)
-		dark_brown = (60,44,28)
-		mid_brown = (80,62,32)
-		slime = (139,250,73)
-		lemon = (246,248,63)
-		orange = (240,140,2)
-		dark_gray = (80,77,81)
-		mid_gray = (124,120,132)
-		light_gray = (180,140,190)
-		dark_purple = (60,50,65)
-		light_purple = (124,100,118)
+		near_black = fmuglobals.FMU_COLORS['near_black']
+		dark_brown = fmuglobals.FMU_COLORS['dark_brown']
+		mid_brown = fmuglobals.FMU_COLORS['mid_brown']
+		slime = fmuglobals.FMU_COLORS['slime']
+		lemon = fmuglobals.FMU_COLORS['lemon']
+		orange = fmuglobals.FMU_COLORS['orange']
+		dark_gray = fmuglobals.FMU_COLORS['dark_gray']
+		mid_gray = fmuglobals.FMU_COLORS['mid_gray']
+		light_gray = fmuglobals.FMU_COLORS['light_gray']
+		dark_purple = fmuglobals.FMU_COLORS['dark_purple']
+		light_purple = fmuglobals.FMU_COLORS['light_purple']
 
 		# View
 		self.set(class_name='View', state='normal', key='background_color', value=None)

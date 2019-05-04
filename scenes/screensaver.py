@@ -28,11 +28,17 @@ class ScreensaverScene(PiScene):
         self.on_nav_change = callback.Signal()
         self.image_directory = 'images/'
         self.img_size = 160
-        self.vx = random.randrange(-5, 5)
-        self.vy = random.randrange(-5, 5)
+        self.vx = random.randint(-10, 10)
+        self.vy = random.randint(-10, 10)
+        if self.vx is 0:
+            self.vx = 5
+        if self.vy is 0:
+            sef.vy = 5
         if os.path.dirname(__file__) != '':
             self.image_directory = os.path.dirname(__file__) + '/../' + self.image_directory
         self.screenaver_image_directory = self.image_directory + 'screensavers'
+
+        self.draw_color = fmuglobals.FMU_COLORS['near_black']
 
         self.track_scroll_velocity = 1
         if fmuglobals.RUN_ON_RASPBERRY_PI == True:
@@ -45,6 +51,8 @@ class ScreensaverScene(PiScene):
         self.cover = self.make_cover()
 
         self.make_screenaver()
+
+        print 'ScreensaverScene inited!'
 
     """
     make_main
@@ -139,6 +147,8 @@ class ScreensaverScene(PiScene):
 
         current_cover = fmuglobals.current_cover_image
 
+        #self.draw_color = self.get_random_color()
+
         logger.debug('ss entered %s' % self.cover.image)
 
         if self.cover.image is not current_cover:
@@ -172,21 +182,45 @@ class ScreensaverScene(PiScene):
     """
     def update(self):
         PiScene.update(self)
-        self.img.frame.left += self.vx
-        self.img.frame.top += self.vy
-        if self.img.frame.left < 0:
-            self.img.frame.left = 0
+
+        #move the bouncing image and do wall check
+        bouncer = self.img.frame
+
+        bouncer.left += self.vx
+        bouncer.top += self.vy
+        if bouncer.left < 0:
+            bouncer.left = 0
             self.vx *= -1
-        elif self.img.frame.right > self.main.frame.right:
+        elif bouncer.right > self.main.frame.right:
             self.img .frame.right = self.main.frame.right
             self.vx *= -1
-        if self.img.frame.top < 0:
-            self.img.frame.top = 0
+        if bouncer.top < 0:
+            bouncer.top = 0
             self.vy *= -1
-        elif self.img.frame.bottom > self.track_y: #self.main.frame.bottom
-            self.img.frame.bottom = self.track_y #self.main.frame.bottom
+        elif bouncer.bottom > self.track_y:
+            bouncer.bottom = self.track_y
             self.vy *= -1
 
+        #check intersection btw bouncer and cover
+        cover = self.cover.frame
+        first_hit = None
+        last_hit = None
+        for x in range(bouncer.left, bouncer.right):
+            for y in range(bouncer.top, bouncer.bottom):
+                if x >= cover.left and x <= cover.right and y >= cover.top and y <= cover.bottom:
+                    #print 'hit at (%s, %s)' % (x, y)
+                    if first_hit is None:
+                        first_hit = (x,y)
+                    last_hit = (x,y)
+        if first_hit is not None:
+            draw_left = first_hit[0] - cover.left
+            draw_top = first_hit[1] - cover.top
+            draw_w = last_hit[0] - first_hit[0]
+            draw_h = last_hit[1] - first_hit[1]
+            #draw_color = self.cover.image.get_at((draw_left, draw_top))
+            self.cover.image.fill(self.draw_color, [draw_left, draw_top, draw_w, draw_h])
+
+        #scroll the track info
         track = self.track
 
         track.frame.left = track.frame.left - self.track_scroll_velocity
@@ -194,6 +228,7 @@ class ScreensaverScene(PiScene):
             track.frame.left = self.main.frame.right
             track.updated = True
 
+        #render
         self.stylize()
 
     """
@@ -229,6 +264,12 @@ class ScreensaverScene(PiScene):
     def get_random_screensaver_image(self):
         defaults = [name for name in os.listdir( self.screenaver_image_directory ) if os.path.isfile( self.screenaver_image_directory + '/' + name )]
         return self.screenaver_image_directory + '/' + defaults[random.randrange(0, len(defaults))]
+
+    """
+    get_random_color
+    """
+    def get_random_color(self):
+        return (random.randint(0,255), random.randint(0, 255), random.randint(0, 255))
 
 """
 ScreensaverImageView
