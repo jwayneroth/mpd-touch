@@ -121,6 +121,8 @@ class ScreensaverScene(PiScene):
                 self.img_size
             )
         )
+        img.frame.left = random.randint(0, self.main.frame.width)
+        img.frame.top = random.randint(0, self.main.frame.height)
         self.img = img
         img.updated = True
         self.main.add_child(img)
