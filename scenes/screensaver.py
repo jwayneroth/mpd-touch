@@ -33,7 +33,7 @@ class ScreensaverScene(PiScene):
         if self.vx is 0:
             self.vx = 5
         if self.vy is 0:
-            sef.vy = 5
+            self.vy = 5
         if os.path.dirname(__file__) != '':
             self.image_directory = os.path.dirname(__file__) + '/../' + self.image_directory
         self.screenaver_image_directory = self.image_directory + 'screensavers'
@@ -49,6 +49,8 @@ class ScreensaverScene(PiScene):
         self.track = self.make_track()
 
         self.cover = self.make_cover()
+
+        self.buffer_image = self.cover.image.copy()
 
         self.make_screenaver()
 
@@ -156,6 +158,7 @@ class ScreensaverScene(PiScene):
         if self.cover.image is not current_cover:
             logger.debug('does not match %s' % fmuglobals.current_cover_image)
             self.cover.image = current_cover
+            self.buffer_image = self.cover.image.copy()
 
         self.track.text = playing.title
 
@@ -205,22 +208,40 @@ class ScreensaverScene(PiScene):
 
         #check intersection btw bouncer and cover
         cover = self.cover.frame
+        cl = cover.left
+        cr = cover.right
+        ct = cover.top
+        cb = cover.top + self.cover.image.get_height()
         first_hit = None
         last_hit = None
         for x in range(bouncer.left, bouncer.right):
             for y in range(bouncer.top, bouncer.bottom):
-                if x >= cover.left and x <= cover.right and y >= cover.top and y <= cover.bottom:
+                if x >= cl and x <= cr and y >= ct and y <= cb:
                     #print 'hit at (%s, %s)' % (x, y)
                     if first_hit is None:
                         first_hit = (x,y)
                     last_hit = (x,y)
         if first_hit is not None:
-            draw_left = first_hit[0] - cover.left
-            draw_top = first_hit[1] - cover.top
+            draw_left = first_hit[0] - cl
+            draw_top = first_hit[1] - ct
             draw_w = last_hit[0] - first_hit[0]
             draw_h = last_hit[1] - first_hit[1]
-            #draw_color = self.cover.image.get_at((draw_left, draw_top))
-            self.cover.image.fill(self.draw_color, [draw_left, draw_top, draw_w, draw_h])
+
+            #self.cover.image.fill(self.draw_color, [draw_left, draw_top, draw_w, draw_h])
+
+            #print 'overlap from %s %s to %s %s' % (draw_left, draw_top, draw_left + draw_w, draw_top + draw_h)
+
+            for x in range(draw_left, draw_left + draw_w):
+                for y in range(draw_top, draw_top + draw_h):
+
+                    pixel = self.cover.image.get_at((x,y))
+                    orig_pixel = self.buffer_image.get_at((x,y))
+
+                    if pixel != orig_pixel:
+                        #print 'pixel at %s %s %s is not %s' % (x, y, pixel, orig_pixel)
+                        self.cover.image.set_at((x,y), orig_pixel)
+                    else:
+                        self.cover.image.set_at((x,y), self.draw_color)
 
         #scroll the track info
         track = self.track
