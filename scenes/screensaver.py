@@ -39,6 +39,7 @@ class ScreensaverScene(PiScene):
         self.screenaver_image_directory = self.image_directory + 'screensavers'
 
         self.draw_color = fmuglobals.FMU_COLORS['near_black']
+        self.erase_mode = True
 
         self.track_scroll_velocity = 1
         if fmuglobals.RUN_ON_RASPBERRY_PI == True:
@@ -217,7 +218,6 @@ class ScreensaverScene(PiScene):
         for x in range(bouncer.left, bouncer.right):
             for y in range(bouncer.top, bouncer.bottom):
                 if x >= cl and x <= cr and y >= ct and y <= cb:
-                    #print 'hit at (%s, %s)' % (x, y)
                     if first_hit is None:
                         first_hit = (x,y)
                     last_hit = (x,y)
@@ -227,21 +227,31 @@ class ScreensaverScene(PiScene):
             draw_w = last_hit[0] - first_hit[0]
             draw_h = last_hit[1] - first_hit[1]
 
-            #self.cover.image.fill(self.draw_color, [draw_left, draw_top, draw_w, draw_h])
+            erased = self.is_cover_erased()
 
-            #print 'overlap from %s %s to %s %s' % (draw_left, draw_top, draw_left + draw_w, draw_top + draw_h)
+            #we are erasing the cover image
+            if self.erase_mode == True:
 
-            for x in range(draw_left, draw_left + draw_w):
-                for y in range(draw_top, draw_top + draw_h):
+                #its fully erased, start redrawing it
+                if erased == 1:
+                    #print 'fully erased, start, drawing'
+                    self.erase_mode = False
+                    self.cover.image.blit(self.buffer_image, (draw_left, draw_top), [draw_left, draw_top, draw_w, draw_h])
+                #continue erasing
+                else:
+                    self.cover.image.fill(self.draw_color, [draw_left, draw_top, draw_w, draw_h])
 
-                    pixel = self.cover.image.get_at((x,y))
-                    orig_pixel = self.buffer_image.get_at((x,y))
+            #we are redrawing the cover image
+            else:
 
-                    if pixel != orig_pixel:
-                        #print 'pixel at %s %s %s is not %s' % (x, y, pixel, orig_pixel)
-                        self.cover.image.set_at((x,y), orig_pixel)
-                    else:
-                        self.cover.image.set_at((x,y), self.draw_color)
+                #its fully redrawn, start erasing it
+                if erased == -1:
+                    #print 'fully drawn, start erasing'
+                    self.erase_mode = True
+                    self.cover.image.fill(self.draw_color, [draw_left, draw_top, draw_w, draw_h])
+                #continue redrawing
+                else:
+                    self.cover.image.blit(self.buffer_image, (draw_left, draw_top), [draw_left, draw_top, draw_w, draw_h])
 
         #scroll the track info
         track = self.track
@@ -253,6 +263,51 @@ class ScreensaverScene(PiScene):
 
         #render
         self.stylize()
+
+    """
+    is_cover_erased
+    return 1 for completely erased
+    return 0 for partly erased
+    return -1 for completely original
+    """
+    def is_cover_erased(self):
+        cover = self.cover.image
+
+        cw = cover.get_width()
+        ch = cover.get_height()
+
+        has_diff = False
+        has_orig = False
+
+        step = 20
+        x = 0
+        y = 0
+        diffs = 0
+
+        for i in range(0, int(cw/step)):
+            for j in range(0, int(ch/step)):
+
+                x = i * step
+                y = j * step
+
+                pixel = cover.get_at((x,y))
+                orig_pixel = self.buffer_image.get_at((x,y))
+
+                if pixel.r != orig_pixel.r or pixel.g != orig_pixel.g or pixel.b != orig_pixel.b:
+                    diffs = diffs +1
+                    has_diff = True
+                    if has_orig == True:
+                        return 0
+                else:
+                    has_orig = True
+                    if has_diff == True:
+                        return 0
+
+        if has_diff is True:
+            if has_orig is False:
+                return 1
+            return 0
+        return -1
 
     """
     on_mpd_update
