@@ -5,3 +5,4 @@ pygameui/*.pyc
 *.AppleDouble
 *.DS_Store
 images/default_covers/*
+*.swp

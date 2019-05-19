@@ -1,0 +1,10 @@
+[Desktop Entry]
+Name=fmuLCD
+#Exec=sudo python /home/pi/pydocs/fmulcd/fmulcd.py &
+Exec=sudo service fmulcd start
+Icon=/home/pi/pydocs/fmulcd/images/icon.png
+Type=Application
+Encoding=UTF-8
+Terminal=false
+Comment=mpd gui by Jonathan Roth
+Categories=None;
