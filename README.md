@@ -1,3 +1,5 @@
+<h2>MPD Touch</h2>
+<p>An mpd client gui, built primarily to stream internet radio (WFMU, almost only) on a raspberry pi with the official raspberry pi touch display. Also plays local files in the mpd database. Works with LIRC for remote control ;)</p>
 <h3>Screenshots</h3>
 <p>Now playing screen with scrolling track info</p>
 <img src="/images/screenshots/now-playing-wfmu.png" width="800" height="480"/>
