@@ -1,3 +1,5 @@
+#https://github.com/pimoroni/python-multitouch/blob/master/library/ft5406.py
+
 import glob
 import io
 import os

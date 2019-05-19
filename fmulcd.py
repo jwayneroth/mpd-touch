@@ -23,7 +23,7 @@ logger.addHandler(fh)
 from lib.mpd_client import *
 import fmuglobals
 from fmutheme import Fmutheme
-#import gpio.buttons
+#from lib.gpio-buttons import AnalogButtons
 import pygameui as ui
 from lib.ft5406 import Touchscreen, TS_PRESS, TS_RELEASE, TS_MOVE
 from lib.lircpoll import Irw
@@ -62,7 +62,7 @@ class Fmulcd(object):
 
 		self.make_current_scene(self.scenes['NowPlaying'])
 
-		#self.ab = buttons.AnalogButtons()
+		#self.ab = AnalogButtons()
 
 	"""
 	init_pygame
