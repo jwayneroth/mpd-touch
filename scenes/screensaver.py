@@ -28,12 +28,12 @@ class ScreensaverScene(PiScene):
         self.on_nav_change = callback.Signal()
         self.image_directory = 'images/'
         self.img_size = 160
-        self.vx = random.randint(-10, 10)
-        self.vy = random.randint(-10, 10)
-        if self.vx is 0:
-            self.vx = 5
-        if self.vy is 0:
-            self.vy = 5
+        self.img = None
+        self.vx = 0
+        self.vy = 0
+
+        self.set_vels()
+
         if os.path.dirname(__file__) != '':
             self.image_directory = os.path.dirname(__file__) + '/../' + self.image_directory
         self.screenaver_image_directory = self.image_directory + 'screensavers'
@@ -111,6 +111,17 @@ class ScreensaverScene(PiScene):
         return cover
 
     """
+    set_vels
+    """
+    def set_vels(self):
+        self.vx = random.randint(-10, 10)
+        self.vy = random.randint(-10, 10)
+        if self.vx is 0:
+            self.vx = 5
+        if self.vy is 0:
+            self.vy = 5
+
+    """
     make_screenaver
     """
     def make_screenaver(self):
@@ -165,6 +176,10 @@ class ScreensaverScene(PiScene):
 
         self.resize_track()
 
+        self.set_vels()
+        self.img.frame.left = random.randint(0, self.main.frame.width)
+        self.img.frame.top = random.randint(0, self.main.frame.height)
+
         self.stylize()
 
     """
@@ -198,7 +213,7 @@ class ScreensaverScene(PiScene):
             bouncer.left = 0
             self.vx *= -1
         elif bouncer.right > self.main.frame.right:
-            self.img .frame.right = self.main.frame.right
+            bouncer.right = self.main.frame.right
             self.vx *= -1
         if bouncer.top < 0:
             bouncer.top = 0
