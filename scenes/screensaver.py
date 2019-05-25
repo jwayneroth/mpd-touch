@@ -16,7 +16,7 @@ class ScreensaverScene(PiScene):
         self.margins_bottom = 10
         self.has_nav = False
         self.is_mpd_listener = True
-        self.cover_size = 399 #290 #160
+        self.cover_size = 384 #290 #160
         self.label_height = 36
         self.music_directory = '/var/lib/mpd/music/'
         self.main_active = False
@@ -45,7 +45,7 @@ class ScreensaverScene(PiScene):
         if fmuglobals.RUN_ON_RASPBERRY_PI == True:
             self.track_scroll_velocity = 3
 
-        self.track_y = self.margins * 2 + self.cover_size #self.label_height * 2 + self.margins * 4 + self.cover_size
+        self.track_y = self.margins * 3 + self.cover_size #self.label_height * 2 + self.margins * 4 + self.cover_size
 
         self.track = self.make_track()
 
@@ -94,7 +94,7 @@ class ScreensaverScene(PiScene):
         cover = CoverView(
             ui.Rect(
                 0,
-                self.margins, #self.label_height * 2 + self.margins * 3,
+                self.margins * 2, #self.label_height * 2 + self.margins * 3,
                 self.main.frame.width,
                 self.cover_size
             ),
@@ -294,7 +294,7 @@ class ScreensaverScene(PiScene):
         has_diff = False
         has_orig = False
 
-        step = 20
+        step = 35 #20
         x = 0
         y = 0
         diffs = 0
