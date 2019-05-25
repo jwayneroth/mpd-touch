@@ -16,7 +16,7 @@ FMU_COLORS = {
 	'lemon':        (246,248,63),
 	'orange':       (240,140,2),
 	'dark_gray':    (80,77,81),
-	'mid_gray':     (124,120,132),
+	'mid_gray':     (188,180,192),
 	'light_gray':   (180,140,190),
 	'dark_purple':  (60,50,65),
 	'light_purple': (124,100,118)
