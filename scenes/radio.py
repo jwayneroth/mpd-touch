@@ -26,6 +26,7 @@ class RadioScene(PiScene):
 			{'title':'Ubu','url':'http://stream0.wfmu.org/ubu'},
 			{'title':'Sheena','url':'http://stream0.wfmu.org/sheena'},
 			{'title':'FMU32','url':'http://stream0.wfmu.org/freeform-32k.mp3'},
+			{'title':'wkcr','url':'http://wkcr.streamguys1.com:80/live'},
 			{'title':'wnyc','url':'http://fm939.wnyc.org/wnycfm'},
 			{'title':'bbc','url':'http://am820.wnyc.org/wnycam'},
 			{'title':'wqxr','url':'http://stream.wqxr.org/wqxr'},
