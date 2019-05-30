@@ -39,7 +39,10 @@ class Fmulcd(object):
 		self.screen = False
 		self.ss_timer = 0
 		self.ss_timer_on = True
-		self.ss_delay = 6000
+		self.ss_delay = 60000
+
+		if not fmuglobals.RUN_ON_RASPBERRY_PI:
+			self.ss_delay = 6000
 
 		self.init_pygame()
 
