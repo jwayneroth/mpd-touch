@@ -190,7 +190,9 @@ class ScreensaverScene(PiScene):
         track.frame.width = track.text_size[0] + 10 # + self.margins
         track.frame.left = 0
         #print 'NowPlayingScene::resize_track \t w: ' + str(track.frame.width)
-        self.stylize()
+        #self.stylize()
+        self.track.stylize()
+        self.updated = True
 
     """
     exited
@@ -277,7 +279,8 @@ class ScreensaverScene(PiScene):
             track.updated = True
 
         #render
-        self.stylize()
+        #self.stylize()
+        self.updated = True
 
     """
     is_cover_erased
@@ -335,19 +338,15 @@ class ScreensaverScene(PiScene):
 
                 if event == 'radio_mode_on':
                     self.resize_track()
-                    self.stylize()
                 elif event == 'radio_mode_off':
                     self.resize_track()
-                    self.stylize()
                 elif event == 'title_change':
                     playing = mpd.now_playing
                     self.track.text = playing.title
                     self.resize_track()
-                    self.stylize()
                 elif event == 'album_change':
                     playing = mpd.now_playing
                     self.resize_track()
-                    self.stylize()
             except IndexError:
                 break
 
