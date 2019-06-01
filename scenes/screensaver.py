@@ -27,8 +27,8 @@ class ScreensaverScene(PiScene):
         self.add_child(self.main)
         self.on_nav_change = callback.Signal()
         self.image_directory = 'images/'
-        self.img_size = 160
-        self.img = None
+        self.ss_size = 160
+        self.ss = None
         self.vx = 0
         self.vy = 0
 
@@ -132,12 +132,12 @@ class ScreensaverScene(PiScene):
                 0,
                 self.label_height * 2 + self.margins * 2,
                 self.main.frame.width,
-                self.img_size
+                self.ss_size
             )
         )
         img.frame.left = random.randint(0, self.main.frame.width)
         img.frame.top = random.randint(0, self.main.frame.height)
-        self.img = img
+        self.ss = img
         img.updated = True
         self.main.add_child(img)
 
@@ -163,6 +163,9 @@ class ScreensaverScene(PiScene):
 
         current_cover = fmuglobals.current_cover_image
 
+        self.ss.image = ui.get_image(self.get_random_screensaver_image())
+        self.ss.updated = True
+
         #self.draw_color = self.get_random_color()
 
         logger.debug('ss entered %s' % self.cover.image)
@@ -177,8 +180,8 @@ class ScreensaverScene(PiScene):
         self.resize_track()
 
         self.set_vels()
-        self.img.frame.left = random.randint(0, self.main.frame.width)
-        self.img.frame.top = random.randint(0, self.main.frame.height)
+        self.ss.frame.left = random.randint(0, self.main.frame.width)
+        self.ss.frame.top = random.randint(0, self.main.frame.height)
 
         self.stylize()
 
@@ -207,7 +210,7 @@ class ScreensaverScene(PiScene):
         PiScene.update(self)
 
         #move the bouncing image and do wall check
-        bouncer = self.img.frame
+        bouncer = self.ss.frame
 
         bouncer.left += self.vx
         bouncer.top += self.vy
@@ -370,36 +373,13 @@ ScreensaverImageView
 class ScreensaverImageView(ui.ImageView):
     def __init__(self, frame, img, parent_frame, content_mode=1):
 
-        if img == None:
-            img = resource.get_image( self.image_directory + 'defaults_covers/1.png')
-
         assert img is not None
 
-        if frame is None:
-            frame = pygame.Rect((0, 0), img.get_size())
-        elif frame.w == 0 and frame.h == 0:
-            frame.size = img.get_size()
+        frame = pygame.Rect((0, 0), img.get_size())
 
-        self._max_frame = frame
-
-        self._enabled = False
-        self.content_mode = content_mode
         self.image = img
+
         self.parent_frame = parent_frame
-
-        #assert self.padding[0] == 0 and self.padding[1] == 0
-
-        if self.content_mode == 0:
-            self._image = ui.resource.scale_image(self.image, frame.size)
-        elif self.content_mode == 1:
-            self._image = ui.resource.scale_to_fit(self.image, frame.size)
-        else:
-            assert False, "Unknown content_mode"
-
-        if self._image.get_width() < self.parent_frame.width:
-            frame.left = (self.parent_frame.width - self._image.get_width()) / 2
-
-        frame.size = self._image.get_size()
 
         ui.View.__init__(self, frame)
 
@@ -409,22 +389,9 @@ class ScreensaverImageView(ui.ImageView):
 
     @image.setter
     def image(self, new_image):
-        try:
-            self._image = ui.resource.scale_to_fit(new_image, self._max_frame.size)
-        except:
-            self._image = new_image
-
-        try:
-            pf = self.parent_frame
-
-            try:
-                f = self.frame
-                if self._image.get_width() < pf.width:
-                    f.left = (pf.width - self._image.get_width() ) / 2
-            except:
-                pass
-        except:
-            pass
+        frame = pygame.Rect((0, 0), new_image.get_size())
+        self.frame = frame
+        self._image =new_image
 
     """
     layout
