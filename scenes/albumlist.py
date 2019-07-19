@@ -13,23 +13,24 @@ class AlbumListScene(PiScene):
 		self.sidebar_index = 1
 		self.active_sidebar_btn = 1
 
-		self.make_page_nav()
+		page_nav = self.make_page_nav()
 		self.page_nav_active = False
 
+		self.new_playlist_set = False
+		
 		self.artists_view = self.make_scroll_view()
 		self.albums_view = self.make_scroll_view()
 		self.tracks_view = self.make_scroll_view()
 
-		self.playlist_btns = [self.new_playlist]
-		self.artist_btns = []#self.page_down]
-		self.album_btns = []#self.page_down]
-		self.track_btns = []#self.page_down]
+		self.artist_btns = [page_nav]#self.page_down]
+		self.album_btns = [page_nav]#self.page_down]
+		self.track_btns = [page_nav]#self.page_down]
 
 		self.artist_idx = 0
 		self.album_idx = 0
 		self.track_idx = 0
 
-		self.child_btns = [
+		self.child_view_btns = [
 			self.artist_btns,
 			self.album_btns,
 			self.track_btns
@@ -45,17 +46,29 @@ class AlbumListScene(PiScene):
 		self.main.add_child(self.icon_up)
 		self.main.add_child(self.artists_view)
 
+		# which scroll view is active
 		self.current_child_index = 0
+		
 		self.current_child = self.artists_view
-		self.active_btn_index = 0
+		
+		# which row of buttons is active
+		self.active_btn_row = 0
+		
 		self.active_btn = False
-		self.sibling_active = False
+		#self.sibling_active = False
+
+		# which index in active button row is active
+		self.active_btn_index = 0
 
 	"""
-	update_active_idx
+	update_btn_row
 	"""
-	def update_active_idx(self, new_index):
-		self.active_btn_index = new_index
+	def update_btn_row(self, new_index):
+
+		self.active_btn_row = new_index
+		
+		self.active_btn_index = 0
+		
 		if self.current_child_index == 0:
 			self.artist_idx = new_index
 		elif self.current_child_index == 1:
@@ -67,8 +80,9 @@ class AlbumListScene(PiScene):
 	on_main_active
 	"""
 	def on_main_active(self):
-		self.update_active_idx(0)
-		self.active_btn = self.child_btns[self.current_child_index][0]
+		self.update_btn_row(0)
+		self.active_btn_index = 0
+		self.active_btn = self.child_view_btns[self.current_child_index][0][self.active_btn_index]
 		self.active_btn.state = 'focused'
 
 	"""
@@ -81,17 +95,18 @@ class AlbumListScene(PiScene):
 		#
 		if key == pygame.K_UP:
 
-			if self.active_btn_index == 0:
+			if self.active_btn_row == 0:
 				self.active_btn.state = 'normal'
 				self.main_active = False
 				self.active_sidebar_btn = 0
 				self.sidebar_btns[self.active_sidebar_btn].state = 'focused'
 				return
 
-			new_index = self.active_btn_index - 1
+			new_index = self.active_btn_row - 1
 
 			self.active_btn.state = 'normal'
-			self.active_btn = self.child_btns[self.current_child_index][new_index]
+
+			self.active_btn = self.child_view_btns[self.current_child_index][new_index][0]
 
 			btn_y = self.active_btn.frame.top
 			offset = self.current_child.content_view.frame.top
@@ -102,27 +117,27 @@ class AlbumListScene(PiScene):
 				self.current_child.do_scroll(pct, 'up')
 
 			self.active_btn.state = 'focused'
-			self.update_active_idx(new_index) #self.active_btn_index = new_index
-			self.sibling_active = False
+			self.update_btn_row(new_index) #self.active_btn_row = new_index
+			#self.sibling_active = False
 
 		#
 		# down
 		#
 		elif key == pygame.K_DOWN:
 
-			new_index = self.active_btn_index + 1
+			new_index = self.active_btn_row + 1
 
-			if new_index >= len(self.child_btns[self.current_child_index]):
+			if new_index >= len(self.child_view_btns[self.current_child_index]):
 				return
 
 			if new_index == 1 and self.current_child.scrolled:
 				new_index = self.get_first_visible()
 
 			self.active_btn.state = 'normal'
-			self.active_btn = self.child_btns[self.current_child_index][new_index]
+			self.active_btn = self.child_view_btns[self.current_child_index][new_index][0]
 			self.active_btn.state = 'focused'
-			self.update_active_idx(new_index)
-			self.sibling_active = False
+			self.update_btn_row(new_index)
+			#self.sibling_active = False
 
 			btn_y = self.active_btn.frame.top + self.label_height
 			offset = self.current_child.content_view.frame.top
@@ -138,33 +153,34 @@ class AlbumListScene(PiScene):
 		# left
 		#
 		elif key == pygame.K_LEFT:
-			if self.sibling_active == True:
-				#focus to sibling
+			#if self.sibling_active == True:
+			if self.active_btn_index > 0:
 				self.active_btn.state = 'normal'
-				self.active_btn = self.child_btns[self.current_child_index][self.active_btn_index]
+				self.active_btn_index = self.active_btn_index - 1
+				self.active_btn = self.child_view_btns[self.current_child_index][self.active_btn_row][self.active_btn_index]
 				self.active_btn.state = 'focused'
-				self.sibling_active = False
+				#self.sibling_active = False
 
 			else:
 				if self.page_nav_active == False:
 					#focus to sidebar
 					self.active_btn.state = 'normal'
-					self.update_active_idx(0) #self.active_btn_index = 0
+					self.update_btn_row(0) #self.active_btn_row = 0
 					self.main_active = False
 					self.active_sidebar_btn = 0
 					self.sidebar_btns[self.active_sidebar_btn].state = 'focused'
 				else:
-					if self.active_btn_index != 0:
+					if self.active_btn_row != 0:
 						#focus to page nav
 						self.active_btn.state = 'normal'
-						self.update_active_idx(0) #self.active_btn_index = 0
-						self.active_btn = self.child_btns[self.current_child_index][self.active_btn_index]
+						self.update_btn_row(0) #self.active_btn_row = 0
+						self.active_btn = self.child_view_btns[self.current_child_index][self.active_btn_row][self.active_btn_index]
 						self.active_btn.state = 'focused'
-						self.sibling_active = False
+						#self.sibling_active = False
 					else:
 						#focus to sidebar
 						self.active_btn.state = 'normal'
-						self.update_active_idx(0) #self.active_btn_index = 0
+						self.update_btn_row(0) #self.active_btn_row = 0
 						self.main_active = False
 						self.active_sidebar_btn = 0
 						self.sidebar_btns[self.active_sidebar_btn].state = 'focused'
@@ -172,13 +188,23 @@ class AlbumListScene(PiScene):
 		# right
 		#
 		elif key == pygame.K_RIGHT:
-			current_btn = self.child_btns[self.current_child_index][self.active_btn_index]
+
+			new_index = self.active_btn_index + 1
+			
+			if new_index < len(self.child_view_btns[self.current_child_index][self.active_btn_row]):
+				self.active_btn_index = new_index
+				self.active_btn.state = 'normal'
+				self.active_btn = self.child_view_btns[self.current_child_index][self.active_btn_row][self.active_btn_index]
+				self.active_btn.state = 'focused'
+			
+			"""
+			current_btn = self.child_view_btns[self.current_child_index][self.active_btn_row][self.active_btn_index]
 			if self.sibling_active == False and current_btn.sibling != False :
 				current_btn.state = 'normal'
 				current_btn.sibling.state = 'focused'
 				self.active_btn = current_btn.sibling
 				self.sibling_active = True
-
+			"""
 
 		#
 		# return
@@ -217,9 +243,10 @@ class AlbumListScene(PiScene):
 		self.active_btn.state = 'normal'
 		self.current_child = self.artists_view
 		self.current_child_index = 0
-		self.update_active_idx(0) #self.active_btn_index = 0
-		self.sibling_active = False
-		self.active_btn = self.child_btns[self.current_child_index][self.active_btn_index]
+		self.update_btn_row(0) #self.active_btn_row = 0
+		#self.sibling_active = False
+		self.active_btn_index = 0
+		self.active_btn = self.child_view_btns[self.current_child_index][self.active_btn_row][self.active_btn_index]
 		self.active_btn.state = 'focused'
 
 		btn_y = self.active_btn.frame.top
@@ -240,7 +267,7 @@ class AlbumListScene(PiScene):
 				0,
 				self.btn_size,
 				self.main.frame.width - ui.SCROLLBAR_SIZE,
-				self.main.frame.height - self.btn_size - self.btn_size - self.margins * 2 - 10
+				self.main.frame.height - self.btn_size - self.margins - 10
 			),
 			ui.Rect(
 				0,
@@ -300,14 +327,17 @@ class AlbumListScene(PiScene):
 
 		btn_down.tag_name = 'Down'
 		btn_up.tag_name ='Up'
-
+		
+		btn_new_playlist.on_clicked.connect(self.on_new_playlist_clicked)
+		icon_new_playlist.on_clicked.connect(self.on_new_playlist_clicked)
+		
 		btn_down.on_clicked.connect(self.on_page_nav_clicked)
 		icon_down.on_clicked.connect(self.on_page_nav_clicked)
 		btn_up.on_clicked.connect(self.on_page_nav_clicked)
 		icon_up.on_clicked.connect(self.on_page_nav_clicked)
 
-		btn_new_playlist.sibling = btn_down
-		btn_down.sibling = btn_up
+		#btn_new_playlist.sibling = btn_down
+		#btn_down.sibling = btn_up
 
 		self.new_playlist = btn_new_playlist
 		self.icon_playlist = icon_new_playlist
@@ -315,6 +345,8 @@ class AlbumListScene(PiScene):
 		self.icon_down = icon_down
 		self.page_up = btn_up
 		self.icon_up = icon_up
+		
+		return [btn_new_playlist, btn_down, btn_up]
 
 	"""
 	populate_artists_view
@@ -352,8 +384,9 @@ class AlbumListScene(PiScene):
 			add_all_btn.artist_name = artist
 			add_all_btn.on_clicked.connect(self.on_artist_add_clicked)
 
-			artist_button.sibling = add_all_btn
-			self.artist_btns.append(artist_button)
+			#artist_button.sibling = add_all_btn
+			
+			self.artist_btns.append([artist_button, add_all_btn])
 
 			scroll_contents.add_child(artist_button)
 			scroll_contents.add_child(add_all_btn)
@@ -365,12 +398,12 @@ class AlbumListScene(PiScene):
 		self.artists_view.update_content_view(scroll_contents)
 
 		if self.artists_view.scrollable:
-			self.artist_btns.insert(0,self.page_down)
+			#self.artist_btns.insert(0, self.page_down)
 			self.activate_page_nav()
 		else:
 			self.deactivate_page_nav()
 			
-		self.artist_btns.insert(0,self.new_playlist)
+		self.artist_btns.insert(0, [self.new_playlist, self.page_down, self.page_up])
 
 	"""
 	populate_albums_view
@@ -407,9 +440,9 @@ class AlbumListScene(PiScene):
 		scroll_contents.add_child(back_icon)
 		scroll_contents.add_child(back_btn)
 
-		add_all_btn.sibling = back_btn
+		#add_all_btn.sibling = back_btn
 
-		self.album_btns.append(add_all_btn)
+		self.album_btns.append([add_all_btn, back_btn])
 
 		scr_y = self.label_height
 
@@ -436,8 +469,6 @@ class AlbumListScene(PiScene):
 			btn.album_name = album
 			btn.on_clicked.connect(self.album_clicked)
 
-			self.album_btns.append(btn)
-
 			add_btn = ui.IconButton(
 				ui.Rect(btn.frame.right + self.margins,scr_y,self.btn_size,self.btn_size),
 				'plus',
@@ -446,11 +477,13 @@ class AlbumListScene(PiScene):
 			add_btn.album_name = album
 			add_btn.on_clicked.connect(self.album_add_clicked)
 
-			btn.sibling = add_btn
+			#btn.sibling = add_btn
 
 			scroll_contents.add_child( btn )
 			scroll_contents.add_child( add_btn )
 
+			self.album_btns.append([btn, add_btn])
+			
 			scr_y = scr_y + self.label_height
 
 		scroll_contents.frame.height = row_count * self.label_height + self.margins * 2 + self.btn_size
@@ -458,12 +491,12 @@ class AlbumListScene(PiScene):
 		self.albums_view.update_content_view(scroll_contents)
 
 		if self.albums_view.scrollable:
-			self.album_btns.insert(0,self.page_down)
+			#self.album_btns.insert(0,self.page_down)
 			self.activate_page_nav()
 		else:
 			self.deactivate_page_nav()
 			
-		self.album_btns.insert(0,self.new_playlist)
+		self.album_btns.insert(0, [self.new_playlist, self.page_down, self.page_up])
 
 	"""
 	populate_tracks_view
@@ -501,9 +534,9 @@ class AlbumListScene(PiScene):
 		scroll_contents.add_child(back_icon)
 		scroll_contents.add_child(back_btn)
 
-		add_all_btn.sibling = back_btn
+		#add_all_btn.sibling = back_btn
 
-		self.track_btns.append(add_all_btn)
+		self.track_btns.append([add_all_btn, back_btn])
 
 		scr_y = self.label_height
 
@@ -526,10 +559,10 @@ class AlbumListScene(PiScene):
 			)
 
 			btn.track_name = track
-			btn.sibling = False
+			#btn.sibling = False
 			btn.on_clicked.connect(self.track_clicked)
 
-			self.track_btns.append(btn)
+			self.track_btns.append([btn])
 
 			scroll_contents.add_child( btn )
 
@@ -540,12 +573,12 @@ class AlbumListScene(PiScene):
 		self.tracks_view.update_content_view(scroll_contents)
 
 		if self.tracks_view.scrollable:
-			self.track_btns.insert(0,self.page_down)
+			#self.track_btns.insert(0,self.page_down)
 			self.activate_page_nav()
 		else:
 			self.deactivate_page_nav()
 			
-		self.track_btns.insert(0,self.new_playlist)
+		self.track_btns.insert(0, [self.new_playlist, self.page_down, self.page_up])
 
 	"""
 	on_artist_clicked
@@ -562,9 +595,10 @@ class AlbumListScene(PiScene):
 		self.current_child = self.albums_view
 
 		self.current_child_index = 1
-		self.update_active_idx(0)
+		self.update_btn_row(0)
 
-		self.active_btn = self.child_btns[self.current_child_index][self.album_idx]
+		self.active_btn_index = 0
+		self.active_btn = self.child_view_btns[self.current_child_index][self.album_idx][self.active_btn_index]
 		self.active_btn.state = 'focused'
 
 		self.stylize()
@@ -578,23 +612,24 @@ class AlbumListScene(PiScene):
 
 		self.deselect_all(self.artist_btns)
 
-		for button in self.artist_btns[1:]:
-			if button.artist_name == btn.artist_name:
-				button.state = 'selected'
-				break
+		for buttons in self.artist_btns[1:]:
+			for button in buttons:
+				if button.artist_name == btn.artist_name:
+					button.state = 'selected'
+					break
 
-		mpd.mpd_client.clear()
-		mpd.mpd_client.findadd('artist', btn.artist_name, 'artist', btn.artist_name)
-
-		#try:
-		mpd.mpd_client.play(0)
-		#except mpd.mpd_client.ConnectionError:
-		#	 mpd.mpd_client.connect('localhost',6600)
-		#	 mpd.mpd_client.play(0)
-
-		#mpd.playlist_add('artist', btn.artist_name, True, True)
-
-		self.on_nav_change('NowPlaying')
+		#mpd.mpd_client.clear()
+		#mpd.mpd_client.findadd('artist', btn.artist_name, 'artist', btn.artist_name)
+		#mpd.mpd_client.play(0)
+		
+		autoplay = False
+		if self.new_playlist_set:
+			self.new_playlist_set = False
+			autoplay = True
+		
+		mpd.playlist_add('artist', btn.artist_name, autoplay, False)
+		
+		#self.on_nav_change('NowPlaying')
 		
 	"""
 	album_clicked
@@ -612,10 +647,11 @@ class AlbumListScene(PiScene):
 		self.current_child = self.tracks_view
 		self.current_child_index = 2
 
-		#self.active_btn_index = 0
-		self.update_active_idx(0)
+		#self.active_btn_row = 0
+		self.update_btn_row(0)
 
-		self.active_btn = self.child_btns[self.current_child_index][self.track_idx]
+		self.active_btn_index = 0
+		self.active_btn = self.child_view_btns[self.current_child_index][self.track_idx][self.active_btn_index]
 
 		self.active_btn.state = 'focused'
 
@@ -632,25 +668,18 @@ class AlbumListScene(PiScene):
 
 		btn.state = 'selected'
 
-		#self.mpd_client.findadd('artist', self.searching_artist, tag_type, tag_name)
+		#mpd.mpd_client.clear()
+		#mpd.mpd_client.findadd('album', btn.album_name, 'album', btn.album_name)
+		#mpd.mpd_client.play(0)
 
-		mpd.mpd_client.clear()
-		mpd.mpd_client.findadd('album', btn.album_name, 'album', btn.album_name)
-
-		#try:
-		mpd.mpd_client.play(0)
-		#except mpd.mpd_client.ConnectionError:
-		#	 mpd.mpd_client.connect('localhost',6600)
-		#	 mpd.mpd_client.play(0)
-
-		#mpd.playlist_add_album(btn.album_name,True,True)
-
-		#self.main.rm_child(self.albums_view)
-		#self.main.add_child(self.artists_view)
-
-		#ui.scene.push(scenes['NowPlaying'])
-
-		self.on_nav_change('NowPlaying')
+		autoplay = False
+		if self.new_playlist_set:
+			self.new_playlist_set = False
+			autoplay = True
+		
+		mpd.playlist_add('album', btn.album_name, autoplay, False)
+		
+		#self.on_nav_change('NowPlaying')
 
 	"""
 	track_clicked
@@ -659,16 +688,18 @@ class AlbumListScene(PiScene):
 		self.deselect_all(self.track_btns)
 		btn.state = "selected"
 
-		mpd.mpd_client.clear()
-		mpd.mpd_client.findadd('title', btn.track_name)
-
-		#try:
-		mpd.mpd_client.play(0)
-		#except mpd.mpd_client.ConnectionError:
-		#	 mpd.mpd_client.connect('localhost',6600)
-		#	 mpd.mpd_client.play(0)
-
-		self.on_nav_change('NowPlaying')
+		#mpd.mpd_client.clear()
+		#mpd.mpd_client.findadd('title', btn.track_name)
+		#mpd.mpd_client.play(0)
+		
+		autoplay = False
+		if self.new_playlist_set:
+			self.new_playlist_set = False
+			autoplay = True
+		
+		mpd.playlist_add('title', btn.track_name, autoplay, False)
+		
+		#self.on_nav_change('NowPlaying')
 
 	"""
 	on_back_btn_clicked
@@ -679,22 +710,23 @@ class AlbumListScene(PiScene):
 			self.main.add_child(self.artists_view)
 			self.current_child = self.artists_view
 			self.current_child_index = 0
-			self.active_btn_index = self.artist_idx
+			self.active_btn_row = self.artist_idx
 		elif btn.tag_name == "Tracks":
 			self.main.add_child(self.albums_view)
 			self.current_child = self.albums_view
 			self.current_child_index = 1
-			self.active_btn_index = self.album_idx
+			self.active_btn_row = self.album_idx
 			#self.stylize()
 
-		self.active_btn = self.child_btns[self.current_child_index][self.active_btn_index]
+		self.active_btn_index = 0
+		self.active_btn = self.child_view_btns[self.current_child_index][self.active_btn_row][self.active_btn_index]
 		self.active_btn.state = 'focused'
 		self.check_scroll_active()
 
 		#self.on_main_active()
 
-		#self.update_active_idx(0) #self.active_btn_index = 0
-		#self.active_btn = self.child_btns[self.current_child_index][0]
+		#self.update_btn_row(0) #self.active_btn_row = 0
+		#self.active_btn = self.child_view_btns[self.current_child_index][0]
 		#self.active_btn.state = 'focused'
 
 
@@ -711,7 +743,7 @@ class AlbumListScene(PiScene):
 	activate_page_nav
 	"""
 	def activate_page_nav(self):
-		self.new_playlist.sibling = self.page_down
+		#self.new_playlist.sibling = self.page_down
 		self.page_nav_active = True
 		self.page_down.state = 'normal'
 		self.page_up.state = 'normal'
@@ -722,7 +754,7 @@ class AlbumListScene(PiScene):
 	deactivate_page_nav
 	"""
 	def deactivate_page_nav(self):
-		self.new_playlist.sibling = False
+		#self.new_playlist.sibling = False
 		self.page_nav_active = False
 		self.page_down.state = 'disabled'
 		self.page_up.state = 'disabled'
@@ -730,12 +762,28 @@ class AlbumListScene(PiScene):
 		self.icon_up.state = 'disabled'
 
 	"""
+	on_new_playlist_clicked
+	
+	 empty current playlist
+	 set a flag so that when first item is added to empty playlist, we know to play it
+	"""
+	def on_new_playlist_clicked(self, btn, mouse_btn):
+		mpd.set_playback('stop')
+		mpd.clear_current_playlist()
+		self.new_playlist_set = True
+		
+	"""
 	on_page_nav_clicked
 	"""
 	def on_page_nav_clicked(self, btn, mouse_btn):
+		
 		idx = 1
+		
 		if btn == self.page_down or btn == self.icon_down:
-			for button in self.child_btns[self.current_child_index][idx:]:
+			for buttons in self.child_view_btns[self.current_child_index][idx:]:
+
+				button = buttons[0]
+				
 				btn_y = button.frame.top + self.label_height
 				offset = self.current_child.content_view.frame.top
 				btn_vy = btn_y + offset
@@ -748,7 +796,7 @@ class AlbumListScene(PiScene):
 					self.current_child.do_scroll(pct, 'down')
 
 					#self.active_btn.state = 'focused'
-					#self.active_btn_index = idx
+					#self.active_btn_row = idx
 					#self.sibling_active = False
 
 					break
@@ -756,7 +804,10 @@ class AlbumListScene(PiScene):
 				idx += 1
 
 		else:
-			for button in self.child_btns[self.current_child_index][idx:]:
+			for buttons in self.child_view_btns[self.current_child_index][idx:]:
+				
+				button = buttons[0]
+
 				btn_y = button.frame.top + self.label_height
 				offset = self.current_child.content_view.frame.top
 				btn_vy = btn_y + offset
@@ -769,7 +820,7 @@ class AlbumListScene(PiScene):
 					self.current_child.do_scroll(pct, 'up')
 
 					#self.active_btn.state = 'focused'
-					#self.active_btn_index = idx
+					#self.active_btn_row = idx
 					#self.sibling_active = False
 
 					break
@@ -780,7 +831,8 @@ class AlbumListScene(PiScene):
 	"""
 	def get_first_visible(self):
 		idx = 1
-		for button in self.child_btns[self.current_child_index][idx:]:
+		for buttons in self.child_view_btns[self.current_child_index][idx:]:
+			button = buttons[0]
 			btn_y = button.frame.top + self.label_height / 2
 			offset = self.current_child.content_view.frame.top
 			btn_vy = btn_y + offset
@@ -792,5 +844,6 @@ class AlbumListScene(PiScene):
 	deselect_all
 	"""
 	def deselect_all(self, btn_list):
-		for btn in btn_list:
-			btn.state = 'normal'
+		for btns in btn_list:
+			for btn in btns:
+				btn.state = 'normal'

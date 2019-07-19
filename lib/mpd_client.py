@@ -212,9 +212,13 @@ class MPDController(object):
 		elif play_status == 'stop':
 			self.mpd_client.stop()
 		elif play_status == 'next':
-			self.mpd_client.next()
+			logger.debug('set_playback next %d of %d' % (self.get_current_playlist_playing_index() + 1, self.current_playlist_count()))
+			if self.get_current_playlist_playing_index() < self.current_playlist_count() - 1:
+				self.mpd_client.next()
 		elif play_status == 'previous':
-			self.mpd_client.previous()
+			logger.debug('set_playback previous %d of %d' % (self.get_current_playlist_playing_index() - 1, self.current_playlist_count()))
+			if self.get_current_playlist_playing_index() > 0:
+				self.mpd_client.previous()
 
 	def get_playback(self):
 		self.status_get()
@@ -491,6 +495,7 @@ class MPDController(object):
 			self.mpd_client.findadd('album', self.searching_album, tag_type, tag_name)
 		elif self.searching_artist != "" and self.searching_album != "":
 			self.mpd_client.findadd('artist', self.searching_artist, 'album', self.searching_album, tag_type, tag_name)
+		self.get_current_playlist()
 		if play:
 			self.play_playlist_item(i + 1)
 
