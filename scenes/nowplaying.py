@@ -212,7 +212,7 @@ class NowPlayingScene(PiScene):
 					print 'NowPlayingScene::on_mpd_update: \t volume: ' + str(mpd.volume)
 					self.controls.volume_slider.value = mpd.volume
 				elif event == 'player_control':
-					state = mpd.player_control_get()
+					state = mpd.get_playback()
 					play_btn = self.controls.buttons['play_pause']
 					print 'NowPlayingScene::on_mpd_update: \t state: ' + state
 					if play_btn.icon_class != 'play' and state == 'play':

@@ -20,6 +20,7 @@ class AlbumListScene(PiScene):
 		self.albums_view = self.make_scroll_view()
 		self.tracks_view = self.make_scroll_view()
 
+		self.playlist_btns = [self.new_playlist]
 		self.artist_btns = []#self.page_down]
 		self.album_btns = []#self.page_down]
 		self.track_btns = []#self.page_down]
@@ -36,6 +37,8 @@ class AlbumListScene(PiScene):
 
 		self.populate_artists_view()
 
+		self.main.add_child(self.new_playlist)
+		self.main.add_child(self.icon_playlist)
 		self.main.add_child(self.page_down)
 		self.main.add_child(self.icon_down)
 		self.main.add_child(self.page_up)
@@ -200,7 +203,6 @@ class AlbumListScene(PiScene):
 
 			self.reset_artists()
 
-
 		elif self.current_child == self.tracks_view:
 
 			self.main.rm_child(self.tracks_view)
@@ -253,25 +255,48 @@ class AlbumListScene(PiScene):
 	make_page_nav
 	"""
 	def make_page_nav(self):
-		btn_down = ui.Button(ui.Rect(0,
-									 0,
-									 self.main.frame.width - self.btn_size,
-									 self.btn_size),'Page Down',halign=ui.RIGHT,valign=ui.CENTER)
+		
+		btn_new_playlist = ui.Button(ui.Rect(
+			self.margins,
+			0,
+			75,
+			self.btn_size
+		), 'New')
+		
+		icon_new_playlist = ui.IconButton(ui.Rect(
+			75 + self.margins,
+			0,
+			self.btn_size,
+			self.btn_size
+		), 'list-alt')
+		
+		btn_down = ui.Button(ui.Rect(
+			self.main.frame.width / 2,
+			0,
+			120, #self.main.frame.width / 2 - self.btn_size,
+			self.btn_size
+			),'Down', halign=ui.RIGHT, valign=ui.CENTER)
 
-		icon_down = ui.IconButton(ui.Rect(self.main.frame.width - self.btn_size,
-										  0,
-										  self.btn_size,
-										  self.btn_size),'chevron-down')
+		icon_down = ui.IconButton(ui.Rect(
+			self.main.frame.width / 2 + 120,
+			0,
+			self.btn_size,
+			self.btn_size
+		),'chevron-down')
 
-		btn_up = ui.Button(ui.Rect(0,
-								   self.main.frame.height - self.btn_size - self.margins,
-								   self.main.frame.width - self.btn_size,
-								   self.btn_size),'Page Up',halign=ui.RIGHT,valign=ui.CENTER)
+		btn_up = ui.Button(ui.Rect(
+			self.main.frame.width - 120 - self.btn_size,
+			0, #self.main.frame.height - self.btn_size - self.margins,
+			120, #self.main.frame.width - self.btn_size,
+			self.btn_size
+		),'Up',halign=ui.RIGHT,valign=ui.CENTER)
 
-		icon_up = ui.IconButton(ui.Rect(self.main.frame.width - self.btn_size,
-										self.main.frame.height - self.btn_size - self.margins,
-										self.btn_size,
-										self.btn_size),'chevron-up')
+		icon_up = ui.IconButton(ui.Rect(
+			self.main.frame.width - self.btn_size, #self.main.frame.width - self.btn_size,
+			0, #self.main.frame.height - self.btn_size - self.margins,
+			self.btn_size,
+			self.btn_size
+		),'chevron-up')
 
 		btn_down.tag_name = 'Down'
 		btn_up.tag_name ='Up'
@@ -281,9 +306,11 @@ class AlbumListScene(PiScene):
 		btn_up.on_clicked.connect(self.on_page_nav_clicked)
 		icon_up.on_clicked.connect(self.on_page_nav_clicked)
 
-
+		btn_new_playlist.sibling = btn_down
 		btn_down.sibling = btn_up
 
+		self.new_playlist = btn_new_playlist
+		self.icon_playlist = icon_new_playlist
 		self.page_down = btn_down
 		self.icon_down = icon_down
 		self.page_up = btn_up
@@ -342,6 +369,8 @@ class AlbumListScene(PiScene):
 			self.activate_page_nav()
 		else:
 			self.deactivate_page_nav()
+			
+		self.artist_btns.insert(0,self.new_playlist)
 
 	"""
 	populate_albums_view
@@ -433,6 +462,8 @@ class AlbumListScene(PiScene):
 			self.activate_page_nav()
 		else:
 			self.deactivate_page_nav()
+			
+		self.album_btns.insert(0,self.new_playlist)
 
 	"""
 	populate_tracks_view
@@ -513,6 +544,8 @@ class AlbumListScene(PiScene):
 			self.activate_page_nav()
 		else:
 			self.deactivate_page_nav()
+			
+		self.track_btns.insert(0,self.new_playlist)
 
 	"""
 	on_artist_clicked
@@ -678,6 +711,7 @@ class AlbumListScene(PiScene):
 	activate_page_nav
 	"""
 	def activate_page_nav(self):
+		self.new_playlist.sibling = self.page_down
 		self.page_nav_active = True
 		self.page_down.state = 'normal'
 		self.page_up.state = 'normal'
@@ -688,6 +722,7 @@ class AlbumListScene(PiScene):
 	deactivate_page_nav
 	"""
 	def deactivate_page_nav(self):
+		self.new_playlist.sibling = False
 		self.page_nav_active = False
 		self.page_down.state = 'disabled'
 		self.page_up.state = 'disabled'
