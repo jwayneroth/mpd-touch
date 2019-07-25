@@ -445,7 +445,7 @@ class ControlsScene(PiScene):
 		f = open("/sys/class/backlight/rpi_backlight/brightness","w")
 		f.write(str(val))
 		f.close()
-
+		
 """
 def make_close_btn(self):
 		btn = ui.IconButton(

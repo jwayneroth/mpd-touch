@@ -35,7 +35,11 @@ class Fmulcd(object):
 	def __init__(self):
 		self.current = False
 		self.last = False
-		self.screen_dimensions = (800,480)
+		
+		screen_width = 800
+		screen_height = 480
+		
+		self.screen_dimensions = (screen_width, screen_height)
 		self.screen = False
 		self.ss_timer = 0
 		self.ss_timer_on = True
@@ -49,20 +53,27 @@ class Fmulcd(object):
 		fmutheme = Fmutheme()
 		ui.theme.use_theme(fmutheme)
 
-		rect = pygame.Rect((0,0),self.screen_dimensions)
+		rect = pygame.Rect((0,0), self.screen_dimensions)
+
+		dialog = pygame.Rect((50,50), (screen_width - 50, screen_height - 50))
 
 		self.scenes = {
 			'NowPlaying': NowPlayingScene(rect),
 			'Albums': AlbumListScene(rect),
 			'Radio': RadioScene(rect),
 			'Settings': SettingsScene(rect),
-			'Controls': ControlsScene(rect),
+			#'Controls': ControlsScene(rect),
 			'Screensaver': ScreensaverScene(rect)
 		}
-
+		
+		self.dialogs = {
+			'Controls': ControlsScene(dialog)
+		}
+		
 		for name,scene in self.scenes.iteritems():
 			scene.on_nav_change.connect(self.change_scene)
-
+			scene.open_dialog.connect(self.open_dialog)
+		
 		self.make_current_scene(self.scenes['NowPlaying'])
 
 		#self.ab = AnalogButtons()
@@ -117,6 +128,16 @@ class Fmulcd(object):
 		self.current = scene
 		self.current.entered()
 		self.current.refresh()
+
+	"""
+	open_dialog
+		add the requested dialog on top of the current scene
+	"""
+	def open_dialog(self, dialog_name):
+		if self.current: 
+			dialog = self.dialogs[dialog_name]
+			self.current.add_child(dialog)
+			dialog.focus()
 
 	"""
 	change_scene

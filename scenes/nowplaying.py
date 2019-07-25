@@ -168,6 +168,8 @@ class NowPlayingScene(PiScene):
 				track.frame.left = self.main.frame.right
 			track.updated = True
 
+			self.updated = True
+
 	"""
 	on_mpd_update
 	"""

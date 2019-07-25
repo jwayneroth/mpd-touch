@@ -40,8 +40,10 @@ import time
 
 from button import *
 from callback import *
+from dialog import *
 from imageview import *
 from label import *
+from modal import *
 from render import *
 from resource import *
 from scroll import *

@@ -26,6 +26,7 @@ class ScreensaverScene(PiScene):
         self.main = self.make_main()
         self.add_child(self.main)
         self.on_nav_change = callback.Signal()
+        self.open_dialog = callback.Signal()
         self.image_directory = 'images/'
         self.ss_size = 160
         self.ss = None

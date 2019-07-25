@@ -8,7 +8,7 @@ PiScene
  parent class for all fmulcd scenes
 """
 class PiScene(ui.Scene):
-	def __init__(self, frame=None, name='PiScene'):
+	def __init__(self, frame=None, name='PiScene', dialogs=None):
 
 		ui.Scene.__init__(self, frame)
 
@@ -28,6 +28,8 @@ class PiScene(ui.Scene):
 		self.sidebar_index = 0
 		self.active_sidebar_btn = 0
 
+		self.dialogs = dialogs
+		
 		self.sidebar = self.make_sidebar()
 		self.main = self.make_main()
 		#self.controls = self.make_controls()
@@ -36,7 +38,8 @@ class PiScene(ui.Scene):
 		self.add_child(self.main)
 
 		self.on_nav_change = callback.Signal()
-
+		self.open_dialog = callback.Signal()
+		
 	"""
 	make_sidebar
 	"""
@@ -132,7 +135,11 @@ class PiScene(ui.Scene):
 		btn.state = 'normal'
 		self.main_active = True
 		self.on_main_active()
-		self.on_nav_change(btn.tag_name)
+		
+		if btn.tag_name is 'Controls':
+			self.open_dialog(btn.tag_name)
+		else:
+			self.on_nav_change(btn.tag_name)
 
 	"""
 	key_down
