@@ -41,9 +41,12 @@ class NowPlayingScene(PiScene):
 	"""
 	def key_down(self, key, code):
 		ui.Scene.key_down(self,key,code)
-
-		if key == pygame.K_DOWN or key == pygame.K_UP or key == pygame.K_RETURN:
-			self.key_down_sidebar(key)
+		
+		if self.dialog is not None:
+			self.dialog.key_down(key, code)
+		else:
+			if key == pygame.K_DOWN or key == pygame.K_UP or key == pygame.K_RETURN:
+				self.key_down_sidebar(key)
 
 	"""
 	make_labels

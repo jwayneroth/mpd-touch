@@ -8,7 +8,7 @@ PiScene
  parent class for all fmulcd scenes
 """
 class PiScene(ui.Scene):
-	def __init__(self, frame=None, name='PiScene', dialogs=None):
+	def __init__(self, frame=None, name='PiScene'):
 
 		ui.Scene.__init__(self, frame)
 
@@ -27,8 +27,7 @@ class PiScene(ui.Scene):
 		self.main_active = False
 		self.sidebar_index = 0
 		self.active_sidebar_btn = 0
-
-		self.dialogs = dialogs
+		self.dialog = None
 		
 		self.sidebar = self.make_sidebar()
 		self.main = self.make_main()
@@ -132,13 +131,12 @@ class PiScene(ui.Scene):
 	sidebar_btn_clicked
 	"""
 	def sidebar_btn_clicked(self, btn, mouse_btn):
-		btn.state = 'normal'
-		self.main_active = True
-		self.on_main_active()
-		
 		if btn.tag_name is 'Controls':
 			self.open_dialog(btn.tag_name)
 		else:
+			btn.state = 'normal'
+			self.main_active = True
+			self.on_main_active()
 			self.on_nav_change(btn.tag_name)
 
 	"""
@@ -148,11 +146,14 @@ class PiScene(ui.Scene):
 		#print 'key_down key: ' + str(key) + ' code: ' + str(code)
 
 		ui.Scene.key_down(self,key,code)
-
-		if self.main_active == True:
-			self.key_down_main(key)
+		
+		if self.dialog is not None:
+			self.dialog.key_down(key, code)
 		else:
-			self.key_down_sidebar(key)
+			if self.main_active == True:
+				self.key_down_main(key)
+			else:
+				self.key_down_sidebar(key)
 
 	"""
 	key_down_main

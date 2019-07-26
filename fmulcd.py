@@ -55,7 +55,7 @@ class Fmulcd(object):
 
 		rect = pygame.Rect((0,0), self.screen_dimensions)
 
-		dialog = pygame.Rect((50,50), (screen_width - 50, screen_height - 50))
+		dialog = pygame.Rect((75,60), (screen_width - 150, screen_height - 120))
 
 		self.scenes = {
 			'NowPlaying': NowPlayingScene(rect),
@@ -67,13 +67,17 @@ class Fmulcd(object):
 		}
 		
 		self.dialogs = {
-			'Controls': ControlsScene(dialog)
+			'Controls': ControlsDialog(dialog),
+			'Brightness': BrightnessDialog(dialog)
 		}
 		
 		for name,scene in self.scenes.iteritems():
 			scene.on_nav_change.connect(self.change_scene)
 			scene.open_dialog.connect(self.open_dialog)
 		
+		for name,dialog in self.dialogs.iteritems():
+			dialog.on_dismissed.connect(self.dialog_dismissed)
+			
 		self.make_current_scene(self.scenes['NowPlaying'])
 
 		#self.ab = AnalogButtons()
@@ -137,8 +141,18 @@ class Fmulcd(object):
 		if self.current: 
 			dialog = self.dialogs[dialog_name]
 			self.current.add_child(dialog)
+			self.current.dialog = dialog
 			dialog.focus()
-
+	
+	"""
+	dialog_dismissed
+	"""
+	def dialog_dismissed(self):
+		logger.debug('fmulcd::dialog_dismissed')
+		if self.current:
+			self.current.dialog = None
+			self.current.layout()
+		
 	"""
 	change_scene
 	 called from a PiScene on_nav_change

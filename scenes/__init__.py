@@ -5,3 +5,5 @@ from nowplaying import *
 from radio import *
 from screensaver import *
 from settings import *
+from controlsdialog import *
+from brightnessdialog import *

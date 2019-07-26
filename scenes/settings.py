@@ -108,7 +108,8 @@ class SettingsScene(PiScene):
 			{ 'name':'restart', 'icon_class':'repeat', 'text':'Restart Player' },
 			{ 'name':'quit', 'icon_class':'remove', 'text':'Quit Player' },
 			{ 'name':'reboot', 'icon_class':'signal', 'text':'Restart Pi' },
-			{ 'name':'shutdown', 'icon_class':'off', 'text':'Shutdown' }
+			{ 'name':'shutdown', 'icon_class':'off', 'text':'Shutdown' },
+			{ 'name':'brightness', 'icon_class':'sunglasses', 'text':'Brightness' }
 		]
 
 		scr_y = 0
@@ -208,3 +209,5 @@ class SettingsScene(PiScene):
 				pygame.quit()
 				import sys
 				sys.exit(0)
+		elif btn.name == 'brightness':
+			self.open_dialog('Brightness')
