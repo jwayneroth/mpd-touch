@@ -405,3 +405,10 @@ NavIconButton
 class NavIconButton(IconButton):
 	def __init__(self, frame, icon_class='cd', caption=''):
 		IconButton.__init__(self, frame, icon_class, caption)
+		
+"""
+DialogButton
+"""
+class DialogButton(IconButton):
+	def __init__(self, frame, icon_class='cd', caption=''):
+		IconButton.__init__(self, frame, icon_class, caption)
