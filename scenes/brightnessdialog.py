@@ -149,7 +149,7 @@ class BrightnessDialog(PiDialogScene):
 		btn_x = panel.frame.width / 2 - self.btn_size * 1.5 - self.padding
 
 		for btn_class in btns:
-			btn = ui.NavIconButton( ui.Rect( btn_x, 0, self.btn_size, self.btn_size ), btn_class )
+			btn = ui.DialogButton( ui.Rect( btn_x, 0, self.btn_size, self.btn_size ), btn_class )
 			btn_x = btn_x + (self.btn_size + self.padding) * 2
 			btn.on_clicked.connect(self.on_button_click)
 			btn.tag_name = btn_class

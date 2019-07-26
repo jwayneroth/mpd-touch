@@ -19,22 +19,40 @@ class PiDialogScene(ui.Scene):
 		self.close_active = True
 		self.main_active = False
 		
+		overlay = self.make_overlay()
+		self.content = self.make_content()
 		self.close = self.make_close()
 		self.close.state = 'focused'
 		self.main = self.make_main()
-		
 		title = self.make_title()
 		
-		self.add_child(title)
-		self.add_child(self.close)
-		self.add_child(self.main)
+		self.add_child(overlay)
+		self.add_child(self.content)
+		
+		self.content.add_child(title)
+		self.content.add_child(self.close)
+		self.content.add_child(self.main)
+	
+	"""
+	make_overlay
+	"""
+	def make_overlay(self):
+		view = DialogOverlay(ui.Rect(0,0,self.frame.width,self.frame.height))
+		return view
+	
+	"""
+	make_content
+	"""
+	def make_content(self):
+		view = DialogContent(ui.Rect(75,60,self.frame.width-150,self.frame.height-120))
+		return view
 	
 	"""
 	make_title
 	"""
 	def make_title(self):
-		label = ui.HeadingOne(
-			ui.Rect(0, 0, self.main.frame.width, self.label_height),
+		label = ui.DialogLabel(
+			ui.Rect(0, 0, self.content.frame.width, self.label_height),
 			self.name,
 			halign=ui.CENTER
 		)
@@ -44,8 +62,8 @@ class PiDialogScene(ui.Scene):
 	make_close
 	"""
 	def make_close(self):
-		close = ui.NavIconButton(
-			ui.Rect(self.frame.width - self.btn_size,0,self.btn_size,self.btn_size,halign=ui.CENTER),
+		close = ui.DialogButton(
+			ui.Rect(self.content.frame.width - self.btn_size,0,self.btn_size,self.btn_size,halign=ui.CENTER),
 			'remove'
 		)
 		close.on_clicked.connect(self.dismiss)
@@ -60,8 +78,8 @@ class PiDialogScene(ui.Scene):
 			ui.Rect(
 				0,
 				self.label_height,
-				self.frame.width,
-				self.frame.height - self.label_height
+				self.content.frame.width,
+				self.content.frame.height - self.label_height
 			)
 		)
 		return main
@@ -150,7 +168,15 @@ class PiDialogScene(ui.Scene):
 	"""
 	dismiss
 	"""
-	def dismiss(self):
+	def dismiss(self, btn=None, mouse_btn=None):
 		self.rm()
 		ui.focus.set(None)
 		self.on_dismissed()
+		
+class DialogContent(ui.View):
+	def __init__(self, frame):
+		ui.View.__init__(self,frame)
+		
+class DialogOverlay(ui.View):
+	def __init__(self, frame):
+		ui.View.__init__(self,frame)

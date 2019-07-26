@@ -55,8 +55,6 @@ class Fmulcd(object):
 
 		rect = pygame.Rect((0,0), self.screen_dimensions)
 
-		dialog = pygame.Rect((75,60), (screen_width - 150, screen_height - 120))
-
 		self.scenes = {
 			'NowPlaying': NowPlayingScene(rect),
 			'Albums': AlbumListScene(rect),
@@ -67,8 +65,8 @@ class Fmulcd(object):
 		}
 		
 		self.dialogs = {
-			'Controls': ControlsDialog(dialog),
-			'Brightness': BrightnessDialog(dialog)
+			'Controls': ControlsDialog(rect),
+			'Brightness': BrightnessDialog(rect)
 		}
 		
 		for name,scene in self.scenes.iteritems():

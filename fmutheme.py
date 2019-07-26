@@ -19,7 +19,9 @@ class Fmutheme(ui.theme.Theme):
 		light_gray = fmuglobals.FMU_COLORS['light_gray']
 		dark_purple = fmuglobals.FMU_COLORS['dark_purple']
 		light_purple = fmuglobals.FMU_COLORS['light_purple']
-
+		grad_dark = fmuglobals.FMU_COLORS['grad_dark']
+		grad_light = fmuglobals.FMU_COLORS['grad_light']
+		
 		# View
 		self.set(class_name='View', state='normal', key='background_color', value=None)
 		self.set(class_name='View', state='focused', key='background_color', value=None)
@@ -52,7 +54,9 @@ class Fmutheme(ui.theme.Theme):
 		#HeadingOne
 		self.set(class_name='HeadingOne', state='normal', key='font', value=ui.resource.get_font(32, use_bold=True))
 		self.set(class_name='HeadingOne', state='normal', key='text_color', value=mid_gray)
-
+		
+		self.set(class_name='DialogLabel', state='normal', key='background_color', value=None)
+		
 		#Button
 		self.set(class_name='Button', state='normal', key='background_color', value=near_black)
 		self.set(class_name='Button', state='focused', key='background_color', value=near_black)
@@ -76,7 +80,12 @@ class Fmutheme(ui.theme.Theme):
 		self.set(class_name='IconButton', state='normal', key='font', value=ui.resource.get_font(fmuglobals.ICON_SIZE, use_bold=False, name='glyphicons-halflings-regular'))
 
 		self.set(class_name='NavIconButton', state='normal', key='font', value=ui.resource.get_font(fmuglobals.NAV_ICON_SIZE, use_bold=False, name='glyphicons-halflings-regular'))
-
+		
+		self.set(class_name='DialogButton', state='normal', key='font', value=ui.resource.get_font(fmuglobals.NAV_ICON_SIZE, use_bold=False, name='glyphicons-halflings-regular'))
+		self.set(class_name='DialogButton', state='focused', key='background_color', value=None)
+		self.set(class_name='DialogButton', state='selected', key='background_color', value=None)
+		self.set(class_name='DialogButton', state='normal', key='background_color', value=None)
+		
 		self.set(class_name='ImageButton', state='normal', key='background_color', value=None)
 		self.set(class_name='ImageButton', state='focused', key='background_color', value=None)
 		self.set(class_name='ImageButton', state='normal', key='border_color', value=None)
@@ -104,7 +113,7 @@ class Fmutheme(ui.theme.Theme):
 		self.set(class_name='SliderTrackView', state='normal', key='border_color', value=dark_purple)
 		self.set(class_name='SliderTrackView', state='focused', key='border_color', value=orange)
 
-		self.set(class_name='SliderView', state='normal', key='background_color', value=near_black)
+		self.set(class_name='SliderView', state='normal', key='background_color', value=None)
 		self.set(class_name='SliderView', state='normal', key='border_widths', value=None)
 
 		self.set(class_name='ImageView', state='normal', key='background_color', value=None)
@@ -157,6 +166,26 @@ class Fmutheme(ui.theme.Theme):
 
 		self.set(class_name='PiScene', state='normal', key='background_color', value=near_black)
 		
-		self.set(class_name='PiDialogScene', state='normal', key='background_color', value=near_black)
-		self.set(class_name='PiDialogScene', state='normal', key='border_widths', value=1)
+		self.set(class_name='DialogContent', state='normal', key='background_color', value=(grad_dark,grad_light))
+		self.set(class_name='DialogOverlay', state='normal', key='background_color', value=(12,5,0,50))
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
 		

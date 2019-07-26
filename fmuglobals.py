@@ -19,7 +19,9 @@ FMU_COLORS = {
 	'mid_gray':     (188,180,192),
 	'light_gray':   (180,140,190),
 	'dark_purple':  (60,50,65),
-	'light_purple': (124,100,118)
+	'light_purple': (124,100,118),
+	'grad_dark':    (20,15,2),
+	'grad_light':   (50,20,4)
 }
 
 current_cover_image = None

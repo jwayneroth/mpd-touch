@@ -19,7 +19,7 @@ class ControlsDialog(PiDialogScene):
 		self.play_modes = [["normal","unchecked"], ["single_repeat","expand"], ["repeat_all","repeat"], ["shuffle","random"]]
 		self.current_play_mode = 0;
 
-		self.buttons = {}
+		self.buttons = {} 
 
 		self.active_btn_index = 0
 		self.sibling_index = 0
@@ -207,7 +207,7 @@ class ControlsDialog(PiDialogScene):
 		btn_x = panel.frame.width / 2 - self.btn_size * 2 - self.padding * 1.5
 
 		for btn_data in btns:
-			btn = ui.NavIconButton( ui.Rect( btn_x, 0, self.btn_size, self.btn_size ), btn_data[1] )
+			btn = ui.DialogButton( ui.Rect( btn_x, 0, self.btn_size, self.btn_size ), btn_data[1] )
 			btn_x = btn_x + self.btn_size + self.padding
 			btn.on_clicked.connect(self.on_button_click)
 			btn.tag_name = btn_data[0]
@@ -236,7 +236,7 @@ class ControlsDialog(PiDialogScene):
 		btn_x = panel.frame.width / 2 - self.btn_size * 1.5 - self.padding
 
 		for btn_class in btns:
-			btn = ui.NavIconButton( ui.Rect( btn_x, 0, self.btn_size, self.btn_size ), btn_class )
+			btn = ui.DialogButton( ui.Rect( btn_x, 0, self.btn_size, self.btn_size ), btn_class )
 			btn_x = btn_x + self.btn_size + self.padding
 			btn.on_clicked.connect(self.on_button_click)
 			btn.tag_name = btn_class
@@ -253,7 +253,7 @@ class ControlsDialog(PiDialogScene):
 	"""
 	def make_volume_slider(self):
 
-		title = ui.HeadingOne(
+		title = ui.DialogLabel(
 			ui.Rect(
 				0,
 				self.top_panel.frame.bottom + self.padding,
@@ -266,7 +266,7 @@ class ControlsDialog(PiDialogScene):
 
 		self.main.add_child(title)
 
-		slider = ui.SliderView( ui.Rect( self.left_margin, title.frame.bottom + self.padding, self.main.frame.width - self.left_margin * 2, ui.SCROLLBAR_SIZE ), ui.HORIZONTAL, 0, 100, show_thumb=False )
+		slider = ui.SliderView( ui.Rect(self.left_margin, title.frame.bottom + self.padding, self.main.frame.width - self.left_margin * 2, ui.SCROLLBAR_SIZE ), ui.HORIZONTAL, 0, 100, show_thumb=False )
 		slider.on_value_changed.connect(self.volume_slider_changed)
 		slider.on_state_changed.connect(self.volume_slider_focused)
 		return slider

@@ -70,6 +70,8 @@ class View(object):
         self.on_parented = callback.Signal()
         self.on_orphaned = callback.Signal()
 
+        self.class_name = self.__class__
+        
     def layout(self):
         """Call to have the view layout itself.
 
