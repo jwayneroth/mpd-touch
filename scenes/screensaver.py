@@ -32,7 +32,8 @@ class ScreensaverScene(PiScene):
 		self.ss = None
 		self.vx = 0
 		self.vy = 0
-
+		self.dialog = None
+		
 		self.set_vels()
 
 		if os.path.dirname(__file__) != '':
