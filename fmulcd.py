@@ -35,10 +35,10 @@ class Fmulcd(object):
 	def __init__(self):
 		self.current = False
 		self.last = False
-		
+
 		screen_width = 800
 		screen_height = 480
-		
+
 		self.screen_dimensions = (screen_width, screen_height)
 		self.screen = False
 		self.ss_timer = 0
@@ -63,19 +63,19 @@ class Fmulcd(object):
 			#'Controls': ControlsScene(rect),
 			'Screensaver': ScreensaverScene(rect)
 		}
-		
+
 		self.dialogs = {
 			'Controls': ControlsDialog(rect),
 			'Brightness': BrightnessDialog(rect)
 		}
-		
+
 		for name,scene in self.scenes.iteritems():
 			scene.on_nav_change.connect(self.change_scene)
 			scene.open_dialog.connect(self.open_dialog)
-		
+
 		for name,dialog in self.dialogs.iteritems():
 			dialog.on_dismissed.connect(self.dialog_dismissed)
-			
+
 		self.make_current_scene(self.scenes['NowPlaying'])
 
 		#self.ab = AnalogButtons()
@@ -136,12 +136,13 @@ class Fmulcd(object):
 		add the requested dialog on top of the current scene
 	"""
 	def open_dialog(self, dialog_name):
-		if self.current: 
+		#logger.debug('fmulcd::open_dialog %s' % dialog_name)
+		if self.current:
 			dialog = self.dialogs[dialog_name]
 			self.current.add_child(dialog)
 			self.current.dialog = dialog
 			dialog.focus()
-	
+
 	"""
 	dialog_dismissed
 	"""
@@ -150,7 +151,7 @@ class Fmulcd(object):
 		if self.current:
 			self.current.dialog = None
 			self.current.layout()
-		
+
 	"""
 	change_scene
 	 called from a PiScene on_nav_change

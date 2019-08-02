@@ -28,7 +28,7 @@ class PiScene(ui.Scene):
 		self.sidebar_index = 0
 		self.active_sidebar_btn = 0
 		self.dialog = None
-		
+
 		self.sidebar = self.make_sidebar()
 		self.main = self.make_main()
 		#self.controls = self.make_controls()
@@ -38,7 +38,7 @@ class PiScene(ui.Scene):
 
 		self.on_nav_change = callback.Signal()
 		self.open_dialog = callback.Signal()
-		
+
 	"""
 	make_sidebar
 	"""
@@ -131,7 +131,8 @@ class PiScene(ui.Scene):
 	sidebar_btn_clicked
 	"""
 	def sidebar_btn_clicked(self, btn, mouse_btn):
-		if btn.tag_name is 'Controls':
+		#logger.debug('PiScene::sidebar_btn_clicked %s' % btn.tag_name)
+		if btn.tag_name == 'Controls':
 			self.open_dialog(btn.tag_name)
 		else:
 			btn.state = 'normal'
@@ -146,7 +147,7 @@ class PiScene(ui.Scene):
 		#print 'key_down key: ' + str(key) + ' code: ' + str(code)
 
 		ui.Scene.key_down(self,key,code)
-		
+
 		if self.dialog is not None:
 			self.dialog.key_down(key, code)
 		else:
