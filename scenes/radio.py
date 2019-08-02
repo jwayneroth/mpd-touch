@@ -16,7 +16,8 @@ class RadioScene(PiScene):
 		self.sidebar_index = 2
 		self.active_sidebar_btn = 2
 
-		self.make_page_nav()
+		page_nav = self.make_page_nav()
+		
 		self.page_nav_active = False
 
 		self.stations = [
@@ -35,23 +36,16 @@ class RadioScene(PiScene):
 
 		self.url_opener = urllib.FancyURLopener({})
 
-		self.streams_btn = ui.Button(ui.Rect(0,0,165,self.btn_size),'Streams',halign=ui.CENTER,valign=ui.CENTER)
-		self.archives_btn = ui.Button(ui.Rect(self.streams_btn.frame.right,0,165,self.btn_size),'Archives',halign=ui.CENTER,valign=ui.CENTER)
-
-		self.streams_btn.tag_name = 'Streams'
-		self.archives_btn.tag_name = 'Archive'
-
-		self.streams_btn.on_clicked.connect(self.on_submenu_btn_clicked)
-		self.archives_btn.on_clicked.connect(self.on_submenu_btn_clicked)
-
-		self.streams_btn.sibling = self.archives_btn
-
 		self.streams_view = self.make_scroll_view()
 		self.archives_view = self.make_scroll_view()
 
-		self.station_btns = []
-		self.archive_btns = []
-		self.child_btns = [ self.station_btns, self.archive_btns ]
+		self.station_btns = [page_nav]
+		self.archive_btns = [page_nav]
+		
+		self.child_view_btns = [
+			self.station_btns,
+			self.archive_btns
+		]
 
 		self.populate_streams_view()
 		self.populate_archives_view()
@@ -63,21 +57,46 @@ class RadioScene(PiScene):
 		self.main.add_child(self.page_up)
 		self.main.add_child(self.icon_up)
 		self.main.add_child(self.streams_view)
-
+		
+		# idx of active scroll view
 		self.current_child_index = 0
+		
+		# reference to active scroll view
 		self.current_child = self.streams_view
+		
+		# idx of active button row
+		self.active_btn_row = 0
+		
+		# idx of active button in active button row
 		self.active_btn_index = 0
+		
+		# reference to active button
 		self.active_btn = False
-		self.sibling_active = False
+
+	"""
+	update_btn_row
+	 update the active btn row idx and its reference for the active scroll view
+	"""
+	def update_btn_row(self, new_index):
+
+		self.active_btn_row = new_index
+		
+		self.active_btn_index = 0
+		
+		if self.current_child_index == 0:
+			self.artist_idx = new_index
+		elif self.current_child_index == 1:
+			self.album_idx = new_index
+		elif self.current_child_index == 2:
+			self.track_idx = new_index
 
 	"""
 	on_main_active
 	"""
 	def on_main_active(self):
-		self.active_btn_index = 0
-		self.active_btn = self.child_btns[self.current_child_index][0]
+		self.update_btn_row(0)
+		self.active_btn = self.child_view_btns[self.current_child_index][0][self.active_btn_index]
 		self.active_btn.state = 'focused'
-
 
 	"""
 	key_down_main
@@ -89,10 +108,18 @@ class RadioScene(PiScene):
 		#
 		if key == pygame.K_UP:
 
-			new_index = self.active_btn_index - 1
+			if self.active_btn_row == 0:
+				self.active_btn.state = 'normal'
+				self.main_active = False
+				self.active_sidebar_btn = 0
+				self.sidebar_btns[self.active_sidebar_btn].state = 'focused'
+				return
+				
+			new_index = self.active_btn_row - 1
 
 			self.active_btn.state = 'normal'
-			self.active_btn = self.child_btns[self.current_child_index][new_index]
+			
+			self.active_btn = self.child_view_btns[self.current_child_index][new_index][0]
 
 			btn_y = self.active_btn.frame.top
 			offset = self.current_child.content_view.frame.top
@@ -103,27 +130,25 @@ class RadioScene(PiScene):
 				self.current_child.do_scroll(pct, 'up')
 
 			self.active_btn.state = 'focused'
-			self.active_btn_index = new_index
-			self.sibling_active = False
+			self.update_btn_row(new_index)
 
 		#
 		# down
 		#
 		elif key == pygame.K_DOWN:
 
-			new_index = self.active_btn_index + 1
+			new_index = self.active_btn_row + 1
 
-			if new_index >= len(self.child_btns[self.current_child_index]):
+			if new_index >= len(self.child_view_btns[self.current_child_index]):
 				return
 
-			if new_index == 2 and self.current_child.scrolled:
+			if new_index == 1 and self.current_child.scrolled:
 				new_index = self.get_first_visible()
 
 			self.active_btn.state = 'normal'
-			self.active_btn = self.child_btns[self.current_child_index][new_index]
+			self.active_btn = self.child_view_btns[self.current_child_index][new_index][0]
 			self.active_btn.state = 'focused'
-			self.active_btn_index = new_index #self.update_active_idx(new_index)
-			self.sibling_active = False
+			self.update_btn_row(new_index)
 
 			btn_y = self.active_btn.frame.top + self.label_height
 			offset = self.current_child.content_view.frame.top
@@ -137,61 +162,44 @@ class RadioScene(PiScene):
 		# left
 		#
 		elif key == pygame.K_LEFT:
-			if self.active_btn_index == 0:
-				self.active_btn.state = 'normal'
-				self.main_active = False
-				self.active_sidebar_btn = 0
-				self.sidebar_btns[self.active_sidebar_btn].state = 'focused'
-				return
-			if self.sibling_active == True:
-				#focus to sibling
-				self.active_btn.state = 'normal'
-				self.active_btn = self.child_btns[self.current_child_index][self.active_btn_index]
-				self.active_btn.state = 'focused'
-				self.sibling_active = False
 
+			# if current button is not first in row, activate next button to the left
+			if self.active_btn_index > 0:
+				self.active_btn.state = 'normal'
+				self.active_btn_index = self.active_btn_index - 1
+				self.active_btn = self.child_view_btns[self.current_child_index][self.active_btn_row][self.active_btn_index]
+				self.active_btn.state = 'focused'
+
+			# current button is first in row
 			else:
-				if self.page_nav_active == False:
-					#focus to sidebar
+
+				# if current button is in first row, activate scene sidebar
+				if self.active_btn_row == 0:
 					self.active_btn.state = 'normal'
-					self.active_btn_index = 0
+					self.update_btn_row(0)
 					self.main_active = False
 					self.active_sidebar_btn = 0
 					self.sidebar_btns[self.active_sidebar_btn].state = 'focused'
+
+				# else activate view nav ( first button row )
 				else:
-					if self.active_btn_index > 1:
-						#focus to page nav
-						self.active_btn.state = 'normal'
-						self.active_btn_index = 1
-						self.active_btn = self.child_btns[self.current_child_index][self.active_btn_index]
-						self.active_btn.state = 'focused'
-						self.sibling_active = False
-					elif self.active_btn_index == 1:
-						#focus to streams / archives
-						self.active_btn.state = 'normal'
-						self.active_btn_index = 0
-						self.active_btn = self.child_btns[self.current_child_index][self.active_btn_index]
-						self.active_btn.state = 'focused'
-						self.sibling_active = False
-					elif self.active_btn_index == 0:
-						#focus to sidebar
-						self.active_btn.state = 'normal'
-						self.active_btn_index = 0
-						self.main_active = False
-						self.active_sidebar_btn = 0
-						self.sidebar_btns[self.active_sidebar_btn].state = 'focused'
+					self.active_btn.state = 'normal'
+					self.update_btn_row(0)
+					self.active_btn = self.child_view_btns[self.current_child_index][self.active_btn_row][self.active_btn_index]
+					self.active_btn.state = 'focused'
 		#
 		# right
 		#
 		elif key == pygame.K_RIGHT:
-			current_btn = self.child_btns[self.current_child_index][self.active_btn_index]
-			if self.sibling_active == False and current_btn.sibling != False :
-				current_btn.state = 'normal'
-				current_btn.sibling.state = 'focused'
 
-				self.active_btn = current_btn.sibling
-				self.sibling_active = True
+			# if there is another button in the row, activate it
+			new_index = self.active_btn_index + 1
 
+			if new_index < len(self.child_view_btns[self.current_child_index][self.active_btn_row]):
+				self.active_btn_index = new_index
+				self.active_btn.state = 'normal'
+				self.active_btn = self.child_view_btns[self.current_child_index][self.active_btn_row][self.active_btn_index]
+				self.active_btn.state = 'focused'
 
 		#
 		# return
@@ -216,6 +224,7 @@ class RadioScene(PiScene):
 		del self.station_btns[:]
 
 		scr_y = 0
+		
 		row_count = len(self.stations)
 
 		for station in self.stations:
@@ -226,14 +235,9 @@ class RadioScene(PiScene):
 			btn.on_clicked.connect(self.on_station_clicked)
 			btn.sibling = False
 
-			self.station_btns.append(btn)
-
-			#add_btn = ui.IconButton( ui.Rect(btn.frame.right + self.margins,scr_y,self.btn_size,self.btn_size), 'plus', 12 )
-			#add_btn.url = station['url']
-			#add_btn.on_clicked.connect(self.on_station_clicked)
+			self.station_btns.append([btn])
 
 			scroll_contents.add_child(btn)
-			#scroll_contents.add_child(add_btn)
 
 			scr_y = scr_y + self.label_height
 
@@ -242,11 +246,11 @@ class RadioScene(PiScene):
 		self.streams_view.update_content_view(scroll_contents)
 
 		if self.streams_view.scrollable:
-			self.station_btns.insert(0,self.page_down)
-			self.station_btns.insert(0,self.streams_btn)
 			self.activate_page_nav()
 		else:
 			self.deactivate_page_nav()
+
+		self.station_btns.insert(0, [self.streams_btn, self.archives_btn, self.page_down, self.page_up])
 
 	"""
 	populate_archives_view
@@ -286,7 +290,7 @@ class RadioScene(PiScene):
 
 		del self.archive_btns[:]
 
-		self.archive_btns.append(refresh_btn)
+		self.archive_btns.append([refresh_btn])
 
 		scr_y = self.btn_size + self.margins
 		row_count = len(archives)
@@ -304,7 +308,7 @@ class RadioScene(PiScene):
 			btn.on_clicked.connect(self.on_archive_clicked)
 			btn.sibling = False
 
-			self.archive_btns.append(btn)
+			self.archive_btns.append([btn])
 
 			scroll_contents.add_child(btn)
 
@@ -315,11 +319,11 @@ class RadioScene(PiScene):
 		self.archives_view.update_content_view(scroll_contents)
 
 		if self.archives_view.scrollable:
-			self.archive_btns.insert(0,self.page_down)
-			self.archive_btns.insert(0,self.streams_btn)
 			self.activate_page_nav()
 		else:
 			self.deactivate_page_nav()
+
+		self.archive_btns.insert(0, [self.streams_btn, self.archives_btn, self.page_down, self.page_up])
 
 	"""
 	filter_stream_name
@@ -344,6 +348,7 @@ class RadioScene(PiScene):
 	def on_station_clicked(self, btn, mouse_btn):
 
 		self.deselect_all(self.station_btns)
+		
 		btn.state = 'selected'
 
 		mpd.radio_station_start(btn.url)
@@ -378,6 +383,8 @@ class RadioScene(PiScene):
 	on_submenu_btn_clicked
 	"""
 	def on_submenu_btn_clicked(self, btn, mouse_btn):
+
+		
 		if btn.tag_name == 'Streams':
 			self.main.rm_child(self.archives_view)
 			self.main.add_child(self.streams_view)
@@ -394,8 +401,9 @@ class RadioScene(PiScene):
 			self.streams_btn.state = 'normal'
 			self.current_child_index = 1
 
+		self.update_btn_row(0)
 		self.active_btn_index = 0
-		self.active_btn = self.child_btns[self.current_child_index][self.active_btn_index]
+		self.active_btn = self.child_view_btns[self.current_child_index][0][self.active_btn_index]
 		self.active_btn.state = 'focused'
 
 	"""
@@ -411,15 +419,15 @@ class RadioScene(PiScene):
 		scroll_list = ui.ScrollList(
 			ui.Rect(
 				0,
-				self.btn_size * 2,
+				self.btn_size,
 				self.main.frame.width - ui.SCROLLBAR_SIZE,
-				self.main.frame.height - self.btn_size - self.btn_size - self.btn_size - self.margins * 2 - 10
+				self.main.frame.height - self.btn_size - self.margins - 10
 			),
 			ui.Rect(
 				0,
 				0,
 				self.main.frame.width - ui.SCROLLBAR_SIZE - self.margins,
-				self.main.frame.height-self.btn_size-self.btn_size
+				self.main.frame.height-self.btn_size
 			)
 		)
 		return scroll_list
@@ -428,45 +436,72 @@ class RadioScene(PiScene):
 	make_page_nav
 	"""
 	def make_page_nav(self):
-		btn_down = ui.Button(
-			ui.Rect(0, self.btn_size, self.main.frame.width - self.btn_size, self.btn_size),
-			'Page Down',
-			halign=ui.RIGHT,
-			valign=ui.CENTER
-		)
+		
+		streams_btn = ui.Button(ui.Rect(
+			0,
+			0,
+			165,
+			self.btn_size
+		),'Streams',halign=ui.CENTER,valign=ui.CENTER)
+		
+		archives_btn = ui.Button(ui.Rect(
+			streams_btn.frame.right,
+			0,
+			165,
+			self.btn_size
+		),'Archives',halign=ui.CENTER,valign=ui.CENTER)
+		
+		btn_down = ui.Button(ui.Rect(
+			self.main.frame.width / 2,
+			0,
+			120,
+			self.btn_size
+			),'Down', halign=ui.RIGHT, valign=ui.CENTER)
 
-		icon_down = ui.IconButton(
-			ui.Rect(self.main.frame.width - self.btn_size, self.btn_size, self.btn_size, self.btn_size),
-			'chevron-down'
-		)
+		icon_down = ui.IconButton(ui.Rect(
+			self.main.frame.width / 2 + 120,
+			0,
+			self.btn_size,
+			self.btn_size
+		),'chevron-down')
 
-		btn_up = ui.Button(
-			ui.Rect(0, self.main.frame.height - self.btn_size - self.margins, self.main.frame.width - self.btn_size, self.btn_size),
-			'Page Up',
-			halign=ui.RIGHT,
-			valign=ui.CENTER
-		)
+		btn_up = ui.Button(ui.Rect(
+			self.main.frame.width - 120 - self.btn_size,
+			0,
+			120,
+			self.btn_size
+		),'Up',halign=ui.RIGHT,valign=ui.CENTER)
 
-		icon_up = ui.IconButton(
-			ui.Rect(self.main.frame.width - self.btn_size, self.main.frame.height - self.btn_size- self.margins, self.btn_size, self.btn_size),
-			'chevron-up'
-		)
-
+		icon_up = ui.IconButton(ui.Rect(
+			self.main.frame.width - self.btn_size,
+			0,
+			self.btn_size,
+			self.btn_size
+		),'chevron-up')
+		
+		streams_btn.tag_name = 'Streams'
+		archives_btn.tag_name = 'Archive'
 		btn_down.tag_name = 'Down'
 		btn_up.tag_name ='Up'
-
+		
+		streams_btn.on_clicked.connect(self.on_submenu_btn_clicked)
+		archives_btn.on_clicked.connect(self.on_submenu_btn_clicked)
 		btn_down.on_clicked.connect(self.on_page_nav_clicked)
 		icon_down.on_clicked.connect(self.on_page_nav_clicked)
 		btn_up.on_clicked.connect(self.on_page_nav_clicked)
 		icon_up.on_clicked.connect(self.on_page_nav_clicked)
 
 		btn_down.sibling = btn_up
-
+		
+		self.streams_btn = streams_btn
+		self.archives_btn = archives_btn
 		self.page_down = btn_down
 		self.icon_down = icon_down
 		self.page_up = btn_up
 		self.icon_up = icon_up
 
+		return [streams_btn, archives_btn, btn_down, btn_up]
+		
 	"""
 	check_scroll_active
 	"""
@@ -500,9 +535,14 @@ class RadioScene(PiScene):
 	on_page_nav_clicked
 	"""
 	def on_page_nav_clicked(self, btn, mouse_btn):
+		
 		idx = 1
+		
 		if btn == self.page_down or btn == self.icon_down:
-			for button in self.child_btns[self.current_child_index][idx:]:
+			for buttons in self.child_view_btns[self.current_child_index][idx:]:
+
+				button = buttons[0]
+				
 				btn_y = button.frame.top + self.label_height
 				offset = self.current_child.content_view.frame.top
 				btn_vy = btn_y + offset
@@ -515,7 +555,10 @@ class RadioScene(PiScene):
 				idx += 1
 
 		else:
-			for button in self.child_btns[self.current_child_index][idx:]:
+			for buttons in self.child_view_btns[self.current_child_index][idx:]:
+				
+				button = buttons[0]
+
 				btn_y = button.frame.top + self.label_height
 				offset = self.current_child.content_view.frame.top
 				btn_vy = btn_y + offset
@@ -531,8 +574,9 @@ class RadioScene(PiScene):
 	get_first_visible
 	"""
 	def get_first_visible(self):
-		idx = 2
-		for button in self.child_btns[self.current_child_index][idx:]:
+		idx = 1
+		for buttons in self.child_view_btns[self.current_child_index][idx:]:
+			button = buttons[0]
 			btn_y = button.frame.top + self.label_height / 2
 			offset = self.current_child.content_view.frame.top
 			btn_vy = btn_y + offset
@@ -544,5 +588,6 @@ class RadioScene(PiScene):
 	deselect_all
 	"""
 	def deselect_all(self, btn_list):
-		for btn in btn_list:
-			btn.state = 'normal'
+		for btn_row in btn_list:
+			for btn in btn_row:
+				btn.state = 'normal'

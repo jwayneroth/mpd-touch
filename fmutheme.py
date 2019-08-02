@@ -130,10 +130,10 @@ class Fmutheme(ui.theme.Theme):
 		self.set(class_name='DialogView', state='normal', key='background_color', value=None)
 		self.set(class_name='DialogView', state='normal', key='shadowed', value=False)
 
-		self.set(class_name='DialogContent', state='normal', key='background_color', value=(32,27,29,200))
-		self.set(class_name='DialogContent', state='normal', key='border_color', value=(30,30,30))
-		self.set(class_name='DialogContent', state='normal', key='border_widths', value=1)
-
+		self.set(class_name='DialogContent', state='normal', key='border_color', value=light_purple)
+		self.set(class_name='DialogContent', state='normal', key='border_widths', value=2)
+		self.set(class_name='DialogContent', state='normal', key='background_color', value=(grad_dark,grad_light))
+		
 		self.shadow_size = 140
 
 		self.set(class_name='AlertView', state='normal', key='title_label.background_color', value=None)
@@ -165,12 +165,6 @@ class Fmutheme(ui.theme.Theme):
 		self.set(class_name='GridView', state='normal', key='line_color', value=light_gray)
 
 		self.set(class_name='PiScene', state='normal', key='background_color', value=near_black)
-		
-		self.set(class_name='DialogContent', state='normal', key='background_color', value=(grad_dark,grad_light))
-		self.set(class_name='DialogOverlay', state='normal', key='background_color', value=(12,5,0,50))
-		#self.set(class_name='DialogOverlay', state='normal', key='shadowed', value=True)
-		
-		
 		
 		
 		
