@@ -2,23 +2,21 @@ import feedparser
 import re
 import urllib
 
-from piscene import *
+from piscrollscene import *
 
 """
 RadioScene
  radio options, playback controls
 """
-class RadioScene(PiScene):
+class RadioScene(PiScrollScene):
 	def __init__(self, frame):
 
-		PiScene.__init__(self, frame, 'Radio')
+		PiScrollScene.__init__(self, frame, 'Radio')
 
 		self.sidebar_index = 2
 		self.active_sidebar_btn = 2
 
 		page_nav = self.make_page_nav()
-		
-		self.page_nav_active = False
 
 		self.stations = [
 			{'title':'WFMU','url':'http://stream0.wfmu.org/freeform-128k'},
@@ -58,155 +56,15 @@ class RadioScene(PiScene):
 		self.main.add_child(self.icon_up)
 		self.main.add_child(self.streams_view)
 		
-		# idx of active scroll view
-		self.current_child_index = 0
-		
-		# reference to active scroll view
 		self.current_child = self.streams_view
-		
-		# idx of active button row
-		self.active_btn_row = 0
-		
-		# idx of active button in active button row
-		self.active_btn_index = 0
-		
-		# reference to active button
-		self.active_btn = False
 
 	"""
 	update_btn_row
 	 update the active btn row idx and its reference for the active scroll view
 	"""
 	def update_btn_row(self, new_index):
-
 		self.active_btn_row = new_index
-		
 		self.active_btn_index = 0
-		
-		if self.current_child_index == 0:
-			self.artist_idx = new_index
-		elif self.current_child_index == 1:
-			self.album_idx = new_index
-		elif self.current_child_index == 2:
-			self.track_idx = new_index
-
-	"""
-	on_main_active
-	"""
-	def on_main_active(self):
-		self.update_btn_row(0)
-		self.active_btn = self.child_view_btns[self.current_child_index][0][self.active_btn_index]
-		self.active_btn.state = 'focused'
-
-	"""
-	key_down_main
-	"""
-	def key_down_main(self, key):
-
-		#
-		# up
-		#
-		if key == pygame.K_UP:
-
-			if self.active_btn_row == 0:
-				self.active_btn.state = 'normal'
-				self.main_active = False
-				self.active_sidebar_btn = 0
-				self.sidebar_btns[self.active_sidebar_btn].state = 'focused'
-				return
-				
-			new_index = self.active_btn_row - 1
-
-			self.active_btn.state = 'normal'
-			
-			self.active_btn = self.child_view_btns[self.current_child_index][new_index][0]
-
-			btn_y = self.active_btn.frame.top
-			offset = self.current_child.content_view.frame.top
-			btn_vy = btn_y + offset
-
-			if btn_vy < 0:
-				pct = (self.current_child.frame.height - self.label_height) / float(self.current_child.content_view.frame.h)
-				self.current_child.do_scroll(pct, 'up')
-
-			self.active_btn.state = 'focused'
-			self.update_btn_row(new_index)
-
-		#
-		# down
-		#
-		elif key == pygame.K_DOWN:
-
-			new_index = self.active_btn_row + 1
-
-			if new_index >= len(self.child_view_btns[self.current_child_index]):
-				return
-
-			if new_index == 1 and self.current_child.scrolled:
-				new_index = self.get_first_visible()
-
-			self.active_btn.state = 'normal'
-			self.active_btn = self.child_view_btns[self.current_child_index][new_index][0]
-			self.active_btn.state = 'focused'
-			self.update_btn_row(new_index)
-
-			btn_y = self.active_btn.frame.top + self.label_height
-			offset = self.current_child.content_view.frame.top
-			btn_vy = btn_y + offset
-
-			if btn_vy > self.current_child.frame.height:
-				pct = (self.current_child.frame.height - self.label_height) / float(self.current_child.content_view.frame.h)
-				self.current_child.do_scroll(pct, 'down')
-
-		#
-		# left
-		#
-		elif key == pygame.K_LEFT:
-
-			# if current button is not first in row, activate next button to the left
-			if self.active_btn_index > 0:
-				self.active_btn.state = 'normal'
-				self.active_btn_index = self.active_btn_index - 1
-				self.active_btn = self.child_view_btns[self.current_child_index][self.active_btn_row][self.active_btn_index]
-				self.active_btn.state = 'focused'
-
-			# current button is first in row
-			else:
-
-				# if current button is in first row, activate scene sidebar
-				if self.active_btn_row == 0:
-					self.active_btn.state = 'normal'
-					self.update_btn_row(0)
-					self.main_active = False
-					self.active_sidebar_btn = 0
-					self.sidebar_btns[self.active_sidebar_btn].state = 'focused'
-
-				# else activate view nav ( first button row )
-				else:
-					self.active_btn.state = 'normal'
-					self.update_btn_row(0)
-					self.active_btn = self.child_view_btns[self.current_child_index][self.active_btn_row][self.active_btn_index]
-					self.active_btn.state = 'focused'
-		#
-		# right
-		#
-		elif key == pygame.K_RIGHT:
-
-			# if there is another button in the row, activate it
-			new_index = self.active_btn_index + 1
-
-			if new_index < len(self.child_view_btns[self.current_child_index][self.active_btn_row]):
-				self.active_btn_index = new_index
-				self.active_btn.state = 'normal'
-				self.active_btn = self.child_view_btns[self.current_child_index][self.active_btn_row][self.active_btn_index]
-				self.active_btn.state = 'focused'
-
-		#
-		# return
-		#
-		elif key == pygame.K_RETURN:
-
-			self.active_btn.on_clicked(self.active_btn, False)
 
 	"""
 	populate_streams_view
@@ -413,181 +271,35 @@ class RadioScene(PiScene):
 		self.populate_archives_view()
 
 	"""
-	make_scroll_view
-	"""
-	def make_scroll_view(self):
-		scroll_list = ui.ScrollList(
-			ui.Rect(
-				0,
-				self.btn_size,
-				self.main.frame.width - ui.SCROLLBAR_SIZE,
-				self.main.frame.height - self.btn_size - self.margins - 10
-			),
-			ui.Rect(
-				0,
-				0,
-				self.main.frame.width - ui.SCROLLBAR_SIZE - self.margins,
-				self.main.frame.height-self.btn_size
-			)
-		)
-		return scroll_list
-
-	"""
 	make_page_nav
 	"""
 	def make_page_nav(self):
-		
+
+		page_nav = PiScrollScene.make_page_nav(self)
+
 		streams_btn = ui.Button(ui.Rect(
 			0,
 			0,
 			165,
 			self.btn_size
 		),'Streams',halign=ui.CENTER,valign=ui.CENTER)
-		
+
 		archives_btn = ui.Button(ui.Rect(
 			streams_btn.frame.right,
 			0,
 			165,
 			self.btn_size
 		),'Archives',halign=ui.CENTER,valign=ui.CENTER)
-		
-		btn_down = ui.Button(ui.Rect(
-			self.main.frame.width / 2,
-			0,
-			120,
-			self.btn_size
-			),'Down', halign=ui.RIGHT, valign=ui.CENTER)
 
-		icon_down = ui.IconButton(ui.Rect(
-			self.main.frame.width / 2 + 120,
-			0,
-			self.btn_size,
-			self.btn_size
-		),'chevron-down')
-
-		btn_up = ui.Button(ui.Rect(
-			self.main.frame.width - 120 - self.btn_size,
-			0,
-			120,
-			self.btn_size
-		),'Up',halign=ui.RIGHT,valign=ui.CENTER)
-
-		icon_up = ui.IconButton(ui.Rect(
-			self.main.frame.width - self.btn_size,
-			0,
-			self.btn_size,
-			self.btn_size
-		),'chevron-up')
-		
 		streams_btn.tag_name = 'Streams'
 		archives_btn.tag_name = 'Archive'
-		btn_down.tag_name = 'Down'
-		btn_up.tag_name ='Up'
-		
+
 		streams_btn.on_clicked.connect(self.on_submenu_btn_clicked)
 		archives_btn.on_clicked.connect(self.on_submenu_btn_clicked)
-		btn_down.on_clicked.connect(self.on_page_nav_clicked)
-		icon_down.on_clicked.connect(self.on_page_nav_clicked)
-		btn_up.on_clicked.connect(self.on_page_nav_clicked)
-		icon_up.on_clicked.connect(self.on_page_nav_clicked)
 
-		btn_down.sibling = btn_up
-		
 		self.streams_btn = streams_btn
 		self.archives_btn = archives_btn
-		self.page_down = btn_down
-		self.icon_down = icon_down
-		self.page_up = btn_up
-		self.icon_up = icon_up
-
-		return [streams_btn, archives_btn, btn_down, btn_up]
 		
-	"""
-	check_scroll_active
-	"""
-	def check_scroll_active(self):
-		if self.current_child.scrollable:
-			self.activate_page_nav()
-		else:
-			self.deactivate_page_nav()
-
-	"""
-	activate_page_nav
-	"""
-	def activate_page_nav(self):
-		self.page_nav_active = True
-		self.page_down.state = 'normal'
-		self.page_up.state = 'normal'
-		self.icon_down.state = 'normal'
-		self.icon_up.state = 'normal'
-
-	"""
-	deactivate_page_nav
-	"""
-	def deactivate_page_nav(self):
-		self.page_nav_active = False
-		self.page_down.state = 'disabled'
-		self.page_up.state = 'disabled'
-		self.icon_down.state = 'disabled'
-		self.icon_up.state = 'disabled'
-
-	"""
-	on_page_nav_clicked
-	"""
-	def on_page_nav_clicked(self, btn, mouse_btn):
+		page_nav.extend([streams_btn, archives_btn])
 		
-		idx = 1
-		
-		if btn == self.page_down or btn == self.icon_down:
-			for buttons in self.child_view_btns[self.current_child_index][idx:]:
-
-				button = buttons[0]
-				
-				btn_y = button.frame.top + self.label_height
-				offset = self.current_child.content_view.frame.top
-				btn_vy = btn_y + offset
-
-				if btn_vy > self.current_child.frame.height:
-					pct = (self.current_child.frame.height - self.label_height) / float(self.current_child.content_view.frame.h)
-					self.current_child.do_scroll(pct, 'down')
-					break
-
-				idx += 1
-
-		else:
-			for buttons in self.child_view_btns[self.current_child_index][idx:]:
-				
-				button = buttons[0]
-
-				btn_y = button.frame.top + self.label_height
-				offset = self.current_child.content_view.frame.top
-				btn_vy = btn_y + offset
-
-				if btn_vy < 0:
-					pct = (self.current_child.frame.height - self.label_height) / float(self.current_child.content_view.frame.h)
-					self.current_child.do_scroll(pct, 'up')
-					break
-
-				idx += 1
-
-	"""
-	get_first_visible
-	"""
-	def get_first_visible(self):
-		idx = 1
-		for buttons in self.child_view_btns[self.current_child_index][idx:]:
-			button = buttons[0]
-			btn_y = button.frame.top + self.label_height / 2
-			offset = self.current_child.content_view.frame.top
-			btn_vy = btn_y + offset
-			if btn_vy > 0:
-				return idx
-			idx += 1
-
-	"""
-	deselect_all
-	"""
-	def deselect_all(self, btn_list):
-		for btn_row in btn_list:
-			for btn in btn_row:
-				btn.state = 'normal'
+		return page_nav
