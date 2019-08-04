@@ -41,7 +41,7 @@ class NowPlayingScene(PiScene):
 	"""
 	def key_down(self, key, code):
 		ui.Scene.key_down(self,key,code)
-		
+
 		if self.dialog is not None:
 			self.dialog.key_down(key, code)
 		else:
@@ -98,8 +98,6 @@ class NowPlayingScene(PiScene):
 	def entered(self):
 
 		PiScene.entered(self)
-
-		self.active_sibar_btn = 0
 
 		playing = mpd.now_playing
 

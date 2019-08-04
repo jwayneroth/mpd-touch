@@ -132,6 +132,7 @@ class PiScene(ui.Scene):
 	"""
 	def sidebar_btn_clicked(self, btn, mouse_btn):
 		#logger.debug('PiScene::sidebar_btn_clicked %s' % btn.tag_name)
+
 		if btn.tag_name == 'Controls':
 			self.open_dialog(btn.tag_name)
 		else:
@@ -211,7 +212,10 @@ class PiScene(ui.Scene):
 	refresh
 	"""
 	def refresh(self):
-		self.active_sidebar_btn = self.sidebar_index
+		if self.active_sidebar_btn != self.sidebar_index:
+			self.sidebar_btns[self.active_sidebar_btn].state = 'normal'
+			self.active_sidebar_btn = self.sidebar_index
+			self.sidebar_btns[self.active_sidebar_btn].state = 'focused'
 		self.main_active = True
 		self.on_main_active()
 
