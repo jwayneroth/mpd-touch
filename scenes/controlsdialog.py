@@ -19,7 +19,7 @@ class ControlsDialog(PiDialogScene):
 		self.play_modes = [["normal","unchecked"], ["single_repeat","expand"], ["repeat_all","repeat"], ["shuffle","random"]]
 		self.current_play_mode = 0;
 
-		self.buttons = {} 
+		self.buttons = {}
 
 		self.active_btn_index = 0
 		self.sibling_index = 0
@@ -299,11 +299,10 @@ class ControlsDialog(PiDialogScene):
 			if mpd.get_playback() == 'play':
 				mpd.set_playback('pause')
 				btn.icon_class = 'pause'
-				btn.stylize()
 			else:
 				mpd.set_playback('play')
 				btn.icon_class = 'play'
-				btn.stylize()
+			self.stylize()
 		elif tag_name == 'volume-off':
 			self.volume_slider.value = 0
 		elif tag_name == 'volume-down':
@@ -319,7 +318,7 @@ class ControlsDialog(PiDialogScene):
 			if self.current_play_mode > len(self.play_modes) - 1:
 				self.current_play_mode = 0
 			btn.icon_class = self.play_modes[self.current_play_mode][1]
-			btn.stylize()
+			self.stylize()
 			play_mode = self.play_modes[self.current_play_mode][0]
 			if play_mode == "normal":
 				mpd.mpd_client.random(0)
