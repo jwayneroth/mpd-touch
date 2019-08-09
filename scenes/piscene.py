@@ -177,7 +177,13 @@ class PiScene(ui.Scene):
 				else:
 					self.sidebar_btns[self.active_sidebar_btn].state = 'normal'
 				self.active_sidebar_btn = self.active_sidebar_btn - 1
-				self.sidebar_btns[self.active_sidebar_btn].state = 'focused'
+			else:
+				if self.sidebar_btns[self.active_sidebar_btn].tag_name == self.name:
+					self.sidebar_btns[self.active_sidebar_btn].state = 'selected'
+				else:
+					self.sidebar_btns[self.active_sidebar_btn].state = 'normal'
+				self.active_sidebar_btn = len(self.sidebar_btns) - 1
+			self.sidebar_btns[self.active_sidebar_btn].state = 'focused'
 
 		elif key == pygame.K_DOWN:
 			if self.active_sidebar_btn < (len(self.sidebar_btns) - 1):
@@ -186,7 +192,14 @@ class PiScene(ui.Scene):
 				else:
 					self.sidebar_btns[self.active_sidebar_btn].state = 'normal'
 				self.active_sidebar_btn = self.active_sidebar_btn + 1
-				self.sidebar_btns[self.active_sidebar_btn].state = 'focused'
+			else:
+				if self.sidebar_btns[self.active_sidebar_btn].tag_name == self.name:
+					self.sidebar_btns[self.active_sidebar_btn].state = 'selected'
+				else:
+					self.sidebar_btns[self.active_sidebar_btn].state = 'normal'
+				self.active_sidebar_btn = 0
+			self.sidebar_btns[self.active_sidebar_btn].state = 'focused'
+
 
 		elif key == pygame.K_LEFT:
 			pass
