@@ -8,7 +8,7 @@ from pidialogscene import *
 class ControlsDialog(PiDialogScene):
 	def __init__(self, frame=None):
 
-		PiDialogScene.__init__(self, frame, 'Controls')
+		PiDialogScene.__init__(self, frame, 'Volume')
 
 		self.is_mpd_listener = True
 
@@ -25,19 +25,19 @@ class ControlsDialog(PiDialogScene):
 		self.sibling_index = 0
 		self.active_btn = False
 
-		self.top_panel = self.make_top_panel()
 		self.volume_slider = self.make_volume_slider()
 		self.volume_panel = self.make_volume_panel()
+		self.controls_panel = self.make_controls_panel()
 
 		self.btns = [
-			[ self.buttons['play_pause'], self.buttons['prev'], self.buttons['next'], self.buttons['play_mode'] ],
 			[ self.volume_slider ],
 			[ self.buttons['volume-off'], self.buttons['volume-down'], self.buttons['volume-up'] ],
+			[ self.buttons['play_pause'], self.buttons['prev'], self.buttons['next'], self.buttons['play_mode'] ],
 		]
 
 		self.volume_slider.value = mpd.volume
 
-		self.main.add_child(self.top_panel)
+		self.main.add_child(self.controls_panel)
 		self.main.add_child(self.volume_slider)
 		self.main.add_child(self.volume_panel)
 
@@ -186,9 +186,22 @@ class ControlsDialog(PiDialogScene):
 				break
 
 	"""
-	make_top_panel
+	make_controls_panel
 	"""
-	def make_top_panel(self):
+	def make_controls_panel(self):
+
+		title = ui.DialogLabel(
+			ui.Rect(
+				0,
+				self.volume_panel.frame.bottom + self.padding,
+				self.main.frame.width,
+				self.label_height
+			),
+			'Controls',
+			halign=ui.CENTER
+		)
+
+		self.main.add_child(title)
 
 		btns = [
 			('play_pause',mpd.get_playback()),
@@ -199,7 +212,7 @@ class ControlsDialog(PiDialogScene):
 
 		panel = ui.View(ui.Rect(
 			self.padding,
-			self.padding + 10,
+			title.frame.bottom + self.padding,
 			self.main.frame.width - self.padding * 2,
 			self.btn_size
 		))
@@ -228,7 +241,7 @@ class ControlsDialog(PiDialogScene):
 
 		panel = ui.View(ui.Rect(
 			self.padding,
-			self.volume_slider.frame.bottom + self.padding, #self.padding * 3 + self.btn_size + self.volume_slider.frame.height,
+			self.volume_slider.frame.bottom + self.padding,
 			self.main.frame.width - self.padding * 2,
 			self.btn_size
 		))
@@ -252,21 +265,7 @@ class ControlsDialog(PiDialogScene):
 	make_volume_slider
 	"""
 	def make_volume_slider(self):
-
-		title = ui.DialogLabel(
-			ui.Rect(
-				0,
-				self.top_panel.frame.bottom + self.padding,
-				self.main.frame.width,
-				self.label_height
-			),
-			'Volume',
-			halign=ui.CENTER
-		)
-
-		self.main.add_child(title)
-
-		slider = ui.SliderView( ui.Rect(self.left_margin, title.frame.bottom + self.padding, self.main.frame.width - self.left_margin * 2, ui.SCROLLBAR_SIZE ), ui.HORIZONTAL, 0, 100, show_thumb=False )
+		slider = ui.SliderView( ui.Rect(self.left_margin, self.padding + 10, self.main.frame.width - self.left_margin * 2, ui.SCROLLBAR_SIZE ), ui.HORIZONTAL, 0, 100, show_thumb=False )
 		slider.on_value_changed.connect(self.volume_slider_changed)
 		slider.on_state_changed.connect(self.volume_slider_focused)
 		return slider

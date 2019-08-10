@@ -6,9 +6,9 @@ class PiDialogScene(ui.Scene):
 	def __init__(self, frame=None, name='PiDialog'):
 
 		ui.Scene.__init__(self, frame)
-		
+
 		self.on_dismissed = callback.Signal()
-		
+
 		self.name = name
 		self.margins = 15
 		self.btn_size = 57 #45
@@ -18,35 +18,35 @@ class PiDialogScene(ui.Scene):
 		self.music_directory = '/var/lib/mpd/music/'
 		self.close_active = True
 		self.main_active = False
-		
+
 		#overlay = self.make_overlay()
 		self.content = self.make_content()
 		self.close = self.make_close()
 		self.close.state = 'focused'
 		self.main = self.make_main()
 		title = self.make_title()
-		
+
 		#self.add_child(overlay)
 		self.add_child(self.content)
-		
+
 		self.content.add_child(title)
 		self.content.add_child(self.close)
 		self.content.add_child(self.main)
-	
+
 	"""
 	make_overlay
 	"""
 	def make_overlay(self):
 		view = DialogOverlay(ui.Rect(0,0,self.frame.width,self.frame.height))
 		return view
-	
+
 	"""
 	make_content
 	"""
 	def make_content(self):
 		view = DialogContent(ui.Rect(75,60,self.frame.width-150,self.frame.height-120))
 		return view
-	
+
 	"""
 	make_title
 	"""
@@ -57,7 +57,7 @@ class PiDialogScene(ui.Scene):
 			halign=ui.CENTER
 		)
 		return label
-		
+
 	"""
 	make_close
 	"""
@@ -69,7 +69,7 @@ class PiDialogScene(ui.Scene):
 		close.on_clicked.connect(self.dismiss)
 		close.tag_name = 'close'
 		return close
-	
+
 	"""
 	make_main
 	"""
@@ -95,7 +95,7 @@ class PiDialogScene(ui.Scene):
 		if self.main_active == True:
 			self.key_down_main(key)
 		else:
-				self.key_down_header(key)
+			self.key_down_header(key)
 
 	"""
 	key_down_header
@@ -106,7 +106,7 @@ class PiDialogScene(ui.Scene):
 
 		elif key == pygame.K_DOWN:
 			self.close_active = False
-			self.close.state = 'normal' 
+			self.close.state = 'normal'
 			self.main_active = True
 			self.on_main_active()
 
@@ -115,7 +115,7 @@ class PiDialogScene(ui.Scene):
 
 		elif key == pygame.K_RIGHT:
 			self.close_active = False
-			self.close.state = 'normal' 
+			self.close.state = 'normal'
 			self.main_active = True
 			self.on_main_active()
 
@@ -164,7 +164,7 @@ class PiDialogScene(ui.Scene):
 	"""
 	def on_mpd_update(self):
 		pass
-		
+
 	"""
 	dismiss
 	"""
@@ -172,11 +172,11 @@ class PiDialogScene(ui.Scene):
 		self.rm()
 		ui.focus.set(None)
 		self.on_dismissed()
-		
+
 class DialogContent(ui.View):
 	def __init__(self, frame):
 		ui.View.__init__(self,frame)
-		
+
 class DialogOverlay(ui.View):
 	def __init__(self, frame):
 		ui.View.__init__(self,frame)
