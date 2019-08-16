@@ -33,7 +33,7 @@ class ScreensaverScene(PiScene):
 		self.vx = 0
 		self.vy = 0
 		self.dialog = None
-		
+
 		self.set_vels()
 
 		if os.path.dirname(__file__) != '':
@@ -252,7 +252,7 @@ class ScreensaverScene(PiScene):
 			draw_w = last_hit[0] - first_hit[0]
 			draw_h = last_hit[1] - first_hit[1]
 
-			erased = self.is_cover_erased()
+			erased = self.is_cover_erased_alt()
 
 			#we are erasing the cover image
 			if self.erase_mode == True:
@@ -292,6 +292,8 @@ class ScreensaverScene(PiScene):
 
 	"""
 	is_cover_erased
+	determines if cover image is erased by sampling every <step> pixels
+	and comparing against original
 	return 1 for completely erased
 	return 0 for partly erased
 	return -1 for completely original
@@ -333,6 +335,61 @@ class ScreensaverScene(PiScene):
 			if has_orig is False:
 				return 1
 			return 0
+		return -1
+
+	"""
+	is_cover_erased_alt
+	determines of cover image is erased by sampling every edge pixel
+	return 1 for completely erased
+	return 0 for partly erased
+	return -1 for completely original
+	"""
+	def is_cover_erased_alt(self):
+		cover = self.cover.image
+
+		cw = cover.get_width()
+		ch = cover.get_height()
+
+		has_diff = False
+		has_orig = False
+
+		edge_ranges = [
+			[(0, 1), (0, ch)],
+			[(cw-1, cw), (0, ch)],
+			[(0, cw), (0, 1)],
+			[(0, cw), (ch-1, ch)]
+		]
+		diffs = 0
+
+		for i in range(len(edge_ranges)):
+			edge =edge_ranges[i]
+			for x in range(edge[0][0], edge[0][1]):
+				for y in range(edge[1][0], edge[1][1]):
+
+					#logger.debug('edge %d x %d y %d' % (i, x, y))
+
+					pixel = cover.get_at((x,y))
+					orig_pixel = self.buffer_image.get_at((x,y))
+
+					if pixel.r != orig_pixel.r or pixel.g != orig_pixel.g or pixel.b != orig_pixel.b:
+						diffs = diffs +1
+						has_diff = True
+						if has_orig == True:
+							#logger.debug('returning 0')
+							return 0
+					else:
+						has_orig = True
+						if has_diff == True:
+							#logger.debug('returning 0')
+							return 0
+
+		if has_diff is True:
+			if has_orig is False:
+				#logger.debug('returning 1')
+				return 1
+			#logger.debug('returning 0')
+			return 0
+		#logger.debug('returning 1')
 		return -1
 
 	"""
