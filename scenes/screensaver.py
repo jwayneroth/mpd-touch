@@ -252,7 +252,7 @@ class ScreensaverScene(PiScene):
 			draw_w = last_hit[0] - first_hit[0]
 			draw_h = last_hit[1] - first_hit[1]
 
-			erased = self.is_cover_erased_alt()
+			erased = self.is_cover_erased()
 
 			#we are erasing the cover image
 			if self.erase_mode == True:
