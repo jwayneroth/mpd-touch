@@ -347,6 +347,8 @@ class ScreensaverScene(PiScene):
 	def is_cover_erased_alt(self):
 		cover = self.cover.image
 
+		step = 5
+
 		cw = cover.get_width()
 		ch = cover.get_height()
 
@@ -354,19 +356,25 @@ class ScreensaverScene(PiScene):
 		has_orig = False
 
 		edge_ranges = [
-			[(0, 1), (0, ch)],
-			[(cw-1, cw), (0, ch)],
-			[(0, cw), (0, 1)],
-			[(0, cw), (ch-1, ch)]
+			[ (0,    1),            (0,    ch/step) ],
+			[ (cw/step-1, cw/step), (0,    ch/step) ],
+			[ (0,    cw/step),      (0,    1) ],
+			[ (0,    cw/step),      (ch/step-1, ch/step) ]
 		]
+
 		diffs = 0
 
 		for i in range(len(edge_ranges)):
-			edge =edge_ranges[i]
-			for x in range(edge[0][0], edge[0][1]):
-				for y in range(edge[1][0], edge[1][1]):
 
-					#logger.debug('edge %d x %d y %d' % (i, x, y))
+			edge =edge_ranges[i]
+
+			for j in range(edge[0][0], edge[0][1]):
+				for k in range(edge[1][0], edge[1][1]):
+
+					x = j * step
+					y = k * step
+
+					#logger.debug('edge %d x: %d y: %d' % (i, x, y))
 
 					pixel = cover.get_at((x,y))
 					orig_pixel = self.buffer_image.get_at((x,y))
