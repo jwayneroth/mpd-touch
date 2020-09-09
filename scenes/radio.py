@@ -21,8 +21,8 @@ class RadioScene(PiScrollScene):
 		self.stations = [
 			{'title':'WFMU','url':'http://stream0.wfmu.org/freeform-128k'},
 			{'title':'GtDR','url':'http://stream0.wfmu.org:80/drummer'},
-			{'title':'Ichiban','url':'http://stream0.wfmu.org/ichiban'},
-			{'title':'Ubu','url':'http://stream0.wfmu.org/ubu'},
+			{'title':'Rock \'n Soul','url':'http://stream0.wfmu.org/rocknsoul'},
+			#{'title':'Ubu','url':'http://stream0.wfmu.org/ubu'},
 			{'title':'Sheena','url':'http://stream0.wfmu.org/sheena'},
 			{'title':'FMU32','url':'http://stream0.wfmu.org/freeform-32k.mp3'},
 			{'title':'wkcr','url':'http://wkcr.streamguys1.com:80/live'},
