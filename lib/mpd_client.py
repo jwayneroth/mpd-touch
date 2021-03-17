@@ -593,7 +593,7 @@ class MPDNowPlaying(object):
 				if 'album' in song_status:
 					self.album = song_status['album']
 
-				current_total = self.str_to_float(song_status['time'])
+				current_total = self.str_to_float(song_status['time']) if 'time' in song_status else 0
 				self.__time_total_sec = current_total
 				self.time_total = self.make_time_string(current_total)
 
