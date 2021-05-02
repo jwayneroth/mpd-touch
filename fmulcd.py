@@ -287,7 +287,8 @@ def lirc_key_translate(key):
 		return pygame.K_DOWN
 	elif key == 'KEY_ENTER':
 		return pygame.K_RETURN
-
+	elif key == 'KEY_SELECT':
+		return pygame.K_RETURN
 	return key
 
 """
