@@ -104,12 +104,12 @@ class SettingsScene(PiScene):
 	def make_buttons(self):
 
 		btn_data = [
-			{ 'name':'update', 'icon_class':'hdd', 'text':'Update Music DB' },
+			{ 'name':'brightness', 'icon_class':'subglasses', 'text':'Brightness' },
+                        { 'name':'update', 'icon_class':'hdd', 'text':'Update Music DB' },
 			{ 'name':'restart', 'icon_class':'repeat', 'text':'Restart Player' },
 			{ 'name':'quit', 'icon_class':'remove', 'text':'Quit Player' },
 			{ 'name':'reboot', 'icon_class':'signal', 'text':'Restart Pi' },
-			{ 'name':'shutdown', 'icon_class':'off', 'text':'Shutdown' },
-			{ 'name':'brightness', 'icon_class':'sunglasses', 'text':'Brightness' }
+			{ 'name':'shutdown', 'icon_class':'off', 'text':'Shutdown' }
 		]
 
 		scr_y = 0
