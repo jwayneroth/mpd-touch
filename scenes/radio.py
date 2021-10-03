@@ -29,7 +29,12 @@ class RadioScene(PiScrollScene):
 			{'title':'wnyc','url':'http://fm939.wnyc.org/wnycfm'},
 			{'title':'bbc','url':'http://am820.wnyc.org/wnycam'},
 			{'title':'wqxr','url':'http://stream.wqxr.org/wqxr'},
-			{'title':'q2','url':'http://q2stream.wqxr.org/q2'}
+			{'title':'q2','url':'http://q2stream.wqxr.org/q2'},
+			{'title':'wcbs','url':'https://18843.live.streamtheworld.com/WCBSAMAAC_SC?sbmid=dff673a8-4f30-4100-9c2f-ee9a8beae226&DIST=CBS&TGT=radiocomPlayer&SRC=CBS&lsid=cookie:eb568720-186f-49a3-866f-879754cfc515'},
+			{'title':'wbgo','url':'http://wbgo.streamguys.net/wbgo128'},
+			{'title':'wbgo jazz','url':'http://wbgo.streamguys.net/thejazzstream'},
+			{'title':'wfuv','url':'https://onair.wfuv.org/onair-hi'},
+			{'title':'wmuh','url':'http://192.104.181.26:8000/stream'}
 		]
 
 		self.url_opener = urllib.FancyURLopener({})
@@ -81,13 +86,17 @@ class RadioScene(PiScrollScene):
 
 		del self.station_btns[:]
 
+		#station_idx = 0
+
+		btn_x = 0
+
 		scr_y = 0
 		
 		row_count = len(self.stations)
 
 		for station in self.stations:
 
-			btn = ui.Button( ui.Rect( 0, scr_y, self.main.frame.width - ui.SCROLLBAR_SIZE, self.label_height ), station['title'], halign=ui.LEFT, valign=ui.CENTER )
+			btn = ui.Button( ui.Rect( btn_x, scr_y, self.main.frame.width - ui.SCROLLBAR_SIZE, self.label_height ), station['title'], halign=ui.LEFT, valign=ui.CENTER )
 
 			btn.url = station['url']
 			btn.on_clicked.connect(self.on_station_clicked)
@@ -98,6 +107,12 @@ class RadioScene(PiScrollScene):
 			scroll_contents.add_child(btn)
 
 			scr_y = scr_y + self.label_height
+
+			#station_idx = station_idx + 1
+
+			#if station_idx > 6:
+			#	scr_y = 0
+			#	btn_x = 250
 
 		scroll_contents.frame.height = row_count * self.label_height
 
