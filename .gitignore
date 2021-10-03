@@ -6,3 +6,5 @@ pygameui/*.pyc
 *.DS_Store
 images/default_covers/*
 *.swp
+creds.txt
+
