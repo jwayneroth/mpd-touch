@@ -45,7 +45,7 @@ class RadioScene(PiScrollScene):
 
 		self.station_btns = [page_nav]
 		self.archive_btns = [page_nav]
-		
+
 		self.child_view_btns = [
 			self.station_btns,
 			self.archive_btns
@@ -61,7 +61,7 @@ class RadioScene(PiScrollScene):
 		self.main.add_child(self.page_up)
 		self.main.add_child(self.icon_up)
 		self.main.add_child(self.streams_view)
-		
+
 		self.current_child = self.streams_view
 
 	"""
@@ -92,12 +92,21 @@ class RadioScene(PiScrollScene):
 		btn_x = 0
 
 		scr_y = 0
-		
+
 		row_count = len(self.stations)
+
+		btn_width = ( self.main.frame.width - ui.SCROLLBAR_SIZE ) / 2
+
+		i = 0
 
 		for station in self.stations:
 
-			btn = ui.Button( ui.Rect( btn_x, scr_y, self.main.frame.width - ui.SCROLLBAR_SIZE, self.label_height ), station['title'], halign=ui.LEFT, valign=ui.CENTER )
+			if i % 2 == 0:
+				btn_x = 0
+			else:
+				btn_x = btn_width
+
+			btn = ui.Button( ui.Rect( btn_x, scr_y, btn_width, self.label_height ), station['title'], halign=ui.LEFT, valign=ui.CENTER )
 
 			btn.url = station['url']
 			btn.on_clicked.connect(self.on_station_clicked)
@@ -107,7 +116,10 @@ class RadioScene(PiScrollScene):
 
 			scroll_contents.add_child(btn)
 
-			scr_y = scr_y + self.label_height
+			if i % 2 != 0:
+				scr_y = scr_y + self.label_height
+
+			i = i + 1
 
 			#station_idx = station_idx + 1
 
@@ -222,7 +234,7 @@ class RadioScene(PiScrollScene):
 	def on_station_clicked(self, btn, mouse_btn):
 
 		self.deselect_all(self.station_btns)
-		
+
 		btn.state = 'selected'
 
 		mpd.radio_station_start(btn.url)
@@ -258,7 +270,7 @@ class RadioScene(PiScrollScene):
 	"""
 	def on_submenu_btn_clicked(self, btn, mouse_btn):
 
-		
+
 		if btn.tag_name == 'Streams':
 			self.main.rm_child(self.archives_view)
 			self.main.add_child(self.streams_view)
@@ -315,7 +327,7 @@ class RadioScene(PiScrollScene):
 
 		self.streams_btn = streams_btn
 		self.archives_btn = archives_btn
-		
+
 		page_nav.extend([streams_btn, archives_btn])
-		
+
 		return page_nav
