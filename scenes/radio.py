@@ -95,16 +95,13 @@ class RadioScene(PiScrollScene):
 
 		row_count = len(self.stations)
 
-		btn_width = ( self.main.frame.width - ui.SCROLLBAR_SIZE ) / 2
+		btn_width = ( self.main.frame.width - ui.SCROLLBAR_SIZE ) / 3
 
 		i = 0
 
 		for station in self.stations:
 
-			if i % 2 == 0:
-				btn_x = 0
-			else:
-				btn_x = btn_width
+			btn_x = btn_width * (i % 3)
 
 			btn = ui.Button( ui.Rect( btn_x, scr_y, btn_width, self.label_height ), station['title'], halign=ui.LEFT, valign=ui.CENTER )
 
@@ -116,7 +113,7 @@ class RadioScene(PiScrollScene):
 
 			scroll_contents.add_child(btn)
 
-			if i % 2 != 0:
+			if (i + 1) % 3 == 0:
 				scr_y = scr_y + self.label_height
 
 			i = i + 1
