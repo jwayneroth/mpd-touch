@@ -5,7 +5,7 @@ import os
 import glob
 import random
 
-from PersistentMPDClient import PersistentMPDClient
+from .PersistentMPDClient import PersistentMPDClient
 from collections import deque
 #from ..mutagen import File
 from pygameui import callback as callback
@@ -56,7 +56,7 @@ class MPDController(object):
 		self.on_album_changed = callback.Signal()
 
 	def dict_to_string(self, dict):
-		print ', '.join("%s=%r" % (key,val) for (key,val) in dict.iteritems())
+		print( ', '.join("%s=%r" % (key,val) for (key,val) in dict.iteritems()) )
 
 	def connect(self):
 		self.mpd_client.connect(self.host, self.port)

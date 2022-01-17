@@ -1,6 +1,7 @@
 #https://github.com/schamp/PersistentMPDClient
 
-import python_mpd2 as mpd
+#import python_mpd2 as mpd
+import mpd
 import socket
 
 import logging

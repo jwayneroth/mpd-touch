@@ -38,17 +38,17 @@ __version__ = '0.2.0'
 import pygame
 import time
 
-from button import *
-from callback import *
-from dialog import *
-from imageview import *
-from label import *
-from modal import *
-from render import *
-from resource import *
-from scroll import *
-from slider import *
-from view import *
+from .button import *
+from .callback import *
+from .dialog import *
+from .imageview import *
+from .label import *
+from .modal import *
+from .render import *
+from .resource import *
+from .scroll import *
+from .slider import *
+from .view import *
 
 import focus
 import scene
