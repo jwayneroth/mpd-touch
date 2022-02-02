@@ -175,7 +175,7 @@ class MPDController(object):
         self.on_album_changed = callback.Signal()
 
     def dict_to_string(self, dict):
-        print ', '.join("%s=%r" % (key,val) for (key,val) in dict.iteritems())
+        print ', '.join("%s=%r" % (key,val) for (key,val) in dict.items())
 
     def connect(self):
         """ Connects to mpd server.

@@ -1,9 +1,9 @@
 import pygame
-import render
-import theme
-import callback
-import resource
-import kvc
+from . import render
+from . import theme
+from . import callback
+from . import resource
+from . import kvc
 
 class View(object):
     """A rectangular portion of the window.
@@ -208,7 +208,7 @@ class View(object):
         for child in self.children:
             child.stylize()
         style = theme.current.get_dict(self)
-        for key, val in style.iteritems():
+        for key, val in style.items():
             kvc.set_value_for_keypath(self, key, val)
         self.layout()
 

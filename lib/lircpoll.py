@@ -90,7 +90,7 @@ if __name__ == "__main__":
 		try:
 			last_key = irw.last()
 			#if last_key is not None:
-			print 'last key is %s ' % last_key
+			print('last key is %s ' % last_key)
 			time.sleep(.3)
 		except KeyboardInterrupt:
 			exit()

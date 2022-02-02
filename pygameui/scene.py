@@ -1,6 +1,6 @@
-import view
-import callback
-import render
+from . import view
+from . import callback
+from . import render
 import pygame
 
 class Scene(view.View):

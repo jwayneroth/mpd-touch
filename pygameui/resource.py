@@ -26,7 +26,7 @@ def get_font(size=16, use_bold=False, name='regular'):
         try:
             logger.debug('loading font %s' % path)
             font = pygame.font.Font(path, size)
-        except pygame.error, e:
+        except pygame.error as e:
             logger.warn('failed to load font: %s: %s' % (path, e))
             backup_fonts = 'helvetica,arial'
             font = pygame.font.SysFont(backup_fonts, size, use_bold)
@@ -72,7 +72,7 @@ def get_image(fullpath):
         try:
             logger.debug('loading image %s' % fullpath)
             img = pygame.image.load(fullpath)
-        except pygame.error, e:
+        except pygame.error as e:
             logger.warn('failed to load image: %s: %s' % (fullpath, e))
             img = None
         else:
@@ -123,7 +123,7 @@ def get_sound(name):
         #path = pkg_resources.resource_filename(package_name, path)
         try:
             sound = pygame.mixer.Sound(path)
-        except pygame.error, e:
+        except pygame.error as e:
             logger.warn('failed to load sound: %s: %s' % (path, e))
             sound = NoSound()
         else:

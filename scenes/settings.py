@@ -2,7 +2,7 @@ import socket
 import subprocess
 
 import fmuglobals
-from piscene import *
+from .piscene import *
 
 #if fmuglobals.RUN_ON_RASPBERRY_PI:
 #	 import RPi.GPIO as GPIO

@@ -1,5 +1,5 @@
 from itertools import chain
-import resource
+from . import resource
 
 class Theme(object):
 	def __init__(self):
@@ -38,11 +38,11 @@ class Theme(object):
 				except KeyError:
 					normal_styles = {}
 
-				state_styles = dict(chain(normal_styles.iteritems(),
-										  state_styles.iteritems()))
+				state_styles = dict(chain(normal_styles.items(),
+										  state_styles.items()))
 
-			style = dict(chain(state_styles.iteritems(),
-							   style.iteritems()))
+			style = dict(chain(state_styles.items(),
+							   style.items()))
 
 		return style
 

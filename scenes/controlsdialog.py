@@ -1,5 +1,4 @@
-import fmuglobals
-from pidialogscene import *
+from .pidialogscene import *
 
 """
  ControlsDialog

@@ -2,7 +2,7 @@ import time
 import os
 
 import fmuglobals
-from piscene import *
+from .piscene import *
 
 """
 ScreensaverScene
@@ -57,7 +57,7 @@ class ScreensaverScene(PiScene):
 
 		self.make_screenaver()
 
-		print 'ScreensaverScene inited!'
+		print('ScreensaverScene inited!')
 
 	"""
 	make_main
@@ -427,7 +427,8 @@ class ScreensaverScene(PiScene):
 	get_random_screensaver_image
 	"""
 	def get_random_screensaver_image(self):
-		defaults = [name for name in os.listdir( self.screenaver_image_directory ) if os.path.isfile( self.screenaver_image_directory + '/' + name )]
+		defaults = [name for name in os.listdir( self.screenaver_image_directory ) if os.path.isfile( self.screenaver_image_directory + '/' + name ) and name != '.DS_Store']
+		print('default ss images {}'.format(defaults))
 		return self.screenaver_image_directory + '/' + defaults[random.randrange(0, len(defaults))]
 
 	"""

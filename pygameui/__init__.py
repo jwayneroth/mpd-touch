@@ -50,10 +50,10 @@ from .scroll import *
 from .slider import *
 from .view import *
 
-import focus
-import scene
-import theme
+from . import focus
+from . import scene
+from . import theme
 
-from scene import Scene
+from .scene import Scene
 
 Rect = pygame.Rect

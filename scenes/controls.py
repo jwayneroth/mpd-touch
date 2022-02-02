@@ -1,5 +1,5 @@
 import fmuglobals
-from piscene import *
+from .piscene import *
 
 """
  ControlsScene

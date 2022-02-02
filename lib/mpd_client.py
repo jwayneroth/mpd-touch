@@ -19,8 +19,9 @@ MPD_TYPE_SONGS = 'title'
 
 TEMP_PLAYLIST_NAME = '_pi-jukebox_temp'
 
-reload(sys)
-sys.setdefaultencoding('utf8')
+#reload(sys)
+
+#sys.setdefaultencoding('utf8')
 
 class MPDController(object):
 	def __init__(self):
@@ -56,7 +57,7 @@ class MPDController(object):
 		self.on_album_changed = callback.Signal()
 
 	def dict_to_string(self, dict):
-		print( ', '.join("%s=%r" % (key,val) for (key,val) in dict.iteritems()) )
+		print( ', '.join("%s=%r" % (key,val) for (key,val) in dict.items()) )
 
 	def connect(self):
 		self.mpd_client.connect(self.host, self.port)

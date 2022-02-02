@@ -449,7 +449,7 @@ class M4ATags(DictProxy, Metadata):
 
     def pprint(self):
         values = []
-        for key, value in self.iteritems():
+        for key, value in self.items():
             key = key.decode('latin1')
             try:
                 values.append("%s=%s" % (key, value))

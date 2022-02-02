@@ -1,9 +1,9 @@
 import pygame
 
-import dialog
-import label
-import theme
-import button
+from . import dialog
+from . import label
+from . import theme
+from . import button
 
 OK = 1
 CANCEL = 2

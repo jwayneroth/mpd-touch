@@ -1,4 +1,4 @@
-from piscrollscene import *
+from .piscrollscene import *
 
 """
 AlbumListScene
@@ -69,7 +69,7 @@ class AlbumListScene(PiScrollScene):
 	"""
 	def refresh(self):
 
-		print 'AlbumListScene::refresh'
+		print('AlbumListScene::refresh')
 
 		PiScene.refresh(self)
 
@@ -160,9 +160,15 @@ class AlbumListScene(PiScrollScene):
 
 		row_count = len(artists)
 
+		#print('artists {}'.format(artists))
+
 		for artist in artists:
 
-			btn_name = artist if artist != "" else "no name"
+			#print('artist name {}'.format(artist))
+
+			btn_name = "no name"
+			if 'artist' in artist and artist['artist'] != '':
+				btn_name = artist['artist']
 
 			artist_button = ui.Button( ui.Rect( 0, scr_y, self.main.frame.width - self.btn_size - self.margins * 3 - ui.SCROLLBAR_SIZE, self.label_height ), btn_name, halign=ui.LEFT, valign=ui.CENTER )
 			artist_button.artist_name = artist
@@ -382,7 +388,7 @@ class AlbumListScene(PiScrollScene):
 	"""
 	def on_artist_add_clicked(self, btn, mouse_btn):
 
-		print 'AlbumListScene::on_artist_add_clickded \t' + btn.artist_name
+		print('AlbumListScene::on_artist_add_clickded \t%s' % btn.artist_name)
 
 		self.deselect_all(self.artist_btns)
 
@@ -410,7 +416,7 @@ class AlbumListScene(PiScrollScene):
 	"""
 	def album_clicked(self, btn, mouse_btn):
 
-		print 'AlbumListScene::album_clicked \t' + btn.album_name
+		print('AlbumListScene::album_clicked \t%s' % btn.album_name)
 
 		self.deselect_all(self.album_btns)
 		btn.state = 'selected'
@@ -436,7 +442,7 @@ class AlbumListScene(PiScrollScene):
 	"""
 	def album_add_clicked(self, btn, mouse_btn):
 
-		print 'AlbumListScene::album_add_clicked \t' + btn.album_name
+		print('AlbumListScene::album_add_clicked \t%s' % btn.album_name)
 
 		self.deselect_all(self.album_btns)
 

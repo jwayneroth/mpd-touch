@@ -1,9 +1,9 @@
-import label
-import callback
-import theme
+from . import label
+from . import callback
+from . import theme
 import pygame
-import view
-import imageview
+from . import view
+from . import imageview
 
 CENTER = 0
 LEFT = 1
@@ -26,7 +26,7 @@ class Button(label.Label):
 	def __init__(self, frame, caption, halign=CENTER, valign=CENTER, wrap=CLIP):
 		if frame.h == 0:
 			frame.h = theme.current.button_height
-		label.Label.__init__(self, frame, caption,halign, valign,wrap)
+		label.Label.__init__(self, frame, caption, halign, valign,wrap)
 		self._enabled = True
 		self.on_clicked = callback.Signal()
 

@@ -26,5 +26,5 @@ FMU_COLORS = {
 
 current_cover_image = None
 
-print 'HOME_DIR: ' + str(HOME_DIR)
-print 'RUN_ON_RASPBERRY_PI: ' + str(RUN_ON_RASPBERRY_PI)
+print('HOME_DIR: {}'.format(str(HOME_DIR)))
+print('RUN_ON_RASPBERRY_PI: {}'.format(str(RUN_ON_RASPBERRY_PI)))

@@ -9,7 +9,8 @@ from collections import namedtuple
 import threading
 import time
 import select
-import Queue as queue
+#import Queue as queue
+import queue
 
 TOUCH_X = 0
 TOUCH_Y = 1

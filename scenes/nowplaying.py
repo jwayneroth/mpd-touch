@@ -3,7 +3,7 @@ import os
 
 from mutagen import File
 import fmuglobals
-from piscene import *
+from .piscene import *
 
 """
 NowPlayingScene
@@ -68,7 +68,7 @@ class NowPlayingScene(PiScene):
 		}
 
 
-		for key, val in comp_labels.iteritems():
+		for key, val in comp_labels.items():
 			label = ui.HeadingOne( val[0], val[1], halign=ui.CENTER )
 			self.main.add_child(label)
 			self.components[key] = label
@@ -148,7 +148,7 @@ class NowPlayingScene(PiScene):
 		track = self.components['track']
 		track.frame.width = track.text_size[0] + 10 # + self.margins
 		track.frame.left = 0
-		#print 'NowPlayingScene::resize_track \t w: ' + str(track.frame.width)
+		#print('NowPlayingScene::resize_track \t w: ' + str(track.frame.width)
 		self.stylize()
 
 	"""
@@ -180,30 +180,30 @@ class NowPlayingScene(PiScene):
 
 				event = mpd.events.popleft()
 
-				#print 'NowPlaying::on_mpd_update \t ' + event
+				#print('NowPlaying::on_mpd_update \t ' + event
 
 				if event == 'radio_mode_on':
-					print 'NowPlayingScene::on_mpd_update: \t radio_mode_on'
+					print('NowPlayingScene::on_mpd_update: \t radio_mode_on')
 					#self.radio_track_settings(True)
 				#elif event == 'time_elapsed':
-					#	 print 'NowPlayingScene::on_mpd_update: \t time_elapsed'
+					#	 print('NowPlayingScene::on_mpd_update: \t time_elapsed'
 					#	 break
 					self.resize_track()
 					self.stylize()
 				elif event == 'radio_mode_off':
-					print 'NowPlayingScene::on_mpd_update: \t radio_mode_off'
+					print('NowPlayingScene::on_mpd_update: \t radio_mode_off')
 					#self.radio_track_settings(False)
 					self.resize_track()
 					self.stylize()
 				elif event == 'title_change':
-					print 'NowPlayingScene::on_mpd_update: \t title_change'
+					print('NowPlayingScene::on_mpd_update: \t title_change')
 					playing = mpd.now_playing
 					self.components['track'].text = playing.title
 					#if playing.playing_type == 'radio':
 					self.resize_track()
 					self.stylize()
 				elif event == 'album_change':
-					print 'NowPlayingScene::on_mpd_update: \t album_change'
+					print('NowPlayingScene::on_mpd_update: \t album_change')
 					playing = mpd.now_playing
 					self.components['artist'].text = playing.artist
 					self.components['album'].text = playing.album
@@ -212,12 +212,12 @@ class NowPlayingScene(PiScene):
 					self.stylize()
 				"""
 				elif event == 'volume':
-					print 'NowPlayingScene::on_mpd_update: \t volume: ' + str(mpd.volume)
+					print('NowPlayingScene::on_mpd_update: \t volume: ' + str(mpd.volume)
 					self.controls.volume_slider.value = mpd.volume
 				elif event == 'player_control':
 					state = mpd.get_playback()
 					play_btn = self.controls.buttons['play_pause']
-					print 'NowPlayingScene::on_mpd_update: \t state: ' + state
+					print('NowPlayingScene::on_mpd_update: \t state: ' + state
 					if play_btn.icon_class != 'play' and state == 'play':
 						play_btn.icon_class = 'play'
 					if play_btn.icon_class != 'pause' and state == 'pause':
@@ -227,7 +227,7 @@ class NowPlayingScene(PiScene):
 			except IndexError:
 				break
 
-		#print 'on_mpd_update'
+		#print('on_mpd_update'
 
 	"""
 	update_cover_image
@@ -252,36 +252,36 @@ class NowPlayingScene(PiScene):
 		file_dir = self.music_directory + os.path.dirname(mpd.now_playing.file)
 		file_name = file_dir + '/' + 'cover_art.jpg'
 
-		print 'NowPlaying::get_cover_image for %s: %s' % (mpd.now_playing.file, file_name)
+		print('NowPlaying::get_cover_image for %s: %s' % (mpd.now_playing.file, file_name))
 
 		if os.path.isfile(file_name) == False:
-			print '\t no existing image'
+			print('\t no existing image')
 			try:
 				music_file = File(self.music_directory + mpd.now_playing.file)
 				if 'covr' in music_file:
-					print 'has covr'
+					print('has covr')
 					try:
 						art_data = music_file.tags['covr'].data
 					except:
 						return ui.get_image( self.get_default_cover_image() )
 				elif 'APIC:' in music_file:
-					print 'has APIC'
+					print('has APIC')
 					try:
 						art_data = music_file.tags['APIC:'].data
 					except:
 						return ui.get_image( self.get_default_cover_image() )
 				else:
-					print '\t no cover art data'
+					print('\t no cover art data')
 					return ui.get_image( self.get_default_cover_image() )
 
 				with open(file_name, 'wb') as img:
 					img.write(art_data)
 
-			except IOError, e:
-				print '\t no music file'
+			except IOError as e:
+				print('\t no music file')
 				return ui.get_image( self.get_default_cover_image() )
 
-		print '\t returning: ' + file_name
+		print('\t returning: %s' % file_name)
 
 		return ui.get_image( file_name )
 

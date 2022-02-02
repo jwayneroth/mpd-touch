@@ -1,6 +1,5 @@
 from lib.mpd_client import *
 import pygameui as ui
-import fmuglobals
 
 class PiDialogScene(ui.Scene):
 	def __init__(self, frame=None, name='PiDialog'):

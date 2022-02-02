@@ -1,6 +1,6 @@
 import pygame
-import view
-import resource
+from . import view
+from . import resource
 
 SCALE_TO_FILL = 0
 SCALE_TO_FIT = 1

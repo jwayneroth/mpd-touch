@@ -1,8 +1,8 @@
 import pygame
-import view
-import render
-import callback
-import button
+from . import view
+from . import render
+from . import callback
+from . import button
 
 HORIZONTAL = 0
 VERTICAL = 1

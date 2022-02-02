@@ -1,4 +1,4 @@
-from piscene import *
+from .piscene import *
 
 """
 PiScrollScene

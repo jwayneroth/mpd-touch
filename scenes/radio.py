@@ -1,9 +1,8 @@
-
 import feedparser
 import re
 import urllib
 
-from piscrollscene import *
+from .piscrollscene import *
 
 """
 RadioScene
@@ -38,7 +37,8 @@ class RadioScene(PiScrollScene):
 			{'title':'wmuh','url':'http://192.104.181.26:8000/stream'}
 		]
 
-		self.url_opener = urllib.FancyURLopener({})
+		#self.url_opener = urllib.FancyURLopener({})
+		self.url_opener = urllib.request
 
 		self.streams_view = self.make_scroll_view()
 		self.archives_view = self.make_scroll_view()
@@ -251,7 +251,8 @@ class RadioScene(PiScrollScene):
 		url = btn.url
 
 		try:
-			f = self.url_opener.open( url )
+			#f = self.url_opener.open( url )
+			f = self.url_opener.urlopen( url )
 			stream = f.read()
 		except:
 			return

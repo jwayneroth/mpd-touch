@@ -1,8 +1,8 @@
 import pygame
 
-import view
-import focus
-import callback
+from . import view
+from . import focus
+from . import callback
 
 
 class DialogView(view.View):

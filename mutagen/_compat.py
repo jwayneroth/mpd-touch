@@ -31,7 +31,7 @@ if PY2:
     def endswith(text, end):
         return text.endswith(end)
 
-    iteritems = lambda d: d.iteritems()
+    iteritems = lambda d: d.items()
     itervalues = lambda d: d.itervalues()
     iterkeys = lambda d: d.iterkeys()
 

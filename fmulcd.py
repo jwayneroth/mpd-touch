@@ -69,11 +69,11 @@ class Fmulcd(object):
 			'Brightness': BrightnessDialog(rect)
 		}
 
-		for name,scene in self.scenes.iteritems():
+		for name,scene in self.scenes.items():
 			scene.on_nav_change.connect(self.change_scene)
 			scene.open_dialog.connect(self.open_dialog)
 
-		for name,dialog in self.dialogs.iteritems():
+		for name,dialog in self.dialogs.items():
 			dialog.on_dismissed.connect(self.dialog_dismissed)
 
 		self.make_current_scene(self.scenes['NowPlaying'])
@@ -314,7 +314,7 @@ if __name__ == '__main__':
 
 	time.sleep(0.3)
 
-	mpd.radio_station_start('http://stream0.wfmu.org/freeform-128k')
+	#mpd.radio_station_start('http://stream0.wfmu.org/freeform-128k')
 
 	while True:
 		ticks = clock.tick()#(fps)
