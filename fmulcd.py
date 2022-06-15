@@ -292,6 +292,22 @@ def lirc_key_translate(key):
 	return key
 
 """
+check lirc key for special case
+"""
+def lirc_special_case(key):
+	if key == 'KEY_VOLUMEUP':
+		mpd.set_volume_relative(5)
+		return True
+	elif key == 'KEY_VOLUMEDOWN':
+		mpd.set_volume_relative(-5)
+		return True
+	elif key == 'KEY_MUTE':
+		#mpd.toggle_muted()
+		mpd.set_volume(0)
+		return True
+	return False
+
+"""
 main
 """
 if __name__ == '__main__':
@@ -333,7 +349,8 @@ if __name__ == '__main__':
 
 			if irwlast is not None:
 				user_active = True
-				fmu.current.key_down(lirc_key_translate(irwlast), '')
+				if lirc_special_case(irwlast) is False:
+					fmu.current.key_down(lirc_key_translate(irwlast), '')
 
 		for e in pygame.event.get():
 			if e.type == pygame.QUIT:
