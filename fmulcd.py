@@ -25,8 +25,9 @@ import fmuglobals
 from fmutheme import Fmutheme
 #from lib.gpio-buttons import AnalogButtons
 import pygameui as ui
-from lib.ft5406 import Touchscreen, TS_PRESS, TS_RELEASE, TS_MOVE
-from lib.lircpoll import Irw
+#from lib.ft5406 import Touchscreen, TS_PRESS, TS_RELEASE, TS_MOVE
+if fmuglobals.USE_LIRCD:
+	from lib.lircpoll import Irw
 from scenes import *
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
@@ -66,7 +67,7 @@ class Fmulcd(object):
 
 		self.dialogs = {
 			'Controls': ControlsDialog(rect),
-			'Brightness': BrightnessDialog(rect)
+			#'Brightness': BrightnessDialog(rect)
 		}
 
 		for name,scene in self.scenes.items():
@@ -97,10 +98,11 @@ class Fmulcd(object):
 		alarm(3)
 
 		try:
+			os.environ["DISPLAY"] = ":0" # JWR 20230516
 			pygame.init()
 
 			if fmuglobals.RUN_ON_RASPBERRY_PI:
-				pygame.mouse.set_visible(False)
+				#pygame.mouse.set_visible(False)
 				self.screen = pygame.display.set_mode((self.screen_dimensions), pygame.FULLSCREEN)
 			else:
 				self.screen = pygame.display.set_mode(self.screen_dimensions)
@@ -321,9 +323,10 @@ if __name__ == '__main__':
 	user_active = False
 
 	if fmuglobals.RUN_ON_RASPBERRY_PI:
-		ts = Touchscreen()
-		irw = Irw(8)
-		irw.run()
+		#ts = Touchscreen()
+		if fmuglobals.USE_LIRCD:
+			irw = Irw(8)
+			irw.run()
 	clock = pygame.time.Clock()
 	fps = 32 if fmuglobals.RUN_ON_RASPBERRY_PI else 30
 	ticks = 0
@@ -339,18 +342,20 @@ if __name__ == '__main__':
 		user_active = False
 
 		if fmuglobals.RUN_ON_RASPBERRY_PI:
-			ts.poll()
-			irwlast = irw.last()
+			#ts.poll()
+			if fmuglobals.USE_LIRCD:
+				irwlast = irw.last()
 
-			for touch in ts.touches:
-				touch.on_press = ts_press_handler
-				touch.on_release = ts_release_handler
-				#touch.on_move = ts_move_handler
+			# for touch in ts.touches:
+			# 	touch.on_press = ts_press_handler
+			# 	touch.on_release = ts_release_handler
+			# 	#touch.on_move = ts_move_handler
 
-			if irwlast is not None:
-				user_active = True
-				if lirc_special_case(irwlast) is False:
-					fmu.current.key_down(lirc_key_translate(irwlast), '')
+			if fmuglobals.USE_LIRCD:
+				if irwlast is not None:
+					user_active = True
+					if lirc_special_case(irwlast) is False:
+						fmu.current.key_down(lirc_key_translate(irwlast), '')
 
 		for e in pygame.event.get():
 			if e.type == pygame.QUIT:
@@ -364,14 +369,14 @@ if __name__ == '__main__':
 					fmu.current.key_down(e.key, e.unicode)
 					break
 
-			if not fmuglobals.RUN_ON_RASPBERRY_PI:
-				mousepoint = pygame.mouse.get_pos()
-				if e.type == pygame.MOUSEBUTTONDOWN:
-					_press_handler(mousepoint)
-				elif e.type == pygame.MOUSEBUTTONUP:
-					_release_handler(mousepoint)
-				#elif e.type == pygame.MOUSEMOTION:
-				# _move_handler(mousepoint, e.rel)
+			#if not fmuglobals.RUN_ON_RASPBERRY_PI:
+			mousepoint = pygame.mouse.get_pos()
+			if e.type == pygame.MOUSEBUTTONDOWN:
+				_press_handler(mousepoint)
+			elif e.type == pygame.MOUSEBUTTONUP:
+				_release_handler(mousepoint)
+			#elif e.type == pygame.MOUSEMOTION:
+			# _move_handler(mousepoint, e.rel)
 
 		if fmu.ss_timer_on:
 			fmu.screensaver_tick(ticks, user_active)

@@ -28,3 +28,5 @@ current_cover_image = None
 
 print('HOME_DIR: {}'.format(str(HOME_DIR)))
 print('RUN_ON_RASPBERRY_PI: {}'.format(str(RUN_ON_RASPBERRY_PI)))
+
+USE_LIRCD = False
