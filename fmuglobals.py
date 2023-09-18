@@ -26,7 +26,14 @@ FMU_COLORS = {
 
 current_cover_image = None
 
-print('HOME_DIR: {}'.format(str(HOME_DIR)))
-print('RUN_ON_RASPBERRY_PI: {}'.format(str(RUN_ON_RASPBERRY_PI)))
+import logging
+logger = logging.getLogger('fmu_logger')
+logger.debug('HOME_DIR: {}'.format(str(HOME_DIR)))
+logger.debug('RUN_ON_RASPBERRY_PI: {}'.format(str(RUN_ON_RASPBERRY_PI)))
 
-USE_LIRCD = False
+USE_LIRCD = True
+SHOW_MOUSE = False
+FULLSCREEN = True
+SS_DELAY = 60000
+SS_UPDATE_INTERVAL = .033
+TRACK_SPEED = 3

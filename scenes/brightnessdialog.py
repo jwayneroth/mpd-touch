@@ -6,7 +6,7 @@ from .pidialogscene import *
   dialog scene with playback controls
 """
 class BrightnessDialog(PiDialogScene):
-	def __init__(self, frame=None):
+	def __init__(self, frame):
 
 		PiDialogScene.__init__(self, frame, 'Brightness')
 

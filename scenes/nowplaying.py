@@ -11,17 +11,15 @@ NowPlayingScene
  and playback controls
 """
 class NowPlayingScene(PiScene):
-	def __init__(self, frame=None):
+	def __init__(self, frame, name):
 
-		PiScene.__init__(self, frame, 'NowPlaying')
+		PiScene.__init__(self, frame, name)
 
 		self.has_nav = True
 		self.is_mpd_listener = True
-		self.cover_size = 290 #160
+		self.cover_size = self.main.frame.height - 190 #290 #160
 		self.label_height = 36
-		self.track_scroll_velocity = 1
-		if fmuglobals.RUN_ON_RASPBERRY_PI == True:
-			self.track_scroll_velocity = 3
+		self.track_scroll_velocity = fmuglobals.TRACK_SPEED
 		self.main_active = False
 		self.components = {}
 		self.image_directory = 'images/'
@@ -183,7 +181,7 @@ class NowPlayingScene(PiScene):
 				#print('NowPlaying::on_mpd_update \t ' + event
 
 				if event == 'radio_mode_on':
-					print('NowPlayingScene::on_mpd_update: \t radio_mode_on')
+					#print('NowPlayingScene::on_mpd_update: \t radio_mode_on')
 					#self.radio_track_settings(True)
 				#elif event == 'time_elapsed':
 					#	 print('NowPlayingScene::on_mpd_update: \t time_elapsed'
@@ -191,19 +189,19 @@ class NowPlayingScene(PiScene):
 					self.resize_track()
 					self.stylize()
 				elif event == 'radio_mode_off':
-					print('NowPlayingScene::on_mpd_update: \t radio_mode_off')
+					#print('NowPlayingScene::on_mpd_update: \t radio_mode_off')
 					#self.radio_track_settings(False)
 					self.resize_track()
 					self.stylize()
 				elif event == 'title_change':
-					print('NowPlayingScene::on_mpd_update: \t title_change')
+					#print('NowPlayingScene::on_mpd_update: \t title_change')
 					playing = mpd.now_playing
 					self.components['track'].text = playing.title
 					#if playing.playing_type == 'radio':
 					self.resize_track()
 					self.stylize()
 				elif event == 'album_change':
-					print('NowPlayingScene::on_mpd_update: \t album_change')
+					#print('NowPlayingScene::on_mpd_update: \t album_change')
 					playing = mpd.now_playing
 					self.components['artist'].text = playing.artist
 					self.components['album'].text = playing.album

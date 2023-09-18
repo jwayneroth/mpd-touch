@@ -1,3 +1,23 @@
+from io import StringIO
+from html.parser import HTMLParser
+
+class MLStripper(HTMLParser):
+	def __init__(self):
+		super().__init__()
+		self.reset()
+		self.strict = False
+		self.convert_charrefs= True
+		self.text = StringIO()
+	def handle_data(self, d):
+		self.text.write(d)
+	def get_data(self):
+		return self.text.getvalue()
+
+def strip_tags(html):
+	s = MLStripper()
+	s.feed(html)
+	return s.get_data()
+
 import feedparser
 import re
 import urllib
@@ -9,9 +29,9 @@ RadioScene
  radio options, playback controls
 """
 class RadioScene(PiScrollScene):
-	def __init__(self, frame):
+	def __init__(self, frame, name):
 
-		PiScrollScene.__init__(self, frame, 'Radio')
+		PiScrollScene.__init__(self, frame, name)
 
 		self.sidebar_index = 2
 		self.active_sidebar_btn = 2
@@ -162,7 +182,7 @@ class RadioScene(PiScrollScene):
 		archives = []
 
 		try:
-			full = feedparser.parse('http://www.wfmu.org/archivefeed/mp3.xml')
+			full = feedparser.parse('https://www.wfmu.org/archivefeed/mp3.xml')
 			for entry in full.entries:
 				archive = dict()
 				archive['title'] = self.filter_stream_name(entry.title)
@@ -243,7 +263,7 @@ class RadioScene(PiScrollScene):
 	"""
 	def on_archive_clicked(self, btn, mouse_btn):
 
-		#print 'RadioScene::on_archive_clicked \t ' + btn.url
+		logger.debug("RadioScene::on_archive_clicked %s", btn.url)
 
 		self.deselect_all(self.archive_btns)
 		btn.state = 'selected'
@@ -252,14 +272,20 @@ class RadioScene(PiScrollScene):
 
 		try:
 			#f = self.url_opener.open( url )
-			f = self.url_opener.urlopen( url )
-			stream = f.read()
+			res = self.url_opener.urlopen( url )
+			logger.debug("opened archive url: %s", res)
+			html = res.read()
 		except:
+			logger.debug("error opening archive")
 			return
 
-		#print '\t stream: ' + stream
-
-		mpd.radio_station_start(stream.strip())
+		logger.debug("html: %s", html)
+		
+		archive_url = str(html, 'utf-8').strip()
+		
+		logger.debug("archive_url: %s", archive_url)
+		
+		mpd.radio_station_start(archive_url)
 
 		self.on_nav_change('NowPlaying')
 

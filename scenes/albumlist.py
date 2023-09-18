@@ -5,9 +5,9 @@ AlbumListScene
  lists albums by artist
 """
 class AlbumListScene(PiScrollScene):
-	def __init__(self, frame=None):
+	def __init__(self, frame, name):
 
-		PiScrollScene.__init__(self, frame, 'Albums')
+		PiScrollScene.__init__(self, frame, name)
 
 		self.is_mpd_listener = False
 		self.sidebar_index = 1
@@ -160,22 +160,24 @@ class AlbumListScene(PiScrollScene):
 
 		row_count = len(artists)
 
-		#print('artists {}'.format(artists))
+		logger.debug('artists {}'.format(artists))
 
 		for artist in artists:
 
-			#print('artist name {}'.format(artist))
+			logger.debug('artist name {}'.format(artist))
 
 			btn_name = "no name"
 			if 'artist' in artist and artist['artist'] != '':
 				btn_name = artist['artist']
 
+			logger.debug('btn_name {}'.format(btn_name))
+
 			artist_button = ui.Button( ui.Rect( 0, scr_y, self.main.frame.width - self.btn_size - self.margins * 3 - ui.SCROLLBAR_SIZE, self.label_height ), btn_name, halign=ui.LEFT, valign=ui.CENTER )
-			artist_button.artist_name = artist
+			artist_button.artist_name = artist['artist']
 			artist_button.on_clicked.connect(self.on_artist_clicked)
 
 			add_all_btn = ui.IconButton( ui.Rect(artist_button.frame.right + self.margins,scr_y,self.btn_size,self.btn_size), 'plus' )
-			add_all_btn.artist_name = artist
+			add_all_btn.artist_name = artist['artist']
 			add_all_btn.on_clicked.connect(self.on_artist_add_clicked)
 
 			self.artist_btns.append([artist_button, add_all_btn])
@@ -235,13 +237,19 @@ class AlbumListScene(PiScrollScene):
 
 		scr_y = self.label_height
 
-		artist_albums = mpd.mpd_client.list('album','artist',artist)
+		artist_albums = mpd.mpd_client.list('album','artist', artist)
+
+		logger.debug('%d albums' % len(artist_albums))
+		logger.debug('for artist %s' % artist)
+		logger.debug('artist_albums {}'.format(artist_albums))
 
 		row_count = len(artist_albums)
 
 		for album in artist_albums:
 
-			album_name = album if album != "" else "no name"
+			album_name = "no name"
+			if 'album' in album and album['album'] != '':
+				album_name = album['album']
 
 			btn = ui.Button(
 				ui.Rect( 0, scr_y, self.main.frame.width - self.btn_size - self.margins * 3 - ui.SCROLLBAR_SIZE, self.label_height	),
@@ -251,7 +259,7 @@ class AlbumListScene(PiScrollScene):
 				wrap=ui.CLIP
 			)
 
-			btn.album_name = album
+			btn.album_name = album_name
 			btn.on_clicked.connect(self.album_clicked)
 
 			add_btn = ui.IconButton(
@@ -259,7 +267,7 @@ class AlbumListScene(PiScrollScene):
 				'plus',
 				12
 			)
-			add_btn.album_name = album
+			add_btn.album_name = album_name
 			add_btn.on_clicked.connect(self.album_add_clicked)
 
 			scroll_contents.add_child( btn )
@@ -330,7 +338,10 @@ class AlbumListScene(PiScrollScene):
 		row_count = len(album_tracks)
 
 		for track in album_tracks:
-			track_name = track if track != "" else "no name"
+			logger.debug('track {}'.format(track))
+			track_name = "no name"
+			if 'title' in track and track['title'] != '':
+				track_name = track['title']
 			btn = ui.Button(
 				ui.Rect( 0, scr_y, self.main.frame.width - self.margins - ui.SCROLLBAR_SIZE, self.label_height ),
 				track_name,
@@ -339,7 +350,7 @@ class AlbumListScene(PiScrollScene):
 				wrap=ui.CLIP
 			)
 
-			btn.track_name = track
+			btn.track_name = track_name
 			btn.on_clicked.connect(self.track_clicked)
 
 			self.track_btns.append([btn])
@@ -370,6 +381,7 @@ class AlbumListScene(PiScrollScene):
 		btn.state = 'selected'
 
 		self.main.rm_child(self.artists_view)
+		logger.debug('artist %s clicked' % btn.artist_name)
 		self.populate_albums_view(btn.artist_name)
 		self.main.add_child(self.albums_view)
 		self.current_child = self.albums_view
@@ -442,7 +454,7 @@ class AlbumListScene(PiScrollScene):
 	"""
 	def album_add_clicked(self, btn, mouse_btn):
 
-		print('AlbumListScene::album_add_clicked \t%s' % btn.album_name)
+		logger.debug('AlbumListScene::album_add_clicked \t%s' % btn.album_name)
 
 		self.deselect_all(self.album_btns)
 

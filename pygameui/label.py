@@ -245,3 +245,7 @@ class HeadingOne(Label):
 class DialogLabel(Label):
 	def __init__(self, frame, text, halign=CENTER, valign=CENTER, wrap=CLIP):
 		Label.__init__(self, frame, text, halign, valign, wrap)
+
+class ScreensaverTrack(Label):
+	def __init__(self, frame, text, halign=CENTER, valign=CENTER, wrap=CLIP):
+		Label.__init__(self, frame, text, halign, valign, wrap)

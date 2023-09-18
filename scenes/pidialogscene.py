@@ -154,6 +154,7 @@ class PiDialogScene(ui.Scene):
 	update
 	"""
 	def update(self):
+		#logger.debug("%s::update", self.name)
 		if self.is_mpd_listener == True:
 			if mpd.status_get():
 				self.on_mpd_update()

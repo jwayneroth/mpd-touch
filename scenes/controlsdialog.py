@@ -141,7 +141,7 @@ class ControlsDialog(PiDialogScene):
 	"""
 	def entered(self):
 
-		PiScene.entered(self)
+		logger.debug("vol slider val: %d; mpd vol: %d", self.volume_slider.value, mpd.volume)
 
 		self.volume_slider.value = mpd.volume
 
@@ -154,35 +154,42 @@ class ControlsDialog(PiDialogScene):
 		if play_btn.icon_class != 'pause' and state == 'pause':
 			play_btn.icon_class = 'pause'
 
-		self.stylize()
-
-		PiScene.entered(self)
+		PiDialogScene.entered(self)
 
 	"""
 	on_mpd_update
 	"""
 	def on_mpd_update(self):
+		logger.debug("%s::on_mpd_update", self.name)
 
-		while True:
-			try:
+		self.volume_slider.value = mpd.volume
+		state = mpd.get_playback()
+		play_btn = self.buttons['play_pause']
+		if play_btn.icon_class != 'play' and state == 'play':
+			play_btn.icon_class = 'play'
+		if play_btn.icon_class != 'pause' and state == 'pause':
+			play_btn.icon_class = 'pause'
+	
+		# while True:
+		# 	try:
 
-				event = mpd.events.popleft()
+		# 		event = mpd.events.popleft()
 
-				#print 'Controls::on_mpd_update \t ' + event
+		# 		logger.debug("event: %s", event)
 
-				if event == 'volume':
-					self.volume_slider.value = mpd.volume
-				elif event == 'player_control':
-					state = mpd.get_playback()
-					play_btn = self.buttons['play_pause']
-					if play_btn.icon_class != 'play' and state == 'play':
-						play_btn.icon_class = 'play'
-					if play_btn.icon_class != 'pause' and state == 'pause':
-						play_btn.icon_class = 'pause'
-					break
+		# 		if event == 'volume':
+		# 			self.volume_slider.value = mpd.volume
+		# 		elif event == 'player_control':
+		# 			state = mpd.get_playback()
+		# 			play_btn = self.buttons['play_pause']
+		# 			if play_btn.icon_class != 'play' and state == 'play':
+		# 				play_btn.icon_class = 'play'
+		# 			if play_btn.icon_class != 'pause' and state == 'pause':
+		# 				play_btn.icon_class = 'pause'
+		# 			break
 
-			except IndexError:
-				break
+		# 	except IndexError:
+		# 		break
 
 	"""
 	make_controls_panel

@@ -6,9 +6,9 @@ from .piscene import *
   scene with playback controls
 """
 class ControlsScene(PiScene):
-	def __init__(self, frame=None):
+	def __init__(self, frame, name):
 
-		PiScene.__init__(self, frame, 'Controls')
+		PiScene.__init__(self, frame, name)
 
 		self.is_mpd_listener = True
 		self.sidebar_index = 4

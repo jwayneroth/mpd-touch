@@ -54,9 +54,16 @@ class Fmutheme(ui.theme.Theme):
 		#HeadingOne
 		self.set(class_name='HeadingOne', state='normal', key='font', value=ui.resource.get_font(32, use_bold=True))
 		self.set(class_name='HeadingOne', state='normal', key='text_color', value=mid_gray)
+		#self.set(class_name='HeadingOne', state='normal', key='background_color', value=(255,255,0,0))
 		
-		self.set(class_name='DialogLabel', state='normal', key='background_color', value=None)
+		#DialogLabel
+		self.set(class_name='DialogLabel', state='normal', key='background_color', value=(None))
 		
+		#ScreensaverTrack
+		self.set(class_name='ScreensaverTrack', state='normal', key='font', value=ui.resource.get_font(32, use_bold=True))
+		self.set(class_name='ScreensaverTrack', state='normal', key='text_color', value=lemon)
+		self.set(class_name='ScreensaverTrack', state='normal', key='background_color', value=(None))
+
 		#Button
 		self.set(class_name='Button', state='normal', key='background_color', value=near_black)
 		self.set(class_name='Button', state='focused', key='background_color', value=near_black)

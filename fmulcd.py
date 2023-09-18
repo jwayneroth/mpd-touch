@@ -13,7 +13,7 @@ logger.setLevel(logging.DEBUG)
 ch = logging.StreamHandler()
 ch.setLevel(logging.DEBUG)
 fh = logging.FileHandler('/var/log/fmulcd.log', 'a')
-fh.setLevel(logging.DEBUG)
+fh.setLevel(logging.INFO)
 formatter = logging.Formatter('%(asctime)s_%(name)s_%(levelname)s - %(message)s')
 ch.setFormatter(formatter)
 fh.setFormatter(formatter)
@@ -37,14 +37,14 @@ class Fmulcd(object):
 		self.current = False
 		self.last = False
 
-		screen_width = 800
-		screen_height = 480
+		screen_width = fmuglobals.SCREEN_SIZE[0]
+		screen_height = fmuglobals.SCREEN_SIZE[1]
 
 		self.screen_dimensions = (screen_width, screen_height)
 		self.screen = False
 		self.ss_timer = 0
 		self.ss_timer_on = True
-		self.ss_delay = 60000
+		self.ss_delay = fmuglobals.SS_DELAY
 
 		if not fmuglobals.RUN_ON_RASPBERRY_PI:
 			self.ss_delay = 6000
@@ -57,13 +57,25 @@ class Fmulcd(object):
 		rect = pygame.Rect((0,0), self.screen_dimensions)
 
 		self.scenes = {
-			'NowPlaying': NowPlayingScene(rect),
-			'Albums': AlbumListScene(rect),
-			'Radio': RadioScene(rect),
-			'Settings': SettingsScene(rect),
-			#'Controls': ControlsScene(rect),
-			'Screensaver': ScreensaverScene(rect)
+			'NowPlaying': NowPlayingScene(rect, 'NowPlaying'),
+			'Albums': AlbumListScene(rect, 'Albums'),
+			'Radio': RadioScene(rect, 'Radio'),
+			'Settings': SettingsScene(rect, 'Settings'),
+			#'Controls': ControlsScene(rect, 'Controls'),
+			'Screensaver': ScreensaverScene(rect, 'Screensaver'),
+			#'SpectrumScreensaver': SpectrumScreensaver(rect, 'SpectrumScreensaver', self.screen),
+			'WaveScreensaver': WaveScreensaver(rect, 'WaveScreensaver', self.screen),
+			#'OrigamiScreensaver': OrigamiScreensaver(rect, 'OrigamiScreensaver', self.screen),
+			'LinesScreensaver': LinesScreensaver(rect, 'LinesScreensaver', self.screen),
 		}
+
+		self.screensavers = [
+			'Screensaver',
+			'WaveScreensaver',
+			'LinesScreensaver',
+			#'SpectrumScreensaver',
+			#'OrigamiScreensaver',
+		]
 
 		self.dialogs = {
 			'Controls': ControlsDialog(rect),
@@ -99,13 +111,22 @@ class Fmulcd(object):
 
 		try:
 			os.environ["DISPLAY"] = ":0" # JWR 20230516
-			pygame.init()
+			pygame.display.init()
+			pygame.font.init()
 
 			if fmuglobals.RUN_ON_RASPBERRY_PI:
-				#pygame.mouse.set_visible(False)
-				self.screen = pygame.display.set_mode((self.screen_dimensions), pygame.FULLSCREEN)
+				pygame.mouse.set_visible(fmuglobals.SHOW_MOUSE)
+
+			# custom cursor
+			# surf = pygame.Surface((10, 10)) # you could also load an image 
+			# surf.fill((255, 255, 255, 0))    # and use that as your surface
+			# color = pygame.cursors.Cursor((0, 0), surf)
+			# pygame.mouse.set_cursor(color)
+
+			if fmuglobals.FULLSCREEN:
+				self.screen = pygame.display.set_mode((0,0), pygame.FULLSCREEN)
 			else:
-				self.screen = pygame.display.set_mode(self.screen_dimensions)
+				self.screen = pygame.display.set_mode((self.screen_dimensions), pygame.NOFRAME)
 
 			alarm(0)
 
@@ -115,7 +136,7 @@ class Fmulcd(object):
 		logger.debug('pygame inited on rpi?: %s' % fmuglobals.RUN_ON_RASPBERRY_PI)
 
 		pygame.key.set_repeat(300,180)
-		pygame.display.set_caption('Raspberry Pi UI')
+		pygame.display.set_caption('FmuLcd')
 		#pygame.event.set_allowed(None)
 		#pygame.event.set_allowed(( pygame.QUIT, pygame.KEYDOWN ))
 
@@ -143,6 +164,7 @@ class Fmulcd(object):
 			dialog = self.dialogs[dialog_name]
 			self.current.add_child(dialog)
 			self.current.dialog = dialog
+			dialog.entered()
 			dialog.focus()
 
 	"""
@@ -179,20 +201,36 @@ class Fmulcd(object):
 				logger.debug('going to screensaver')
 				self.ss_timer_on = False
 				self.ss_timer = 0
-				self.change_scene('Screensaver')
+				#self.change_scene('Screensaver')
+				self.load_screensaver()
 
-	def kill_app(self):
-		if fmuglobals.RUN_ON_RASPBERRY_PI:
-			#GPIO.output(18, GPIO.LOW)
-			pygame.quit()
-			try:
-				subprocess.Popen('sudo service fmulcd stop', shell=True, stdout=subprocess.PIPE)
-			except:
-				pass
-			sys.exit(0)
-		else:
-			pygame.quit()
-			sys.exit(0)
+	def load_screensaver(self) :
+		ss = self.screensavers[random.randrange(len(self.screensavers))]
+		self.change_scene(ss)
+
+	def kill_app(self) :
+		logger.debug("fmu.kill_app")
+
+		fmu.current.exited()
+		
+		time.sleep(.05)
+		
+		# if fmuglobals.RUN_ON_RASPBERRY_PI:
+			
+		# 	#GPIO.output(18, GPIO.LOW)
+			
+		# 	pygame.quit()
+			
+		# 	try:
+		# 		subprocess.Popen('sudo service fmulcd stop', shell=True, stdout=subprocess.PIPE)
+		# 	except:
+		# 		pass
+	
+		pygame.quit()
+
+		#sys.exit(0)
+		
+		os._exit(0)
 
 """
 ts mousedown handler
@@ -218,6 +256,7 @@ def ts_move_handler(event, touch):
 mousedown handler
 """
 def _press_handler(mousepoint):
+	#logger.debug("_press_handler %s", mousepoint)
 
 	global user_active
 	global down_in_view
@@ -246,7 +285,7 @@ def _release_handler(mousepoint):
 
 	hit_view = fmu.current.hit(mousepoint)
 
-	if fmu.current == fmu.scenes['Screensaver']:
+	if fmu.current.name in fmu.screensavers:
 		fmu.change_scene('NowPlaying', False, True)
 		return
 
@@ -279,17 +318,17 @@ def _move_handler(mousepoint):
 translate lirc key to pygame key
 """
 def lirc_key_translate(key):
-	if key == 'KEY_LEFT':
+	if key == b'KEY_LEFT':
 		return pygame.K_LEFT
-	elif key == 'KEY_RIGHT':
+	elif key == b'KEY_RIGHT':
 		return pygame.K_RIGHT
-	elif key == 'KEY_UP':
+	elif key == b'KEY_UP':
 		return pygame.K_UP
-	elif key == 'KEY_DOWN':
+	elif key == b'KEY_DOWN':
 		return pygame.K_DOWN
-	elif key == 'KEY_ENTER':
+	elif key == b'KEY_ENTER':
 		return pygame.K_RETURN
-	elif key == 'KEY_SELECT':
+	elif key == b'KEY_SELECT':
 		return pygame.K_RETURN
 	return key
 
@@ -297,13 +336,13 @@ def lirc_key_translate(key):
 check lirc key for special case
 """
 def lirc_special_case(key):
-	if key == 'KEY_VOLUMEUP':
+	if key == b'KEY_VOLUMEUP':
 		mpd.set_volume_relative(5)
 		return True
-	elif key == 'KEY_VOLUMEDOWN':
+	elif key == b'KEY_VOLUMEDOWN':
 		mpd.set_volume_relative(-5)
 		return True
-	elif key == 'KEY_MUTE':
+	elif key == b'KEY_MUTE':
 		#mpd.toggle_muted()
 		mpd.set_volume(0)
 		return True
@@ -328,34 +367,34 @@ if __name__ == '__main__':
 			irw = Irw(8)
 			irw.run()
 	clock = pygame.time.Clock()
-	fps = 32 if fmuglobals.RUN_ON_RASPBERRY_PI else 30
+	#fps = 32 if fmuglobals.RUN_ON_RASPBERRY_PI else 30
 	ticks = 0
 
 	time.sleep(0.3)
 
-	#mpd.radio_station_start('http://stream0.wfmu.org/freeform-128k')
+	mpd.radio_station_start('http://stream0.wfmu.org/freeform-128k')
 
 	while True:
-		ticks = clock.tick()#(fps)
+		ticks = clock.tick() #(fps)
 
 		down_in_view = None
 		user_active = False
 
 		if fmuglobals.RUN_ON_RASPBERRY_PI:
-			#ts.poll()
-			if fmuglobals.USE_LIRCD:
-				irwlast = irw.last()
 
+			#ts.poll()
 			# for touch in ts.touches:
 			# 	touch.on_press = ts_press_handler
 			# 	touch.on_release = ts_release_handler
 			# 	#touch.on_move = ts_move_handler
 
 			if fmuglobals.USE_LIRCD:
+				irwlast = irw.last()
 				if irwlast is not None:
 					user_active = True
 					if lirc_special_case(irwlast) is False:
-						fmu.current.key_down(lirc_key_translate(irwlast), '')
+						irw_trans = lirc_key_translate(irwlast)
+						fmu.current.key_down(irw_trans, '')
 
 		for e in pygame.event.get():
 			if e.type == pygame.QUIT:
@@ -370,11 +409,10 @@ if __name__ == '__main__':
 					break
 
 			#if not fmuglobals.RUN_ON_RASPBERRY_PI:
-			mousepoint = pygame.mouse.get_pos()
 			if e.type == pygame.MOUSEBUTTONDOWN:
-				_press_handler(mousepoint)
+				_press_handler(pygame.mouse.get_pos())
 			elif e.type == pygame.MOUSEBUTTONUP:
-				_release_handler(mousepoint)
+				_release_handler(pygame.mouse.get_pos())
 			#elif e.type == pygame.MOUSEMOTION:
 			# _move_handler(mousepoint, e.rel)
 
@@ -383,10 +421,10 @@ if __name__ == '__main__':
 
 		fmu.current.update()
 
-		if fmu.current.draw():
+		if fmu.current.draw(): # and fmu.current.is_screensaver != True:
 
 			fmu.screen.blit(fmu.current.surface, (0, 0))
 
 			pygame.display.flip()
 
-		#time.sleep(.05)
+		#time.sleep(.033)

@@ -2,21 +2,21 @@ import time
 import os
 
 import fmuglobals
-from .piscene import *
+from ..piscene import *
 
 """
 ScreensaverScene
 """
 class ScreensaverScene(PiScene):
-	def __init__(self, frame=None):
+	def __init__(self, frame, name):
 		ui.Scene.__init__(self, frame)
-		self.name = 'Screensaver'
+		self.name = name
 		self.margins = 15
 		self.btn_size = 45
 		self.margins_bottom = 10
 		self.has_nav = False
 		self.is_mpd_listener = True
-		self.cover_size = 399 #290 #160
+		self.cover_size = frame.height - 66 #81
 		self.label_height = 36
 		self.music_directory = '/var/lib/mpd/music/'
 		self.main_active = False
@@ -37,17 +37,15 @@ class ScreensaverScene(PiScene):
 		self.set_vels()
 
 		if os.path.dirname(__file__) != '':
-			self.image_directory = os.path.dirname(__file__) + '/../' + self.image_directory
+			self.image_directory = os.path.dirname(__file__) + '/../../' + self.image_directory
 		self.screenaver_image_directory = self.image_directory + 'screensavers'
 
 		self.draw_color = fmuglobals.FMU_COLORS['near_black']
 		self.erase_mode = True
 
-		self.track_scroll_velocity = 1
-		if fmuglobals.RUN_ON_RASPBERRY_PI == True:
-			self.track_scroll_velocity = 3
+		self.track_scroll_velocity = fmuglobals.TRACK_SPEED
 
-		self.track_y = self.margins * 2 + self.cover_size #self.label_height * 2 + self.margins * 4 + self.cover_size
+		self.track_y = self.cover_size #self.margins * 2 + self.cover_size #self.label_height * 2 + self.margins * 4 + self.cover_size
 
 		self.track = self.make_track()
 
@@ -64,7 +62,7 @@ class ScreensaverScene(PiScene):
 	"""
 	def make_main(self):
 
-		main = PiMain( #ui.View(
+		main = PiMain(
 			ui.Rect(
 				0,
 				0,
@@ -96,20 +94,16 @@ class ScreensaverScene(PiScene):
 	make_cover
 	"""
 	def make_cover(self):
+		cover_rect = ui.Rect(
+			0,
+			self.margins,
+			self.main.frame.width,
+			self.cover_size
+		)
 		cover = CoverView(
-			ui.Rect(
-				0,
-				self.margins, #self.label_height * 2 + self.margins * 3,
-				self.main.frame.width,
-				self.cover_size
-			),
+			cover_rect,
 			fmuglobals.current_cover_image,
-			ui.Rect(
-				0,
-				self.label_height * 2 + self.margins * 2,
-				self.main.frame.width,
-				self.cover_size
-			)
+			cover_rect,
 		)
 		cover.updated = True
 		self.main.add_child(cover)
@@ -121,9 +115,9 @@ class ScreensaverScene(PiScene):
 	def set_vels(self):
 		self.vx = random.randint(-10, 10)
 		self.vy = random.randint(-10, 10)
-		if self.vx is 0:
+		if self.vx == 0:
 			self.vx = 5
-		if self.vy is 0:
+		if self.vy == 0:
 			self.vy = 5
 
 	"""
@@ -152,7 +146,7 @@ class ScreensaverScene(PiScene):
 	def make_track(self):
 		track_x = 0
 		track_y = self.track_y
-		track_rect = ui.Rect(track_x, track_y, self.main.frame.width, self.label_height)
+		track_rect = ui.Rect(track_x, track_y + self.margins, self.main.frame.width, self.label_height)
 		track = ui.HeadingOne(track_rect, mpd.now_playing.title, halign=ui.CENTER)
 		self.main.add_child(track)
 		return track
@@ -176,7 +170,7 @@ class ScreensaverScene(PiScene):
 		logger.debug('ss entered %s' % self.cover.image)
 
 		if self.cover.image is not current_cover:
-			logger.debug('does not match %s' % fmuglobals.current_cover_image)
+			#logger.debug('does not match %s' % fmuglobals.current_cover_image)
 			self.cover.image = current_cover
 			self.buffer_image = self.cover.image.copy()
 
@@ -419,6 +413,7 @@ class ScreensaverScene(PiScene):
 					self.resize_track()
 				elif event == 'album_change':
 					playing = mpd.now_playing
+					self.track.text = playing.title
 					self.resize_track()
 			except IndexError:
 				break

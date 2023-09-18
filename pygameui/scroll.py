@@ -157,7 +157,7 @@ class VBar(ScrollbarView):
 
         self.scroll_view.set_content_offset(off_x, off_y)
 
-        percentage = (self.scroll_view.frame.h / float(self.scroll_view.content_view.frame.h))
+        percentage = (self.scroll_view.frame.h / float(self.scroll_view.content_view.frame.h)) if (self.scroll_view.content_view.frame.h > 0) else 0
 
         #print 'VBar::_update_thumb pct:' + str(percentage) + ' h: ' + str(self.thumb.frame.h)
 

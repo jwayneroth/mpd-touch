@@ -7,7 +7,7 @@ PiScene
  parent class for all fmulcd scenes
 """
 class PiScene(ui.Scene):
-	def __init__(self, frame=None, name='PiScene'):
+	def __init__(self, frame, name):
 
 		ui.Scene.__init__(self, frame)
 
@@ -27,6 +27,7 @@ class PiScene(ui.Scene):
 		self.sidebar_index = 0
 		self.active_sidebar_btn = 0
 		self.dialog = None
+		self.is_screensaver = False
 
 		self.sidebar = self.make_sidebar()
 		self.main = self.make_main()
@@ -243,9 +244,16 @@ class PiScene(ui.Scene):
 	"""
 	def update(self):
 		#ui.Scene.update(self, dt)
+		dialog_mpd_listener = self.dialog != None and self.dialog.is_mpd_listener == True
+		#logger.debug("%s::update dialog_mpd_listener: %s", self.name, dialog_mpd_listener)
 		if self.is_mpd_listener == True:
 			if mpd.status_get():
 				self.on_mpd_update()
+				if dialog_mpd_listener :
+					self.dialog.on_mpd_update()
+		elif dialog_mpd_listener :
+			if mpd.status_get():
+				self.dialog.on_mpd_update()
 
 	"""
 	on_mpd_update

@@ -12,9 +12,9 @@ SettingsScene
  app settings
 """
 class SettingsScene(PiScene):
-	def __init__(self, frame=None):
+	def __init__(self, frame, name):
 
-		PiScene.__init__(self, frame, 'Settings')
+		PiScene.__init__(self, frame, name)
 
 		self.sidebar_index = 3
 		self.active_sidebar_btn = 3
@@ -104,7 +104,8 @@ class SettingsScene(PiScene):
 	def make_buttons(self):
 
 		btn_data = [
-			{ 'name':'brightness', 'icon_class':'subglasses', 'text':'Brightness' },
+			{ 'name':'settings', 'icon_class':'cog', 'text':'Settings' },
+			#{ 'name':'brightness', 'icon_class':'subglasses', 'text':'Brightness' },
                         { 'name':'update', 'icon_class':'hdd', 'text':'Update Music DB' },
 			{ 'name':'restart', 'icon_class':'repeat', 'text':'Restart Player' },
 			{ 'name':'quit', 'icon_class':'remove', 'text':'Quit Player' },
@@ -165,6 +166,8 @@ class SettingsScene(PiScene):
 	on_btn_clicked
 	"""
 	def on_btn_clicked(self, btn, mouse_btn):
+		if btn.name == 'settings':
+			pass
 		if btn.name == 'shutdown':
 			if fmuglobals.RUN_ON_RASPBERRY_PI:
 				#GPIO.output(18, GPIO.LOW)

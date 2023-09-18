@@ -7,4 +7,5 @@ pygameui/*.pyc
 images/default_covers/*
 *.swp
 creds.txt
+web
 
