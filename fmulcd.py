@@ -29,6 +29,7 @@ import pygameui as ui
 if fmuglobals.USE_LIRCD:
 	from lib.lircpoll import Irw
 from scenes import *
+from web.server.server import *
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 
@@ -43,13 +44,16 @@ class Fmulcd(object):
 		self.screen_dimensions = (screen_width, screen_height)
 		self.screen = False
 		self.ss_timer = 0
-		self.ss_timer_on = True
+		self.ss_timer_on = False
 		self.ss_delay = fmuglobals.SS_DELAY
+		self.web_server = None
 
 		if not fmuglobals.RUN_ON_RASPBERRY_PI:
 			self.ss_delay = 6000
 
 		self.init_pygame()
+
+		self.init_web()
 
 		fmutheme = Fmutheme()
 		ui.theme.use_theme(fmutheme)
@@ -69,13 +73,19 @@ class Fmulcd(object):
 			'LinesScreensaver': LinesScreensaver(rect, 'LinesScreensaver', self.screen),
 		}
 
+		for name, scene in self.scenes.items():
+			scene.layout()
+
 		self.screensavers = [
 			'Screensaver',
 			'WaveScreensaver',
-			'LinesScreensaver',
+			#'LinesScreensaver',
 			#'SpectrumScreensaver',
 			#'OrigamiScreensaver',
 		]
+
+		if fmuglobals.RUN_ON_RASPBERRY_PI:
+			self.screensavers.append('LinesScreensaver')
 
 		self.dialogs = {
 			'Controls': ControlsDialog(rect),
@@ -83,6 +93,7 @@ class Fmulcd(object):
 		}
 
 		for name,scene in self.scenes.items():
+			scene.on_state_changed.connect(self.scene_state_change)
 			scene.on_nav_change.connect(self.change_scene)
 			scene.open_dialog.connect(self.open_dialog)
 
@@ -92,6 +103,9 @@ class Fmulcd(object):
 		self.make_current_scene(self.scenes['NowPlaying'])
 
 		#self.ab = AnalogButtons()
+
+	def scene_state_change(self, scene):
+		logger.debug("FMULCD::scene_state_change::%s" % scene.name)
 
 	"""
 	init_pygame
@@ -123,10 +137,10 @@ class Fmulcd(object):
 			# color = pygame.cursors.Cursor((0, 0), surf)
 			# pygame.mouse.set_cursor(color)
 
-			if fmuglobals.FULLSCREEN:
+			if fmuglobals.FULLSCREEN and fmuglobals.RUN_ON_RASPBERRY_PI:
 				self.screen = pygame.display.set_mode((0,0), pygame.FULLSCREEN)
 			else:
-				self.screen = pygame.display.set_mode((self.screen_dimensions), pygame.NOFRAME)
+				self.screen = pygame.display.set_mode((self.screen_dimensions)) #, pygame.NOFRAME)
 
 			alarm(0)
 
@@ -139,6 +153,17 @@ class Fmulcd(object):
 		pygame.display.set_caption('FmuLcd')
 		#pygame.event.set_allowed(None)
 		#pygame.event.set_allowed(( pygame.QUIT, pygame.KEYDOWN ))
+
+	"""
+	init_web
+	"""
+	def init_web(self):
+		#try:
+		# f = open(os.devnull, 'w')
+		# sys.stdout = sys.stderr = f
+		self.web_server = Server(self)
+		#except Exception as e:
+		#	logger.debug(e)
 
 	"""
 	make_current_scene
@@ -182,6 +207,7 @@ class Fmulcd(object):
 	 push requested scene to ui and refresh it
 	"""
 	def change_scene(self, scene_name, refresh=False, from_screensaver=False):
+		logger.debug("Fmulcd::change_scene %s", self)
 		if from_screensaver:
 			logger.debug('exiting screensaver, going to %s' % self.last.name)
 			self.ss_timer_on = True
@@ -358,6 +384,7 @@ if __name__ == '__main__':
 
 	fmu = Fmulcd()
 
+	update = False
 	down_in_view = None
 	user_active = False
 
@@ -419,7 +446,10 @@ if __name__ == '__main__':
 		if fmu.ss_timer_on:
 			fmu.screensaver_tick(ticks, user_active)
 
-		fmu.current.update()
+		update = fmu.current.update()
+
+		if update and fmu.web_server is not None:
+			fmu.web_server.update_clients()
 
 		if fmu.current.draw(): # and fmu.current.is_screensaver != True:
 

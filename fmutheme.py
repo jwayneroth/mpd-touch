@@ -172,31 +172,3 @@ class Fmutheme(ui.theme.Theme):
 		self.set(class_name='GridView', state='normal', key='line_color', value=light_gray)
 
 		self.set(class_name='PiScene', state='normal', key='background_color', value=near_black)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

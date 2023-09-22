@@ -1,0 +1,12 @@
+{% extends "index.html" %}
+
+{% block body %}
+<div id="nowplaying">
+	<div id="nowplaying__inner">
+		{%if artist != None and artist != '' %}<h2 id="nowplaying__artist">{{ artist }}</h2>{% end %}
+		{%if album != None and album != '' %}<h2 id="nowplaying__album">{{ album }}</h2>{% end %}
+		<img id="nowplaying__cover" src="api/cover" />
+	</div>
+	<h2 id="nowplaying__track">{{ track }}</h2>
+</div>
+{% end %}

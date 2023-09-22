@@ -329,8 +329,8 @@ class Wave():
 			tri.color = base_color
 		for tri in self.wave_triangles :
 			tri.color = wave_color
-		for i in range( (WAVE_RES - 1) * 2) :
-			self.wave_triangles.color = base_color
+		for tri in self.face_triangles :
+			tri.color = base_color
 		self.base_triangles[2].color = wave_color
 		self.base_triangles[3].color = wave_color
 

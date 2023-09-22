@@ -251,9 +251,11 @@ class PiScene(ui.Scene):
 				self.on_mpd_update()
 				if dialog_mpd_listener :
 					self.dialog.on_mpd_update()
+				return True
 		elif dialog_mpd_listener :
 			if mpd.status_get():
 				self.dialog.on_mpd_update()
+		return False
 
 	"""
 	on_mpd_update
@@ -320,7 +322,7 @@ class CoverView(ui.ImageView):
 		if img is None:
 			logger.debug('CoverView img is None, find default ' + self.image_directory + 'default_covers/1.png')
 			img = ui.get_image( self.image_directory + 'default_covers/1.png')
-			print(img)
+			#print(img)
 		assert img is not None
 
 		if frame is None:

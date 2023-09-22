@@ -298,7 +298,7 @@ class ControlsDialog(PiDialogScene):
 
 		tag_name = btn.tag_name
 
-		#print tag_name
+		logger.debug("ControlsDialog::on_button_click %s", tag_name)
 
 		if tag_name == 'play_pause':
 			if mpd.get_playback() == 'play':

@@ -1,0 +1,26 @@
+{% extends "index.html" %}
+
+{% block body %}
+<div id="radio">
+	<nav id="radio__nav">
+		<div class="nav nav-pills" id="radio__tabs" role="tablist">
+			<button class="nav-link active" id="streams-tab" data-bs-toggle="pill" data-bs-target="#radio__streams" type="button" role="tab" aria-controls="radio__streams" aria-selected="true">Streams</button>
+			<button class="nav-link" id="archives-tab" data-bs-toggle="pill" data-bs-target="#radio__archives" type="button" role="tab" aria-controls="radio__archives" aria-selected="false">Archives</button>
+		</div>
+	</nav>
+	<div id="radio__panels" class="tab-content">
+		<div id="radio__streams" class="tab-pane fade show active" aria-labelledby="artists-tab" role="tabpanel" tabindex="0">
+			<ul>
+				{% for station in stations %}
+				<li>
+					<a href class="stream" data-url="{{ url_escape(station['url']) }}">
+						<span>{{ station['title'] }}</span>
+					</a>
+				</li>
+				{% end %}
+			</ul>
+		</div>
+		<div id="radio__archives" class="tab-pane fade" aria-labelledby="archives-tab" role="tabpanel" tabindex="0"></div>
+	</div>
+</div>
+{% end %}

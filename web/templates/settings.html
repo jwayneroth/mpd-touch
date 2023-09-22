@@ -1,0 +1,18 @@
+{% extends "index.html" %}
+
+{% block body %}
+<div id="settings">
+	<nav id="settings__nav">
+		<ul>
+		{% for btn in btn_data %}
+		<li>
+			<a href data-name="{{ btn['name'] }}">
+				<span class="icon {{ btn['icon_class'] }}"></span>
+				<span>{{ btn['text'] }}</span>
+			</a>
+		</li>
+		{% end %}
+		</ul>
+	</nav>
+</div>
+{% end %}

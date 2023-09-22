@@ -65,7 +65,6 @@ class NowPlayingScene(PiScene):
 			]
 		}
 
-
 		for key, val in comp_labels.items():
 			label = ui.HeadingOne( val[0], val[1], halign=ui.CENTER )
 			self.main.add_child(label)
@@ -154,7 +153,7 @@ class NowPlayingScene(PiScene):
 	"""
 	def update(self):
 
-		PiScene.update(self)
+		update = PiScene.update(self)
 
 		track = self.components['track']
 
@@ -168,6 +167,9 @@ class NowPlayingScene(PiScene):
 			track.updated = True
 
 			self.updated = True
+
+		#logger.debug("NowPlaying::update %s" % update)
+		return update
 
 	"""
 	on_mpd_update
@@ -224,8 +226,6 @@ class NowPlayingScene(PiScene):
 				"""
 			except IndexError:
 				break
-
-		#print('on_mpd_update'
 
 	"""
 	update_cover_image

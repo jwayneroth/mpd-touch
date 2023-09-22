@@ -6,6 +6,7 @@ AlbumListScene
 """
 class AlbumListScene(PiScrollScene):
 	def __init__(self, frame, name):
+		logger.debug("AlbumListScene::init")
 
 		PiScrollScene.__init__(self, frame, name)
 
@@ -16,7 +17,7 @@ class AlbumListScene(PiScrollScene):
 		page_nav = self.make_page_nav()
 
 		self.new_playlist_set = False
-		
+
 		self.artists_view = self.make_scroll_view()
 		self.albums_view = self.make_scroll_view()
 		self.tracks_view = self.make_scroll_view()
@@ -24,7 +25,9 @@ class AlbumListScene(PiScrollScene):
 		self.artist_idx = 0
 		self.album_idx = 0
 		self.track_idx = 0
-		
+
+		self.artists = [];
+
 		self.artist_btns = [page_nav]
 		self.album_btns = [page_nav]
 		self.track_btns = [page_nav]
@@ -160,17 +163,20 @@ class AlbumListScene(PiScrollScene):
 
 		row_count = len(artists)
 
-		logger.debug('artists {}'.format(artists))
+		#logger.debug('artists {}'.format(artists))
 
 		for artist in artists:
 
-			logger.debug('artist name {}'.format(artist))
+			#logger.debug('artist name {}'.format(artist))
 
 			btn_name = "no name"
 			if 'artist' in artist and artist['artist'] != '':
 				btn_name = artist['artist']
+			else:
+				continue
+			#logger.debug('btn_name {}'.format(btn_name))
 
-			logger.debug('btn_name {}'.format(btn_name))
+			self.artists.append(artist['artist'])
 
 			artist_button = ui.Button( ui.Rect( 0, scr_y, self.main.frame.width - self.btn_size - self.margins * 3 - ui.SCROLLBAR_SIZE, self.label_height ), btn_name, halign=ui.LEFT, valign=ui.CENTER )
 			artist_button.artist_name = artist['artist']
@@ -239,9 +245,9 @@ class AlbumListScene(PiScrollScene):
 
 		artist_albums = mpd.mpd_client.list('album','artist', artist)
 
-		logger.debug('%d albums' % len(artist_albums))
-		logger.debug('for artist %s' % artist)
-		logger.debug('artist_albums {}'.format(artist_albums))
+		#logger.debug('%d albums' % len(artist_albums))
+		#logger.debug('for artist %s' % artist)
+		#logger.debug('artist_albums {}'.format(artist_albums))
 
 		row_count = len(artist_albums)
 
@@ -338,7 +344,7 @@ class AlbumListScene(PiScrollScene):
 		row_count = len(album_tracks)
 
 		for track in album_tracks:
-			logger.debug('track {}'.format(track))
+			#logger.debug('track {}'.format(track))
 			track_name = "no name"
 			if 'title' in track and track['title'] != '':
 				track_name = track['title']

@@ -1,0 +1,32 @@
+@mixin glyphicon {
+	
+	@each $class, $text_code in $glyphicon_classes {
+		&.#{$class}::before {
+			content: $text_code;
+		}
+	}
+
+	display: flex;
+	flex-flow: column nowrap;
+	justify-content: center;
+	align-items: center;
+	text-decoration: none;
+	width: 50px;
+	height: 50px;
+
+	&::before {
+		display: block;
+		font-family: glyphicons;
+		font-size: 34px;
+		color: map-get($theme_colors, 'light_purple');
+		content: "\e019";
+	}
+
+	&:hover::before {
+		color: map-get($theme_colors, 'orange');
+	}
+
+	&.active::before {
+		color: map-get($theme_colors, 'lemon');
+	}
+}

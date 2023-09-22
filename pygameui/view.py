@@ -51,6 +51,7 @@ class View(object):
 
         self.shadowed = False
         self.shadow_image = None
+        self.background_color = None
 
         self.on_focused = callback.Signal()
         self.on_blurred = callback.Signal()

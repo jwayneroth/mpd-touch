@@ -162,7 +162,7 @@ class PiScrollScene(PiScene):
 
 				new_active_btn = self.child_view_btns[self.current_child_index][self.active_btn_row][new_index]
 
-				if new_active_btn.state is 'disabled':
+				if new_active_btn.state == 'disabled':
 					return
 
 				self.active_btn_index = new_index

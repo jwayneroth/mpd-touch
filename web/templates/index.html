@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+	<meta charset="UTF-8">
+	<!-- <link rel='icon' type='image/png' href='web/client/favicon.png'/> -->
+	<link rel="stylesheet" type="text/css" href="assets/css/app.css">
+	<!-- <script type="text/javascript" src="assets/js/websocket.js"></script>
+	<script type="text/javascript" src="assets/js/controller.js"></script> -->
+	<script type="text/javascript" src="assets/js/app.js"></script>
+	<title>{{ title }}</title>
+</head>
+<body class="{% if request.uri[1:] != '' %}{{ request.uri[1:] }}{% else %}home{% end %}">
+	<div id="app">
+		<aside id="sidebar">
+			<nav id="main-nav">
+				<ul>
+					{% for link,vals in main_nav.items() %}
+					<li>
+						<a
+							href="{{ vals[0] }}"
+							class="{{ vals[1] }}{% if request.uri == vals[0] %}{{ ' active' }}{% end %}"
+						>
+							<span>{{ link }}</span>
+						</a>
+					</li>
+					{% end %}
+					<li>
+						<a href data-bs-toggle="modal" data-bs-target="#controls" class="volume-down"></a>
+					</li>
+				</ul>
+			</nav>
+		</aside>
+		<main id="main">
+			{% block body %}{% end %}
+		</main>
+	</div>
+	<div class="modal fade" id="controls" tabindex="-1" aria-hidden="true">
+		<div id="controls__dialog" class="modal-dialog modal-dialog-centered">
+			<div id="controls__content" class="modal-content">
+				<button id="controls__close" type="button" class="btn btn-dark" data-bs-dismiss="modal" aria-label="Close">
+					<span class="icon remove"></span>
+				</button>
+				<div id="controls__body" class="modal-body">
+					<h2>Volume</h2>
+					<input
+						type="range"
+						class="form-range"
+						id="controls__volume"
+						data-bs-theme="dark"
+						min="0"
+						max="100"
+						{%if 'current_volume' in locals() %}
+						value="{{ current_volume }}"
+						{% else %}
+						disabled
+						{% end %}
+					/>
+					<div class="btn-group">
+						<button type="button" class="btn btn-dark" data-tag-name="volume-off">
+							<span class="icon volume-off"></span>
+						</button>
+						<button type="button" class="btn btn-dark" data-tag-name="volume-down">
+							<span class="icon volume-down"></span>
+						</button>
+						<button type="button" class="btn btn-dark" data-tag-name="volume-up">
+							<span class="icon volume-up"></span>
+						</button>
+					</div>
+					<h2>Controls</h2>
+					<div class="btn-group">
+						<button type="button" class="btn btn-dark" data-tag-name="play_pause">
+							<span class="icon {%if 'play_state' in locals() %}{{ play_state }}{% else %}play{% end %}"></span>
+						</button>
+						<button type="button" class="btn btn-dark" data-tag-name="prev">
+							<span class="icon backward"></span>
+						</button>
+						<button type="button" class="btn btn-dark" data-tag-name="next">
+							<span class="icon forward"></span>
+						</button>
+						<button type="button" class="btn btn-dark" data-tag-name="play_mode">
+							<span class="icon {%if 'play_mode' in locals() %}{{ current_play_mode }}{% else %}unchecked{% end %}"></span>
+						</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>

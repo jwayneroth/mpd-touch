@@ -22,6 +22,16 @@ class SettingsScene(PiScene):
 		self.active_btn_index = 0
 		self.active_btn = False
 
+		self.btn_data = [
+			{ 'name':'settings', 'icon_class':'cog', 'text':'Settings' },
+			#{ 'name':'brightness', 'icon_class':'subglasses', 'text':'Brightness' },
+			{ 'name':'update', 'icon_class':'hdd', 'text':'Update Music DB' },
+			{ 'name':'restart', 'icon_class':'repeat', 'text':'Restart Player' },
+			{ 'name':'quit', 'icon_class':'remove', 'text':'Quit Player' },
+			{ 'name':'reboot', 'icon_class':'signal', 'text':'Restart Pi' },
+			{ 'name':'shutdown', 'icon_class':'off', 'text':'Shutdown' }
+		]
+
 		self.btns = []
 
 		self.make_buttons()
@@ -103,15 +113,7 @@ class SettingsScene(PiScene):
 	"""
 	def make_buttons(self):
 
-		btn_data = [
-			{ 'name':'settings', 'icon_class':'cog', 'text':'Settings' },
-			#{ 'name':'brightness', 'icon_class':'subglasses', 'text':'Brightness' },
-                        { 'name':'update', 'icon_class':'hdd', 'text':'Update Music DB' },
-			{ 'name':'restart', 'icon_class':'repeat', 'text':'Restart Player' },
-			{ 'name':'quit', 'icon_class':'remove', 'text':'Quit Player' },
-			{ 'name':'reboot', 'icon_class':'signal', 'text':'Restart Pi' },
-			{ 'name':'shutdown', 'icon_class':'off', 'text':'Shutdown' }
-		]
+		btn_data = self.btn_data
 
 		scr_y = 0
 
@@ -166,24 +168,35 @@ class SettingsScene(PiScene):
 	on_btn_clicked
 	"""
 	def on_btn_clicked(self, btn, mouse_btn):
+		logger.debug("Settings::on_btn_clicked %s", btn.name)
+
 		if btn.name == 'settings':
 			pass
+
 		if btn.name == 'shutdown':
 			if fmuglobals.RUN_ON_RASPBERRY_PI:
 				#GPIO.output(18, GPIO.LOW)
 				logger.debug('calling shutdown')
 				subprocess.Popen('sudo shutdown -h now', shell=True, stdout=subprocess.PIPE)
 			else:
-				sys.exit()
+				import pygame
+				import sys
+				pygame.quit()
+				sys.exit(0)
+
 		elif btn.name == 'reboot':
 			if fmuglobals.RUN_ON_RASPBERRY_PI:
 				logger.debug('calling reboot now')
 				subprocess.Popen('sudo shutdown -r now', shell=True, stdout=subprocess.PIPE)
 			else:
-				sys.exit()
+				import pygame
+				import sys
+				pygame.quit()
+				sys.exit(0)
+
 		elif btn.name == 'update':
-			mpd.library_rescan()
 			import pygame
+			mpd.library_rescan()
 			pygame.time.wait(5000)
 			self.on_nav_change('Albums', True)
 
@@ -194,8 +207,11 @@ class SettingsScene(PiScene):
 				logger.debug('requesting fmulcd service restart')
 				subprocess.Popen('sudo service fmulcd restart', shell=True, stdout=subprocess.PIPE)
 			else:
+				import pygame
 				import sys
-				sys.exit()
+				pygame.quit()
+				sys.exit(0)
+
 		elif btn.name == 'quit':
 			logger.debug('quitting fmulcd')
 			if fmuglobals.RUN_ON_RASPBERRY_PI:
@@ -209,8 +225,9 @@ class SettingsScene(PiScene):
 				sys.exit(0)
 			else:
 				import pygame
-				pygame.quit()
 				import sys
+				pygame.quit()
 				sys.exit(0)
+
 		elif btn.name == 'brightness':
 			self.open_dialog('Brightness')

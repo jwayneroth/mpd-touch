@@ -1,0 +1,30 @@
+{% extends "index.html" %}
+
+{% block body %}
+<div id="library">
+	<nav id="library__nav">
+		<a href class="new-playlist">New Playlist<span class="icon list-alt"></span></a>
+		<div class="nav nav-tabs" id="library__tabs" role="tablist" style="display: none;">
+			<button class="nav-link active" id="artists-tab" data-bs-toggle="tab" data-bs-target="#library__artists" type="button" role="tab" aria-controls="library__artists" aria-selected="true">Artists</button>
+			<button class="nav-link" id="albums-tab" data-bs-toggle="tab" data-bs-target="#library__albums" type="button" role="tab" aria-controls="library__albums" aria-selected="false">Albums</button>
+			<button class="nav-link" id="tracks-tab" data-bs-toggle="tab" data-bs-target="#library__tracks" type="button" role="tab" aria-controls="library__tracks" aria-selected="false">Tracks</button>
+		</div>
+	</nav>
+	<div id="library__panels" class="tab-content">
+		<div id="library__artists" class="tab-pane fade show active" aria-labelledby="artists-tab" role="tabpanel" tabindex="0">
+			<ul>
+			{% for artist in artists %}
+			<li>
+				<a class="artist" href data-name="{{ url_escape(artist) }}">
+					<span>{{ artist }}</span>
+				</a>
+				<a href class="add-artist icon plus" data-name="{{ url_escape(artist) }}"></a>
+			</li>
+			{% end %}
+			</ul>
+		</div>
+		<div id="library__albums" class="tab-pane fade" aria-labelledby="albums-tab" role="tabpanel" tabindex="0"></div>
+		<div id="library__tracks" class="tab-pane fade" aria-labelledby="tracks-tab" role="tabpanel" tabindex="0"></div>
+	</div>
+</div>
+{% end %}
