@@ -48,9 +48,6 @@ class Fmulcd(object):
 		self.ss_delay = fmuglobals.SS_DELAY
 		self.web_server = None
 
-		if not fmuglobals.RUN_ON_RASPBERRY_PI:
-			self.ss_delay = 6000
-
 		self.init_pygame()
 
 		self.init_web()
