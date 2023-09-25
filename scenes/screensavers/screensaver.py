@@ -206,7 +206,7 @@ class ScreensaverScene(PiScene):
 	update
 	"""
 	def update(self):
-		PiScene.update(self)
+		updated = PiScene.update(self)
 
 		#move the bouncing image and do wall check
 		bouncer = self.ss.frame
@@ -283,6 +283,8 @@ class ScreensaverScene(PiScene):
 		#render
 		#self.stylize()
 		self.updated = True
+
+		return updated
 
 	"""
 	is_cover_erased

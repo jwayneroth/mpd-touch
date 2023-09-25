@@ -2,6 +2,7 @@ import 'bootstrap/js/dist/tab';
 import 'bootstrap/js/dist/modal';
 
 import WebSocketHandler from './websocket-handler';
+import NowPlayingPage from './nowplaying-page';
 import SettingsPage from './settings-page';
 import LibraryPage from './library-page';
 import RadioPage from './radio-page';
@@ -12,6 +13,11 @@ const socketHandler = new WebSocketHandler();
 window.addEventListener('load', function () {
 
 	socketHandler.checkInitSocket();
+
+	const nowplaying = document.querySelector('#nowplaying');
+	if (nowplaying) {
+		new NowPlayingPage(nowplaying);
+	}
 
 	const library = document.querySelector('#library');
 	if (library) {

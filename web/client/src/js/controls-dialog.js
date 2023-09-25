@@ -26,15 +26,33 @@ export default class ControlsDialog {
 		this.dom.volumeSlider.addEventListener('change', this.onVolumeChange.bind(this));
 
 		el.addEventListener('shown.bs.modal', this.onModalShown.bind(this));
+
+		window.addEventListener('mpdstatus', this.onMpdStatus.bind(this));
+	}
+
+	onMpdStatus(evt) {
+		console.log('ControlsDialog::onMpdStatus', evt.detail);
 	}
 
 	controlClick(evt) {
 		evt.preventDefault();
 
-		console.log('control link click', evt.currentTarget.dataset.tagName);
+		const tag_name = evt.currentTarget.dataset.tagName;
+		console.log('control link click', tag_name);
 
-		axios.get(API_URL + '/controls/' + evt.currentTarget.dataset.tagName)
-			.then(this.updateControlButtons.bind(this))
+		if (tag_name == 'volume-off') {
+			this.dom.volumeSlider.value = 0;
+			this.onVolumeChange();
+		} else if (tag_name == 'volume-down') {
+			this.dom.volumeSlider.value = parseInt(this.dom.volumeSlider.value, 10) - 10;
+			this.onVolumeChange();
+		} else if (tag_name == 'volume-up') {
+			this.dom.volumeSlider.value = parseInt(this.dom.volumeSlider.value, 10) + 10;
+			this.onVolumeChange();
+		} else {
+			axios.get(API_URL + '/controls/' + tag_name)
+				.then(this.updateControlButtons.bind(this))
+		}
 
 		return false;
 	}

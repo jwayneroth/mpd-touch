@@ -255,6 +255,7 @@ class PiScene(ui.Scene):
 		elif dialog_mpd_listener :
 			if mpd.status_get():
 				self.dialog.on_mpd_update()
+				return True
 		return False
 
 	"""

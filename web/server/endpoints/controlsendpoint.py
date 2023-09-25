@@ -18,9 +18,7 @@ class ControlsEndpoint(RequestHandler):
 			class Object(object):
 				pass
 
-			btn = Object()
-			btn.tag_name = resource
-
+			btn = scene.buttons[resource]
 			scene.on_button_click(btn, None)
 
 			self.finish({'play_state': mpd.get_playback(), 'play_mode': scene.play_modes[scene.current_play_mode]})

@@ -99,8 +99,11 @@ class SpectrumScreensaver(PiScene):
 	update
 	"""
 	def update(self):
+		updated = False
+
 		if mpd.status_get():
 			self.on_mpd_update()
+			updated = True
 
 		track = self.track
 
@@ -112,6 +115,8 @@ class SpectrumScreensaver(PiScene):
 		self.updated = True
 		
 		time.sleep(fmuglobals.SS_UPDATE_INTERVAL)
+
+		return updated
 
 	"""
 	on_mpd_update

@@ -92,10 +92,16 @@ function dispatchMessageFromServer(msg) {
 		return;
 	}
 
-	var c = d["command"];
-	var comps = d["components"];
+	var s = d["status"];
 
-	console.log("command: " + c);
+	if (s) {
+		dispatchStatus(s);
+	}
+
+	console.log('status', s);
+
+	var c = d["command"];
+	console.log("command", c);
 
 	if (c == "refresh") {
 		if (document.body.classList.contains('home')) {
@@ -127,4 +133,13 @@ function webSocketClosedInServer() {
 	console.log("webSocket closed in server");
 	closeWebSocketInClient();
 	console.log("webSocket closed in client");
+}
+
+function dispatchStatus(status) {
+	console.log('dispatchStatus', status)
+
+	const event = new CustomEvent("mpdstatus", { detail: status });
+
+	// Dispatch the event.
+	window.dispatchEvent(event);
 }

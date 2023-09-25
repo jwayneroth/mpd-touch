@@ -1,0 +1,45 @@
+import { axios, API_URL } from './api';
+
+/**
+ * NowPlaying
+ */
+export default class NowPlayingPage {
+	constructor(el) {
+
+		this.dom = {
+			el,
+			artist: el.querySelector('#nowplaying__artist'),
+			album: el.querySelector('#nowplaying__album'),
+			cover: el.querySelector('#nowplaying__cover'),
+			track: el.querySelector('#nowplaying__track'),
+		};
+
+		console.log('NowPlayingPage dom', this.dom);
+
+		window.addEventListener('mpdstatus', this.onMpdStatus.bind(this));
+	}
+
+	onMpdStatus(evt) {
+		const status = evt.detail;
+
+		console.log('NowPlayingPage::onMpdStatus', status);
+
+		if (status.now_playing.artist && status.now_playing.artist != '') {
+			this.dom.artist.innerHTML = status.now_playing.artist;
+			this.dom.artist.setAttribute('style', 'display: block;');
+		} else {
+			this.dom.artist.setAttribute('style', 'display: hidden;');
+		}
+
+		if (status.now_playing.album && status.now_playing.album != '') {
+			this.dom.album.innerHTML = status.now_playing.album;
+			this.dom.album.setAttribute('style', 'display: block;');
+		} else {
+			this.dom.album.setAttribute('style', 'display: hidden;');
+		}
+
+		this.dom.track.innerHTML = status.now_playing.title;
+
+		this.dom.cover.setAttribute('src', '/api/cover');
+	}
+}

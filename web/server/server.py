@@ -6,6 +6,7 @@ from tornado.httpserver import HTTPServer
 import os
 from threading import Thread
 
+from lib.mpd_client import *
 from web.server.constants import *
 from .handlers import * 
 from .endpoints import * 
@@ -72,9 +73,25 @@ class Server(object):
 
 		#self.send_json_to_web_ui(self.screen_to_json())
 
-	def update_clients(self):
-		logger.debug("Server::update_clients")
-		self.send_json_to_web_ui()
+	def update(self):
+		if len(self.web_clients) > 0:
+			try:
+				for c in self.web_clients:
+					c.write_message(json.dumps({"status" : {
+						"volume": mpd.volume,
+						"now_playing": {
+							"type": mpd.now_playing.playing_type,
+							"title": mpd.now_playing.title,
+							"artist": mpd.now_playing.artist,
+							"name": mpd.now_playing.name,
+							"album": mpd.now_playing.album
+						}
+					}}).encode(encoding="utf-8"))
+					#c.write_message(json.dumps({"command" : "refresh"}).encode(encoding="utf-8"))
+			except Exception as e:
+				logging.debug(e)
+		else:
+			logger.debug("no clients to update!")
 
 	def send_json_to_web_ui(self):
 		""" Send provided Json object to all web clients

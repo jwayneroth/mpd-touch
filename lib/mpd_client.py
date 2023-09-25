@@ -126,7 +126,7 @@ class MPDController(object):
 		# if our playback status is unchanged, end parsing
 		if self.__status == status:
 			return status_change
-		
+
 		self.__status = status
 
 		self.playback_options_get(status)

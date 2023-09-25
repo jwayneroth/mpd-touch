@@ -67,7 +67,6 @@ class Fmulcd(object):
 			#'SpectrumScreensaver': SpectrumScreensaver(rect, 'SpectrumScreensaver', self.screen),
 			'WaveScreensaver': WaveScreensaver(rect, 'WaveScreensaver', self.screen),
 			#'OrigamiScreensaver': OrigamiScreensaver(rect, 'OrigamiScreensaver', self.screen),
-			'LinesScreensaver': LinesScreensaver(rect, 'LinesScreensaver', self.screen),
 		}
 
 		for name, scene in self.scenes.items():
@@ -82,6 +81,7 @@ class Fmulcd(object):
 		]
 
 		if fmuglobals.RUN_ON_RASPBERRY_PI:
+			self.scenes.LinesScreensaver = LinesScreensaver(rect, 'LinesScreensaver', self.screen)
 			self.screensavers.append('LinesScreensaver')
 
 		self.dialogs = {
@@ -443,10 +443,9 @@ if __name__ == '__main__':
 		if fmu.ss_timer_on:
 			fmu.screensaver_tick(ticks, user_active)
 
-		update = fmu.current.update()
-
-		if update and fmu.web_server is not None:
-			fmu.web_server.update_clients()
+		if fmu.current.update():
+			if fmu.web_server is not None:
+				fmu.web_server.update()
 
 		if fmu.current.draw(): # and fmu.current.is_screensaver != True:
 
