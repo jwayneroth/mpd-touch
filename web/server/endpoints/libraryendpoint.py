@@ -25,7 +25,7 @@ class LibraryEndpoint(RequestHandler):
 		if resource == None or resource == "":
 			artists = scene.artists
 			#logger.debug("LibraryHandler::get artists %s", artists)
-			self.render("library.html", artists=artists)
+			return self.render("library.html", artists=artists)
 
 		elif resource == "artist":
 			artist = url_unescape(self.get_argument('artist'))

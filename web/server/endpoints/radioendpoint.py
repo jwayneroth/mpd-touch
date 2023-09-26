@@ -21,7 +21,7 @@ class RadioEndpoint(RequestHandler):
 
 		if resource == "":
 			stations = scene.stations
-			self.render("radio.html", stations=stations)
+			return self.render("radio.html", stations=stations)
 
 		elif resource == "stream":
 			stream = url_unescape(self.get_argument('stream'))

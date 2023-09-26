@@ -33,14 +33,14 @@ export default class NowPlayingPage {
 			this.dom.artist.innerHTML = status.now_playing.artist;
 			this.dom.artist.setAttribute('style', 'display: block;');
 		} else {
-			this.dom.artist.setAttribute('style', 'display: hidden;');
+			this.dom.artist.setAttribute('style', 'display: none;');
 		}
 
 		if (status.now_playing.album && status.now_playing.album != '') {
 			this.dom.album.innerHTML = status.now_playing.album;
 			this.dom.album.setAttribute('style', 'display: block;');
 		} else {
-			this.dom.album.setAttribute('style', 'display: hidden;');
+			this.dom.album.setAttribute('style', 'display: none;');
 		}
 
 		this.dom.track.innerHTML = status.now_playing.title;

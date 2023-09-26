@@ -11,7 +11,7 @@ class ControlsEndpoint(RequestHandler):
 		logger.debug("ControlsEndpoint::get %s", resource)
 
 		if resource == 'volume':
-			self.finish({'volume': mpd.volume})
+			return self.finish({'volume': mpd.volume})
 		else:
 			scene = self.app.dialogs['Controls']
 

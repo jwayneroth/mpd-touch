@@ -12,7 +12,7 @@ class SettingsEndpoint(RequestHandler):
 		
 		if resource == "":
 			btn_data = scene.btn_data
-			self.render("settings.html", btn_data=btn_data)
+			return self.render("settings.html", btn_data=btn_data)
 
 		else:
 			for btn in scene.btns:
