@@ -81,7 +81,7 @@ class Fmulcd(object):
 		]
 
 		if fmuglobals.RUN_ON_RASPBERRY_PI:
-			self.scenes.LinesScreensaver = LinesScreensaver(rect, 'LinesScreensaver', self.screen)
+			self.scenes['LinesScreensaver'] = LinesScreensaver(rect, 'LinesScreensaver', self.screen)
 			self.screensavers.append('LinesScreensaver')
 
 		self.dialogs = {
