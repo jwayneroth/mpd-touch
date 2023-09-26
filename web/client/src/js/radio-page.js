@@ -5,6 +5,13 @@ import { axios, API_URL } from './api';
  */
 export default class RadioPage {
 	constructor(el) {
+		console.log('RadioPage::init');
+
+		this.initDom(el);
+
+	}
+
+	initDom(el) {
 
 		this.archivesLoaded = false;
 
@@ -67,10 +74,14 @@ export default class RadioPage {
 		axios.get(API_URL + '/radio/' + endpoint, { params }).then(callback);
 	}
 
+	gotoNowPlaying() {
+		window.location.hash = '';
+	}
+
 	//
 	// button handlers
 	//
-	onArchivesShown(evt) {
+	onArchivesShown() {
 		if (this.archivesLoaded) return;
 		this.apiCall('archives', {}, this.populateArchivesPanel.bind(this));
 	}
@@ -79,7 +90,7 @@ export default class RadioPage {
 		console.log('stream link click', evt.currentTarget.dataset.url);
 		evt.preventDefault();
 		const stream = evt.currentTarget.dataset.url;
-		this.apiCall('stream', { stream }, () => { });
+		this.apiCall('stream', { stream }, () => this.gotoNowPlaying());
 		return false;
 	}
 
@@ -87,7 +98,7 @@ export default class RadioPage {
 		console.log('archive link click', evt.currentTarget.dataset.url);
 		evt.preventDefault();
 		const archive = evt.currentTarget.dataset.url;
-		this.apiCall('archive', { archive }, () => { });
+		this.apiCall('archive', { archive }, () => this.gotoNowPlaying());
 		return false;
 	}
 

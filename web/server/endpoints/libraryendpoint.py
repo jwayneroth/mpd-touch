@@ -15,14 +15,19 @@ class LibraryEndpoint(RequestHandler):
 			autoplay = True
 		return autoplay
 
-	def get(self, resource):
+	def get(self, resource=None):
 		scene = self.app.scenes['Albums']
 		
 		logger.debug("LibraryEndpoint::get %s", resource)
 
 		#try:
 
-		if resource == "artist":
+		if resource == None or resource == "":
+			artists = scene.artists
+			#logger.debug("LibraryHandler::get artists %s", artists)
+			self.render("library.html", artists=artists)
+
+		elif resource == "artist":
 			artist = url_unescape(self.get_argument('artist'))
 			albums = []
 			artist_albums = mpd.mpd_client.list('album','artist', artist)

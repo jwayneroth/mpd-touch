@@ -8,5 +8,5 @@ images/default_covers/*
 *.swp
 creds.txt
 node_modules
-web/client/public
+#web/client/public
 

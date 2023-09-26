@@ -1,3 +1,4 @@
+from .nowplayingendpoint import *
 from .radioendpoint import *
 from .coverendpoint import *
 from .settingsendpoint import *

@@ -10,10 +10,15 @@ class SettingsEndpoint(RequestHandler):
 	def get(self, resource):
 		scene = self.app.scenes['Settings']
 		
-		for btn in scene.btns:
-			if btn.name == resource:
-				btn.on_clicked(btn, False)
-				return self.finish()
+		if resource == "":
+			btn_data = scene.btn_data
+			self.render("settings.html", btn_data=btn_data)
+
+		else:
+			for btn in scene.btns:
+				if btn.name == resource:
+					btn.on_clicked(btn, False)
+					return self.finish()
 
 		self.set_status(500)
 		return self.finish()

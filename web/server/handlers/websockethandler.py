@@ -6,15 +6,13 @@ from web.server.constants import *
 class WebSocketHandler(WebSocketHandler):
 	""" Custom WebSocket handler extends Tornado handler """
 
-	def initialize(self, redraw_web_ui, web_clients):
+	def initialize(self, web_clients):
 		""" Initializer
 
-			:param redraw_web_ui: method to redraw the whole web UI
 			:param web_clients: the list of web clients
 		"""
 		logger.debug("WebSocketHandler initialized")
 
-		self.redraw_web_ui = redraw_web_ui
 		self.web_clients = web_clients
 
 	def open(self):
@@ -55,7 +53,8 @@ class WebSocketHandler(WebSocketHandler):
 			:param d: command object
 		"""
 		if d["command"] == "init":
-			self.redraw_web_ui()
+			#self.redraw_web_ui()
+			pass
 		elif d["command"] == "mouse":
 			a = {}
 			a["pos"] = (d["x"], d["y"])

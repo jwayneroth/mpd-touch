@@ -5,6 +5,8 @@ import { axios, API_URL } from './api';
  */
 export default class ControlsDialog {
 	constructor(el) {
+		console.log('ControlsDialog::init');
+
 		let i;
 
 		const controls = el.querySelectorAll('.btn-group .btn[data-tag-name]');
@@ -16,8 +18,6 @@ export default class ControlsDialog {
 			playMode: el.querySelector("button[data-tag-name='play_mode']"),
 			volumeSlider: el.querySelector('#controls__volume'),
 		};
-
-		console.log('ControlsDialog dom', this.dom);
 
 		for (i = 0; i < controls.length; i++) {
 			controls[i].addEventListener('click', this.controlClick.bind(this));

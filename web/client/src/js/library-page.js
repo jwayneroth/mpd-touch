@@ -5,7 +5,12 @@ import { axios, API_URL } from './api';
  */
 export default class LibraryPage {
 	constructor(el) {
+		console.log('LibraryPage::init');
 
+		this.initDom(el);
+	}
+
+	initDom(el) {
 		this.currentArtist = null;
 		this.currentAlbum = null;
 		this.dom = {
@@ -121,6 +126,10 @@ export default class LibraryPage {
 	apiCall(endpoint, params, callback) {
 		axios.get(API_URL + '/library/' + endpoint, { params }).then(callback);
 	}
+
+	// gotoNowPlaying() {
+	// 	window.location.hash = '';
+	// }
 
 	//
 	// button handlers

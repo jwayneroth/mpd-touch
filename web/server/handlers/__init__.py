@@ -1,5 +1,2 @@
-from .nowplayinghandler import *
-from .libraryhandler import *
-from .radiohandler import *
-from .settingshandler import *
+from .indexhandler import *
 from .websockethandler import *

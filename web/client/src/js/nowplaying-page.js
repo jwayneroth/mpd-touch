@@ -5,7 +5,14 @@ import { axios, API_URL } from './api';
  */
 export default class NowPlayingPage {
 	constructor(el) {
+		console.log('NowPlayingPage::init');
 
+		this.initDom(el);
+
+		//window.addEventListener('mpdstatus', this.onMpdStatus.bind(this));
+	}
+
+	initDom(el) {
 		this.dom = {
 			el,
 			artist: el.querySelector('#nowplaying__artist'),
@@ -15,8 +22,6 @@ export default class NowPlayingPage {
 		};
 
 		console.log('NowPlayingPage dom', this.dom);
-
-		window.addEventListener('mpdstatus', this.onMpdStatus.bind(this));
 	}
 
 	onMpdStatus(evt) {

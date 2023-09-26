@@ -3,7 +3,7 @@
 <head lang="en">
 	<meta charset="UTF-8">
 	<meta http-equiv="Cache-Control" content="no-store" />
-	<!-- <link rel='icon' type='image/png' href='web/client/favicon.png'/> -->
+	<link rel='icon' type='image/png' href='assets/images/favicon.png'/>
 	<link rel="stylesheet" type="text/css" href="assets/css/app.css">
 	<script type="text/javascript" src="assets/js/app.js"></script>
 	<title>{{ title }}</title>
@@ -13,24 +13,35 @@
 		<aside id="sidebar">
 			<nav id="main-nav">
 				<ul>
-					{% for link,vals in main_nav.items() %}
 					<li>
-						<a
-							href="{{ vals[0] }}"
-							class="{{ vals[1] }}{% if request.uri == vals[0] %}{{ ' active' }}{% end %}"
-						>
-							<span>{{ link }}</span>
+						<a href="#" class="cd active">
+							<span>Home</span>
 						</a>
 					</li>
-					{% end %}
 					<li>
-						<a href data-bs-toggle="modal" data-bs-target="#controls" class="volume-down"></a>
+						<a href="#library" class="list">
+							<span>Library</span>
+						</a>
+					</li>
+					<li>
+						<a href="#radio" class="music">
+							<span>Radio</span>
+						</a>
+					</li>
+					<li>
+						<a href="#settings" class="cog">
+							<span>Settings</span>
+						</a>
+					</li>
+					<li>
+						<a href data-bs-toggle="modal" data-bs-target="#controls" class="volume-down">
+							<span>Controls</span>
+						</a>
 					</li>
 				</ul>
 			</nav>
 		</aside>
 		<main id="main">
-			{% block body %}{% end %}
 		</main>
 	</div>
 	<div class="modal fade" id="controls" tabindex="-1" aria-hidden="true">

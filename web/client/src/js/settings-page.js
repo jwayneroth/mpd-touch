@@ -5,6 +5,12 @@ import { axios, API_URL } from './api';
  */
 export default class SettingsPage {
 	constructor(el) {
+		console.log('SettingsPage::init');
+
+		this.initDom(el);
+	}
+
+	initDom(el) {
 		this.el = el;
 		const links = this.el.querySelectorAll('a');
 		let i;

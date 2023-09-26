@@ -19,7 +19,11 @@ class RadioEndpoint(RequestHandler):
 		
 		#try:
 
-		if resource == "stream":
+		if resource == "":
+			stations = scene.stations
+			self.render("radio.html", stations=stations)
+
+		elif resource == "stream":
 			stream = url_unescape(self.get_argument('stream'))
 			logger.debug('stream url: %s', stream)
 			mpd.radio_station_start(stream)
