@@ -31,23 +31,27 @@ class CoverEndpoint(RequestHandler):
 
 		return s
 
-	def get(self):
+	def get(self, resource=None):
 		logger.debug("CoverHandler::get")
 		try:
-			s = self.app.scenes['NowPlaying']
-			if not s:
-				logger.debug("no NowPlaying scene!")
-				return
+			if resource == None or resource == '':
+				scene = self.app.scenes['NowPlaying']
+				if not scene:
+					logger.debug("no NowPlaying scene!")
+					return
 
-			center_button = s.components['album_cover']
-			content = center_button.image
-			
-			img = self.get_png_from_surface(content)
-			
-			#logger.debug("got img %s" % img)
-			
-			self.set_header("Content-Type", "image/png")
-			self.write(img)
+				center_button = scene.components['album_cover']
+				content = center_button.image
+				
+				img = self.get_png_from_surface(content)
+				
+				#logger.debug("got img %s" % img)
+				
+				self.set_header("Content-Type", "image/png")
+				self.write(img)
+			elif resource == 'ss':
+				scene = self.app.scenes['Screensaver']
+				self.write(scene.get_random_screensaver_image())
 		except:
 			self.set_status(500)
 			return self.finish()

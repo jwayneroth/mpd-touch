@@ -8,7 +8,11 @@ import NowPlayingPage from './nowplaying-page';
 import SettingsPage from './settings-page';
 import LibraryPage from './library-page';
 import RadioPage from './radio-page';
+import ScreensaverPage from './screensaver-page';
 import ControlsDialog from './controls-dialog';
+
+const SS_ON = false;
+const SS_DELAY = 1500;
 
 class FmuLcd {
 	constructor(el) {
@@ -28,6 +32,50 @@ class FmuLcd {
 
 		window.addEventListener('mpdstatus', this.onMpdStatus.bind(this));
 		window.addEventListener('hashchange', this.onHashChange.bind(this));
+
+		this.ssActivityListener = this.activityCheck.bind(this);
+		this.ssTimerOn = false;
+		this.ssTimeoutID = null;
+
+		if (SS_ON) {
+			this.turnOnScreensaverTimer();
+		}
+	}
+
+	turnOnScreensaverTimer() {
+		this.ssTimerOn = true;
+		this.ssTimeoutID = window.setTimeout(this.screensaverFire.bind(this), SS_DELAY);
+		window.addEventListener('click', this.ssActivityListener);
+	}
+
+	screensaverFire() {
+		this.turnOffScreensaverTimer();
+		this.addScreensaver();
+		this.ssTimeoutID = null;
+	}
+
+	turnOffScreensaverTimer() {
+		this.ssTimerOn = false;
+		window.removeEventListener('click', this.ssActivityListener);
+	}
+
+	// reset ss timeout
+	activityCheck() {
+		if (this.ssTimeoutID) {
+			window.clearTimeout(this.ssTimeoutID);
+			this.ssTimeoutID = window.setTimeout(this.screensaverFire.bind(this), SS_DELAY);
+		}
+	}
+
+	addScreensaver() {
+		console.log('addScreensaver');
+		if (!this.ss) {
+			console.log('app dom', this.dom);
+			const ss = new ScreensaverPage();
+			this.dom.el.appendChild(ss.dom.el);
+			//ss.initDom();
+			ss.initAnime();
+		}
 	}
 
 	onMpdStatus(evt) {

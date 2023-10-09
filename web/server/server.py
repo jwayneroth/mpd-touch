@@ -36,7 +36,7 @@ class Server(object):
 				(r"/assets/(.*)", StaticFileHandler, {"path": root + "/web/client/public"}),
 				(r"/", IndexHandler, {"app": self.app}),
 				(r"/ws", WebSocketHandler, {"web_clients": self.web_clients}),
-				("/api/cover", CoverEndpoint, {"app": self.app}),
+				(r"/api/cover/?(.*)", CoverEndpoint, {"app": self.app}),
 				("/api/nowplaying", NowPlayingEndpoint, {"app": self.app}),
 				(r"/api/radio/?(.*)", RadioEndpoint, {"app": self.app}),
 				(r"/api/library/?(.*)", LibraryEndpoint, {"app": self.app}),
