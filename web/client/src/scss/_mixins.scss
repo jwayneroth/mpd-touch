@@ -1,3 +1,7 @@
+@function pxToRem($value) {
+	@return #{$value / 16}rem;
+}
+
 @mixin glyphicon {
 	
 	@each $class, $text_code in $glyphicon_classes {
@@ -11,13 +15,13 @@
 	justify-content: center;
 	align-items: center;
 	text-decoration: none;
-	width: 50px;
-	height: 50px;
+	max-width: 50px;
+	height: 100%; //50px;
 
 	&::before {
 		display: block;
 		font-family: glyphicons;
-		font-size: 34px;
+		font-size: clamp(16px, 8vw, 34px);
 		color: map-get($theme_colors, 'light_purple');
 		content: "\e019";
 	}
@@ -28,5 +32,79 @@
 
 	&.active::before {
 		color: map-get($theme_colors, 'lemon');
+	}
+}
+
+
+/**
+* Responsive Media Query Helpers
+* -- responsiveQuery(xs)
+* -- responsiveQuery("(min-width: 100em)")
+*/
+
+@mixin responsiveQuery($media: null, $number: null) {
+	@if $number !=null {
+			@media only screen and (min-width: $number) {
+					@content;
+			}
+	}
+	// MOBILE
+	@else if $media==xs or $media==map-get($breakpoints, xs) {
+			@media only screen and (min-width: map-get($breakpoints, xs)) {
+					@content;
+			}
+			// 480
+	}
+	// PHABLET / SMALL TABLET / NETBOOK / SMALL SCREEN
+	@else if $media==s or $media==map-get($breakpoints, s) {
+			@media only screen and (min-width: map-get($breakpoints, s)) {
+					@content;
+			}
+			// 600
+	}
+	@else if $media==m or $media==map-get($breakpoints, m) {
+			@media only screen and (min-width: map-get($breakpoints, m)) {
+					@content;
+			}
+			// 768
+	}
+	// DESKTOP / LARGE TABLET
+	@else if $media==l or $media==map-get($breakpoints, l) {
+			@media only screen and (min-width: map-get($breakpoints, l)) {
+					@content;
+			}
+			// 1024
+	}
+	// MASSIVE SCREEN
+	@else if $media==xl or $media==map-get($breakpoints, xl) {
+			@media only screen and (min-width: map-get($breakpoints, xl)) {
+					@content;
+			}
+			// 1280
+	}
+	@else if $media==xxl or $media==map-get($breakpoints, xxl) {
+			@media only screen and (min-width: map-get($breakpoints, xxl)) {
+					@content;
+			}
+			// 1440
+	}
+	@else if $media==final or $media==1920 {
+			@media only screen and (min-width: 1920px) {
+					@content;
+			}
+			// 1920
+	}
+	@else if $media==retina {
+			@media only screen and (-webkit-min-device-pixel-ratio: 1.5), only screen and (min--moz-device-pixel-ratio: 1.5), only screen and (min-device-pixel-ratio: 1.5) {
+					@content;
+			}
+			// retina
+	}
+	// OTHER
+	@else {
+			@media only screen and #{$media} {
+					@content;
+			}
+			// anything else
 	}
 }
