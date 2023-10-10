@@ -396,7 +396,10 @@ if __name__ == '__main__':
 
 	time.sleep(0.3)
 
-	mpd.radio_station_start('http://stream0.wfmu.org/freeform-128k')
+	try:
+		mpd.radio_station_start('http://stream0.wfmu.org/freeform-128k')
+	except:
+		pass
 
 	while True:
 		ticks = clock.tick() #(fps)
