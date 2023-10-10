@@ -536,7 +536,10 @@ class MPDController(object):
 
 	def radio_station_start(self, station_URL):
 		self.get_current_playlist()
-		self.mpd_client.rm(TEMP_PLAYLIST_NAME)
+		try:
+			self.mpd_client.rm(TEMP_PLAYLIST_NAME)
+		except:
+			pass
 		self.mpd_client.save(TEMP_PLAYLIST_NAME)
 		self.clear_current_playlist()
 		self.mpd_client.addid(station_URL)
