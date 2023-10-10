@@ -37,7 +37,7 @@ ul {
 }
 
 .icon-button {
-	font-size: pxToRem(32);
+	font-size: pxToRem(28);
 	display: flex;
 	flex-flow: row nowrap;
 	justify-content: flex-start;
@@ -53,7 +53,11 @@ ul {
 html {
 	font-size: 4.26667vw;
 
-	@include responsiveQuery(null, 800px) {
+	@include responsiveQuery(s) {
+		font-size: 3.6vw;
+	}
+	
+	@include responsiveQuery(m) {
 		font-size: 16px;
 	}
 }
@@ -84,10 +88,11 @@ body {
 	height: 100%;
 	flex: 0 0 auto;
 	display: flex;
-	flex-flow: row nowrap;
+	flex-flow: column nowrap;
 	position: relative;
 
 	@include responsiveQuery(m) {
+		flex-flow: row nowrap;
 		width: 800px;
 		height: 480px;
 		flex: 0 0 480px;
@@ -95,11 +100,13 @@ body {
 }
 
 #sidebar {
-	width: 10%;
-	flex: 0 0 10%;
+	width: 100%;
+	flex: 0 0 auto;
 
 	@include responsiveQuery(m) {
-		flex: 0 0 80px;
+		width: 10%;
+		flex: 0 0 10%;
+		//flex: 0 0 80px;
 	}
 
 	#main-nav {
@@ -108,11 +115,15 @@ body {
 
 	ul {
 		display: flex;
-		flex-flow: column nowrap;
+		flex-flow: row nowrap;
 		justify-content: space-between;
 		align-items: center;
 		height: 100%;
-		padding: 15px;
+		padding: pxToRem(10);
+
+		@include responsiveQuery(m) {
+			flex-flow: column nowrap;
+		}
 	}
 
 	li {
@@ -130,14 +141,16 @@ body {
 }
 
 #main {
-	width: 90%;
-	//height: 480px;
-	flex: 0 0 90%;
+	width: 100%;
+	flex: 1 0 auto;
 	position: relative;
+	padding: 0 pxToRem(15);
 
 	@include responsiveQuery(m) {
+		width: 90%;
 		height: 480px;
 		flex: 0 0 720px;
+		padding: 0;
 	}
 }
 
@@ -149,7 +162,12 @@ body {
 	position: absolute;
 	width: 100%;
 	height: 100%;
-	
+	left: 0;
+
+	@include responsiveQuery(m) {
+		left: auto;
+	}
+
 	&__inner {
 		display: flex;
 		flex-flow: column nowrap;
@@ -233,21 +251,27 @@ body {
 #radio {
 
 	&__nav {
+
 		a.new-playlist {
 			display: flex;
 			flex-flow: row nowrap;
 			justify-content: flex-end;
 			align-items: baseline;
-			font-size: pxToRem(30);
-			margin-right: pxToRem(30);
+			font-size: pxToRem(20);
+			//margin-right: pxToRem(10);
 
 			@include responsiveQuery(m) {
+				font-size: pxToRem(24);
+				padding: 8px 20px 0 0;
+			}
 
+			span:first-child {
+				margin-right: pxToRem(8);
 			}
 
 			.icon {
 				&::before {
-					font-size: pxToRem(24);
+					font-size: pxToRem(22);
 				}
 			}
 		}
@@ -255,11 +279,17 @@ body {
 
 	&__panels {
 		position: absolute;
-		top: 60px;
-		width: 100%;
-		height: calc(100% - 80px);
+		top: pxToRem(45);
+		left: 0;
+		//width: 100%;
+		height: calc(100% - pxToRem(45));
 		overflow-x: hidden;
 		overflow-y: auto;
+		padding: 0 pxToRem(10);
+
+		@include responsiveQuery(m) {
+			left: auto;
+		}
 
 		ul {
 			width: 100%;
@@ -275,7 +305,7 @@ body {
 			
 			> a:first-child {
 				flex: 1 1 auto;
-				font-size: pxToRem(24);
+				font-size: pxToRem(22);
 				display: block;
 
 				@include responsiveQuery(m) {
@@ -296,7 +326,15 @@ body {
 			flex-flow: row nowrap;
 			justify-content: flex-start;
 			align-items: center;
-			margin-bottom: 15px;
+			margin-bottom: pxToRem(15);
+
+			a {
+				margin-right: pxToRem(12);
+			}
+
+			span {
+				margin-right: pxToRem(8);
+			}
 		}
 	}
 
@@ -316,15 +354,37 @@ body {
 		ul {
 			display: flex;
 			flex-flow: row wrap;
+			align-items: center;
+
+			@include responsiveQuery(m) {
+
+			}
 
 			li {
-				flex: 1 1 50%;
+				flex: 0 1 auto;
 				width: 50%;
-
+				
 				@include responsiveQuery(m) {
 					flex: 1 1 33.33%;
 					width: 33.33%;
 				}
+			}
+		}
+	}
+
+	#radio__archives {
+
+		.refresh-archives {
+			display: flex;
+			flex-flow: row nowrap;
+			font-size: pxToRem(22);
+
+			.icon {
+				margin-right: pxToRem(8);
+			}
+
+			span:last-child {
+				font-size: 1em;
 			}
 		}
 	}
