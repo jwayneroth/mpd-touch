@@ -10,9 +10,9 @@ const BOUNCER_IMAGES = [
 	'gd-bolt.png',
 ];
 
-export default class ScreensaverPage {
+export default class BounceScreensaver {
 	constructor() {
-		console.log('ScreensaverPage::init');
+		console.log('BounceScreensaver::init');
 
 		this.el = null;
 		this.bouncer = null;
@@ -238,6 +238,14 @@ export default class ScreensaverPage {
 			return 0
 		}
 		return -1
+	}
+
+	onMpdStatus(evt) {
+		const status = evt.detail;
+
+		console.log('Screensaver::onMpdStatus', status);
+
+		this.dom.track.innerHTML = status.now_playing.title;
 	}
 }
 

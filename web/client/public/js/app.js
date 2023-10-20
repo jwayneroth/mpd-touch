@@ -36,7 +36,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _settings_page__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./settings-page */ "./src/js/settings-page.js");
 /* harmony import */ var _library_page__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./library-page */ "./src/js/library-page.js");
 /* harmony import */ var _radio_page__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./radio-page */ "./src/js/radio-page.js");
-/* harmony import */ var _screensaver_page__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./screensaver-page */ "./src/js/screensaver-page.js");
+/* harmony import */ var _bounce_screensaver__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./bounce-screensaver */ "./src/js/bounce-screensaver.js");
 /* harmony import */ var _controls_dialog__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./controls-dialog */ "./src/js/controls-dialog.js");
 function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -53,15 +53,17 @@ function _toPrimitive(input, hint) { if (_typeof(input) !== "object" || input ==
 
 
 
+//import WeatherScreensaver from './weather-screensaver';
 
-var SS_ON = false;
-var SS_DELAY = 1500;
+var SS_ON = true;
+var SS_DELAY = 60000;
 var FmuLcd = /*#__PURE__*/function () {
   function FmuLcd(el) {
     _classCallCheck(this, FmuLcd);
     this.currentPageName = null;
     this.dom = {
       el: el,
+      inner: el.querySelector('#app__inner'),
       main: el.querySelector('#main'),
       main_nav: el.querySelector('#main-nav'),
       nav_links: el.querySelectorAll('#main-nav a:not([data-bs-toggle="modal"])')
@@ -70,9 +72,12 @@ var FmuLcd = /*#__PURE__*/function () {
     this.onHashChange();
     window.addEventListener('mpdstatus', this.onMpdStatus.bind(this));
     window.addEventListener('hashchange', this.onHashChange.bind(this));
+    this.lastPage = null;
     this.ssActivityListener = this.activityCheck.bind(this);
+    this.removeScreensaverDelegate = this.removeScreensaver.bind(this);
     this.ssTimerOn = false;
     this.ssTimeoutID = null;
+    this.ss = null;
     if (SS_ON) {
       this.turnOnScreensaverTimer();
     }
@@ -113,10 +118,26 @@ var FmuLcd = /*#__PURE__*/function () {
       console.log('addScreensaver');
       if (!this.ss) {
         console.log('app dom', this.dom);
-        var ss = new _screensaver_page__WEBPACK_IMPORTED_MODULE_8__["default"]();
-        this.dom.el.appendChild(ss.dom.el);
-        //ss.initDom();
+        var ss = new _bounce_screensaver__WEBPACK_IMPORTED_MODULE_8__["default"]();
+
+        //this.dom.el.appendChild(ss.dom.el);
+        //this.dom.el.innerHTML = ss.dom.el.outerHTML;
+        this.lastPage = this.dom.el.replaceChild(ss.dom.el, this.dom.inner);
         ss.initAnime();
+        this.ss = ss;
+        window.addEventListener('click', this.removeScreensaverDelegate);
+      }
+    }
+  }, {
+    key: "removeScreensaver",
+    value: function removeScreensaver() {
+      console.log('removeScreensaver', this.ss);
+      if (this.ss) {
+        //this.ss.dom.el.remove();
+        this.dom.el.replaceChild(this.lastPage, this.ss.dom.el);
+        this.ss = null;
+        window.removeEventListener('click', this.removeScreensaverDelegate);
+        this.turnOnScreensaverTimer();
       }
     }
   }, {
@@ -126,6 +147,9 @@ var FmuLcd = /*#__PURE__*/function () {
       var page = this.pages[this.currentPageName];
       if (typeof page.onMpdStatus === 'function') {
         page.onMpdStatus(evt);
+      }
+      if (this.ss && typeof this.ss.onMpdStatus === 'function') {
+        this.ss.onMpdStatus(evt);
       }
     }
   }, {
@@ -216,6 +240,284 @@ window.addEventListener('load', function () {
     new _controls_dialog__WEBPACK_IMPORTED_MODULE_9__["default"](controls);
   }
 });
+
+/***/ }),
+
+/***/ "./src/js/bounce-screensaver.js":
+/*!**************************************!*\
+  !*** ./src/js/bounce-screensaver.js ***!
+  \**************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ BounceScreensaver)
+/* harmony export */ });
+/* harmony import */ var _api__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./api */ "./src/js/api.js");
+function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, _toPropertyKey(descriptor.key), descriptor); } }
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
+function _toPropertyKey(arg) { var key = _toPrimitive(arg, "string"); return _typeof(key) === "symbol" ? key : String(key); }
+function _toPrimitive(input, hint) { if (_typeof(input) !== "object" || input === null) return input; var prim = input[Symbol.toPrimitive]; if (prim !== undefined) { var res = prim.call(input, hint || "default"); if (_typeof(res) !== "object") return res; throw new TypeError("@@toPrimitive must return a primitive value."); } return (hint === "string" ? String : Number)(input); }
+
+var FPS = 18;
+var BOUNCER_IMAGES = ['raspberrypi.png', 'ra.png', 'ra-demons.png', 'gd-face.png', 'gd-bolt.png'];
+var BounceScreensaver = /*#__PURE__*/function () {
+  function BounceScreensaver() {
+    _classCallCheck(this, BounceScreensaver);
+    console.log('BounceScreensaver::init');
+    this.el = null;
+    this.bouncer = null;
+    this.cover = null;
+    this.bufferCover = null;
+    this.fps = FPS;
+    this.fpsInterval = 1000 / this.fps;
+    this.lastRender = null;
+    this.active = false;
+    this.eraseMode = true;
+    var el = document.createElement('div');
+    el.setAttribute('id', 'screensaver');
+    el.innerHTML = "\n\t\t\t<div id=\"screensaver__inner\">\n\t\t\t\t<canvas id=\"screensaver__canvas\" width=\"800\" height=\"425\"></canvas>\n\t\t\t\t<h2 id=\"screensaver__track\"></h2>\n\t\t\t\t<div id=\"screensaver__bouncer\"></div>\n\t\t\t</div>\n\t\t";
+    this.dom = {
+      el: el,
+      inner: el.querySelector('#screensaver__inner'),
+      canvas: el.querySelector('#screensaver__canvas'),
+      track: el.querySelector('#screensaver__track')
+      //bouncer: el.querySelector('#screensaver__bouncer'),
+    };
+
+    this.ctx = this.dom.canvas.getContext('2d');
+    this.ctx.fillStyle = 'yellow'; //'rgb(10,5,0)';
+
+    console.log('ss dom', this.dom);
+  }
+  _createClass(BounceScreensaver, [{
+    key: "initAnime",
+    value: function initAnime() {
+      var _this = this;
+      var cover = new Image();
+      var bouncer = new Image();
+      cover.onload = function () {
+        _this.cover.left = 400 - cover.width / 2;
+        _this.cover.top = 240 - cover.height / 2;
+        _this.cover.right = _this.cover.left + cover.width;
+        _this.cover.bottom = _this.cover.top + cover.height;
+        console.log('cover props', _this.cover);
+        _this.ctx.drawImage(cover, _this.cover.left, _this.cover.top);
+        bouncer.onload = function () {
+          console.log('bouncer load', bouncer.width, bouncer.height);
+
+          //this.dom.bouncer.appendChild(bouncer);
+
+          _this.bouncer = new Bouncer(bouncer);
+          _this.bouncer.x = _this.bouncer.width / 2 + Math.random() * (800 - _this.bouncer.width);
+          _this.bouncer.y = _this.bouncer.height / 2 + Math.random() * (425 - _this.bouncer.height);
+          console.log('bouncer props', _this.bouncer);
+          _this.lastRender = Date.now();
+          _this.active = true;
+          _this.animeID = window.requestAnimationFrame(_this.animate.bind(_this));
+        };
+        var src = BOUNCER_IMAGES[Math.floor(Math.random() * BOUNCER_IMAGES.length)];
+        bouncer.src = '/assets/images/screensavers/' + src;
+      };
+      this.cover = {
+        img: cover,
+        left: null,
+        top: null,
+        right: null,
+        bottom: null
+      };
+      cover.setAttribute('src', '/api/cover');
+    }
+  }, {
+    key: "animate",
+    value: function animate() {
+      if (!this.active) return;
+      this.animeID = window.requestAnimationFrame(this.animate.bind(this));
+      var now = Date.now();
+      var elapsed = now - this.lastRender;
+      if (elapsed > this.fpsInterval) {
+        //console.log('screensaver frame');
+
+        this.lastRender = now - elapsed % this.fpsInterval;
+
+        // move the bouncing image and do wall check
+        var bouncer = this.bouncer;
+        bouncer.x += bouncer.vx;
+        bouncer.y += bouncer.vy;
+        if (bouncer.x > 800 - bouncer.width / 2) {
+          bouncer.x = 800 - bouncer.width / 2;
+          bouncer.vx *= -1;
+        } else if (bouncer.x < bouncer.width / 2) {
+          bouncer.x = bouncer.width / 2;
+          bouncer.vx *= -1;
+        }
+        if (bouncer.y > 425 - bouncer.height / 2) {
+          bouncer.y = 425 - bouncer.height / 2;
+          bouncer.vy *= -1;
+        } else if (bouncer.y < bouncer.height / 2) {
+          bouncer.y = bouncer.height / 2;
+          bouncer.vy *= -1;
+        }
+
+        // check intersection btw bouncer and cover
+        var cover = this.cover;
+        var cl = cover.left;
+        var cr = cover.right;
+        var ct = cover.top;
+        var cb = cover.bottom;
+        var x, y, firstHit, lastHit, drawLeft, drawTop, drawWidth, drawHeight, erased;
+        for (x = bouncer.left; x < bouncer.right; x++) {
+          for (y = bouncer.top; y < bouncer.bottom; y++) {
+            if (x >= cl && x <= cr && y >= ct && y <= cb) {
+              if (!firstHit) {
+                firstHit = {
+                  x: x,
+                  y: y
+                };
+              }
+              lastHit = {
+                x: x,
+                y: y
+              };
+            }
+          }
+        }
+        if (firstHit) {
+          drawLeft = firstHit.x; // - cl;
+          drawTop = firstHit.y; // - ct;
+          drawWidth = lastHit.x - firstHit.x;
+          drawHeight = lastHit.y - firstHit.y;
+          erased = this.isCoverErased();
+
+          // we are erasing the cover image
+          if (this.eraseMode) {
+            // its fully erased, start redrawing it
+            if (erased == 1) {
+              this.eraseMode = false;
+              this.ctx.drawImage(cover.img, drawLeft, drawTop, drawWidth, drawHeight);
+              // continue erasing
+            } else {
+              this.ctx.fillRect(drawLeft, drawTop, drawWidth, drawHeight);
+            }
+          }
+          // we are redrawing the cover image
+          else {
+            // its fully redrawn, start erasing it
+            if (erased == -1) {
+              this.eraseMode = true;
+              this.ctx.fillRect(drawLeft, drawTop, drawWidth, drawHeight);
+              // continue redrawing
+            } else {
+              this.ctx.drawImage(cover.img, drawLeft, drawTop, drawWidth, drawHeight);
+            }
+          }
+        }
+        this.ctx.drawImage(bouncer.img, bouncer.x - bouncer.width / 2, bouncer.y - bouncer.height / 2);
+      }
+    }
+
+    /**
+     * isCoverErased
+     * 
+     * determines if cover image is erased by sampling every <step> pixels
+     * and comparing against original
+     * return 1 for completely erased, 0 for partly erased, -1 for completely original
+     * 
+     * @returns Boolean
+     */
+  }, {
+    key: "isCoverErased",
+    value: function isCoverErased() {
+      var cover = this.cover;
+      var cw = cover.width;
+      var ch = cover.height;
+      var hasDiff = false;
+      var hasOrig = false;
+      var step = 20;
+      var i, j, pixel, origPixel;
+      var x = 0;
+      var y = 0;
+      var diffs = 0;
+      for (i = 0; i < Math.round(cw / step); i++) {
+        for (j = 0; j < Math.round(ch / step); j++) {
+          x = i * step;
+          y = j * step;
+          pixel = cover.getImageData(x, y, 1, 1).data;
+          origPixel = this.bufferCover.getImageData(x, y, 1, 1).data;
+          if (pixel[0] != origPixel[0] || pixel[1] != origPixel[1] || pixel[2] != origPixel[2]) {
+            diffs += 1;
+            hasDiff = true;
+            if (hasOrig == true) {
+              return 0;
+            }
+          } else {
+            hasOrig = true;
+            if (hasDiff == true) {
+              return 0;
+            }
+          }
+        }
+      }
+      if (hasDiff == true) {
+        if (hasOrig == false) {
+          return 1;
+        }
+        return 0;
+      }
+      return -1;
+    }
+  }, {
+    key: "onMpdStatus",
+    value: function onMpdStatus(evt) {
+      var status = evt.detail;
+      console.log('Screensaver::onMpdStatus', status);
+      this.dom.track.innerHTML = status.now_playing.title;
+    }
+  }]);
+  return BounceScreensaver;
+}();
+
+var Bouncer = /*#__PURE__*/function () {
+  function Bouncer(img) {
+    _classCallCheck(this, Bouncer);
+    this.img = img;
+    this.width = img.width;
+    this.height = img.height;
+    this.vx = Math.random() * 30 - 15;
+    this.vy = Math.random() * 30 - 15;
+    this._x = null;
+    this._y = null;
+    this.left = null;
+    this.right = null;
+    this.top = null;
+    this.bottom = null;
+  }
+  _createClass(Bouncer, [{
+    key: "x",
+    get: function get() {
+      return this._x;
+    },
+    set: function set(x) {
+      this._x = x;
+      this.left = x - this.width / 2;
+      this.right = x + this.width / 2;
+    }
+  }, {
+    key: "y",
+    get: function get() {
+      return this._y;
+    },
+    set: function set(y) {
+      this._y = y;
+      this.top = y - this.height / 2;
+      this.bottom = y + this.height / 2;
+    }
+  }]);
+  return Bouncer;
+}();
 
 /***/ }),
 
@@ -807,277 +1109,6 @@ var RadioPage = /*#__PURE__*/function () {
   return RadioPage;
 }();
 
-
-/***/ }),
-
-/***/ "./src/js/screensaver-page.js":
-/*!************************************!*\
-  !*** ./src/js/screensaver-page.js ***!
-  \************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (/* binding */ ScreensaverPage)
-/* harmony export */ });
-/* harmony import */ var _api__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./api */ "./src/js/api.js");
-function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, _toPropertyKey(descriptor.key), descriptor); } }
-function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
-function _toPropertyKey(arg) { var key = _toPrimitive(arg, "string"); return _typeof(key) === "symbol" ? key : String(key); }
-function _toPrimitive(input, hint) { if (_typeof(input) !== "object" || input === null) return input; var prim = input[Symbol.toPrimitive]; if (prim !== undefined) { var res = prim.call(input, hint || "default"); if (_typeof(res) !== "object") return res; throw new TypeError("@@toPrimitive must return a primitive value."); } return (hint === "string" ? String : Number)(input); }
-
-var FPS = 18;
-var BOUNCER_IMAGES = ['raspberrypi.png', 'ra.png', 'ra-demons.png', 'gd-face.png', 'gd-bolt.png'];
-var ScreensaverPage = /*#__PURE__*/function () {
-  function ScreensaverPage() {
-    _classCallCheck(this, ScreensaverPage);
-    console.log('ScreensaverPage::init');
-    this.el = null;
-    this.bouncer = null;
-    this.cover = null;
-    this.bufferCover = null;
-    this.fps = FPS;
-    this.fpsInterval = 1000 / this.fps;
-    this.lastRender = null;
-    this.active = false;
-    this.eraseMode = true;
-    var el = document.createElement('div');
-    el.setAttribute('id', 'screensaver');
-    el.innerHTML = "\n\t\t\t<div id=\"screensaver__inner\">\n\t\t\t\t<canvas id=\"screensaver__canvas\" width=\"800\" height=\"425\"></canvas>\n\t\t\t\t<h2 id=\"screensaver__track\"></h2>\n\t\t\t\t<div id=\"screensaver__bouncer\"></div>\n\t\t\t</div>\n\t\t";
-    this.dom = {
-      el: el,
-      inner: el.querySelector('#screensaver__inner'),
-      canvas: el.querySelector('#screensaver__canvas'),
-      track: el.querySelector('#screensaver__track')
-      //bouncer: el.querySelector('#screensaver__bouncer'),
-    };
-
-    this.ctx = this.dom.canvas.getContext('2d');
-    this.ctx.fillStyle = 'yellow'; //'rgb(10,5,0)';
-
-    console.log('ss dom', this.dom);
-  }
-  _createClass(ScreensaverPage, [{
-    key: "initAnime",
-    value: function initAnime() {
-      var _this = this;
-      var cover = new Image();
-      var bouncer = new Image();
-      cover.onload = function () {
-        _this.cover.left = 400 - cover.width / 2;
-        _this.cover.top = 240 - cover.height / 2;
-        _this.cover.right = _this.cover.left + cover.width;
-        _this.cover.bottom = _this.cover.top + cover.height;
-        console.log('cover props', _this.cover);
-        _this.ctx.drawImage(cover, _this.cover.left, _this.cover.top);
-        bouncer.onload = function () {
-          console.log('bouncer load', bouncer.width, bouncer.height);
-
-          //this.dom.bouncer.appendChild(bouncer);
-
-          _this.bouncer = new Bouncer(bouncer);
-          _this.bouncer.x = _this.bouncer.width / 2 + Math.random() * (800 - _this.bouncer.width);
-          _this.bouncer.y = _this.bouncer.height / 2 + Math.random() * (425 - _this.bouncer.height);
-          console.log('bouncer props', _this.bouncer);
-          _this.lastRender = Date.now();
-          _this.active = true;
-          _this.animeID = window.requestAnimationFrame(_this.animate.bind(_this));
-        };
-        var src = BOUNCER_IMAGES[Math.floor(Math.random() * BOUNCER_IMAGES.length)];
-        bouncer.src = '/assets/images/screensavers/' + src;
-      };
-      this.cover = {
-        img: cover,
-        left: null,
-        top: null,
-        right: null,
-        bottom: null
-      };
-      cover.setAttribute('src', '/api/cover');
-    }
-  }, {
-    key: "animate",
-    value: function animate() {
-      if (!this.active) return;
-      this.animeID = window.requestAnimationFrame(this.animate.bind(this));
-      var now = Date.now();
-      var elapsed = now - this.lastRender;
-      if (elapsed > this.fpsInterval) {
-        //console.log('screensaver frame');
-
-        this.lastRender = now - elapsed % this.fpsInterval;
-
-        // move the bouncing image and do wall check
-        var bouncer = this.bouncer;
-        bouncer.x += bouncer.vx;
-        bouncer.y += bouncer.vy;
-        if (bouncer.x > 800 - bouncer.width / 2) {
-          bouncer.x = 800 - bouncer.width / 2;
-          bouncer.vx *= -1;
-        } else if (bouncer.x < bouncer.width / 2) {
-          bouncer.x = bouncer.width / 2;
-          bouncer.vx *= -1;
-        }
-        if (bouncer.y > 425 - bouncer.height / 2) {
-          bouncer.y = 425 - bouncer.height / 2;
-          bouncer.vy *= -1;
-        } else if (bouncer.y < bouncer.height / 2) {
-          bouncer.y = bouncer.height / 2;
-          bouncer.vy *= -1;
-        }
-
-        // check intersection btw bouncer and cover
-        var cover = this.cover;
-        var cl = cover.left;
-        var cr = cover.right;
-        var ct = cover.top;
-        var cb = cover.bottom;
-        var x, y, firstHit, lastHit, drawLeft, drawTop, drawWidth, drawHeight, erased;
-        for (x = bouncer.left; x < bouncer.right; x++) {
-          for (y = bouncer.top; y < bouncer.bottom; y++) {
-            if (x >= cl && x <= cr && y >= ct && y <= cb) {
-              if (!firstHit) {
-                firstHit = {
-                  x: x,
-                  y: y
-                };
-              }
-              lastHit = {
-                x: x,
-                y: y
-              };
-            }
-          }
-        }
-        if (firstHit) {
-          drawLeft = firstHit.x; // - cl;
-          drawTop = firstHit.y; // - ct;
-          drawWidth = lastHit.x - firstHit.x;
-          drawHeight = lastHit.y - firstHit.y;
-          erased = this.isCoverErased();
-
-          // we are erasing the cover image
-          if (this.eraseMode) {
-            // its fully erased, start redrawing it
-            if (erased == 1) {
-              this.eraseMode = false;
-              this.ctx.drawImage(cover.img, drawLeft, drawTop, drawWidth, drawHeight);
-              // continue erasing
-            } else {
-              this.ctx.fillRect(drawLeft, drawTop, drawWidth, drawHeight);
-            }
-          }
-          // we are redrawing the cover image
-          else {
-            // its fully redrawn, start erasing it
-            if (erased == -1) {
-              this.eraseMode = true;
-              this.ctx.fillRect(drawLeft, drawTop, drawWidth, drawHeight);
-              // continue redrawing
-            } else {
-              this.ctx.drawImage(cover.img, drawLeft, drawTop, drawWidth, drawHeight);
-            }
-          }
-        }
-        this.ctx.drawImage(bouncer.img, bouncer.x - bouncer.width / 2, bouncer.y - bouncer.height / 2);
-      }
-    }
-
-    /**
-     * isCoverErased
-     * 
-     * determines if cover image is erased by sampling every <step> pixels
-     * and comparing against original
-     * return 1 for completely erased, 0 for partly erased, -1 for completely original
-     * 
-     * @returns Boolean
-     */
-  }, {
-    key: "isCoverErased",
-    value: function isCoverErased() {
-      var cover = this.cover;
-      var cw = cover.width;
-      var ch = cover.height;
-      var hasDiff = false;
-      var hasOrig = false;
-      var step = 20;
-      var i, j, pixel, origPixel;
-      var x = 0;
-      var y = 0;
-      var diffs = 0;
-      for (i = 0; i < Math.round(cw / step); i++) {
-        for (j = 0; j < Math.round(ch / step); j++) {
-          x = i * step;
-          y = j * step;
-          pixel = cover.getImageData(x, y, 1, 1).data;
-          origPixel = this.bufferCover.getImageData(x, y, 1, 1).data;
-          if (pixel[0] != origPixel[0] || pixel[1] != origPixel[1] || pixel[2] != origPixel[2]) {
-            diffs += 1;
-            hasDiff = true;
-            if (hasOrig == true) {
-              return 0;
-            }
-          } else {
-            hasOrig = true;
-            if (hasDiff == true) {
-              return 0;
-            }
-          }
-        }
-      }
-      if (hasDiff == true) {
-        if (hasOrig == false) {
-          return 1;
-        }
-        return 0;
-      }
-      return -1;
-    }
-  }]);
-  return ScreensaverPage;
-}();
-
-var Bouncer = /*#__PURE__*/function () {
-  function Bouncer(img) {
-    _classCallCheck(this, Bouncer);
-    this.img = img;
-    this.width = img.width;
-    this.height = img.height;
-    this.vx = Math.random() * 30 - 15;
-    this.vy = Math.random() * 30 - 15;
-    this._x = null;
-    this._y = null;
-    this.left = null;
-    this.right = null;
-    this.top = null;
-    this.bottom = null;
-  }
-  _createClass(Bouncer, [{
-    key: "x",
-    get: function get() {
-      return this._x;
-    },
-    set: function set(x) {
-      this._x = x;
-      this.left = x - this.width / 2;
-      this.right = x + this.width / 2;
-    }
-  }, {
-    key: "y",
-    get: function get() {
-      return this._y;
-    },
-    set: function set(y) {
-      this._y = y;
-      this.top = y - this.height / 2;
-      this.bottom = y + this.height / 2;
-    }
-  }]);
-  return Bouncer;
-}();
 
 /***/ }),
 

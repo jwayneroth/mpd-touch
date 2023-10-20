@@ -12,39 +12,41 @@
 </head>
 <body class="{% if request.uri[1:] != '' %}{{ request.uri[1:] }}{% else %}home{% end %}">
 	<div id="app">
-		<aside id="sidebar">
-			<nav id="main-nav">
-				<ul>
-					<li>
-						<a href="#" class="cd active">
-							<span>Home</span>
-						</a>
-					</li>
-					<li>
-						<a href="#library" class="list">
-							<span>Library</span>
-						</a>
-					</li>
-					<li>
-						<a href="#radio" class="music">
-							<span>Radio</span>
-						</a>
-					</li>
-					<li>
-						<a href="#settings" class="cog">
-							<span>Settings</span>
-						</a>
-					</li>
-					<li>
-						<a href data-bs-toggle="modal" data-bs-target="#controls" class="volume-down">
-							<span>Controls</span>
-						</a>
-					</li>
-				</ul>
-			</nav>
-		</aside>
-		<main id="main">
-		</main>
+		<div id="app__inner">
+			<aside id="sidebar">
+				<nav id="main-nav">
+					<ul>
+						<li>
+							<a href="#" class="cd active">
+								<span>Home</span>
+							</a>
+						</li>
+						<li>
+							<a href="#library" class="list">
+								<span>Library</span>
+							</a>
+						</li>
+						<li>
+							<a href="#radio" class="music">
+								<span>Radio</span>
+							</a>
+						</li>
+						<li>
+							<a href="#settings" class="cog">
+								<span>Settings</span>
+							</a>
+						</li>
+						<li>
+							<a href data-bs-toggle="modal" data-bs-target="#controls" class="volume-down">
+								<span>Controls</span>
+							</a>
+						</li>
+					</ul>
+				</nav>
+			</aside>
+			<main id="main">
+			</main>
+		</div>
 	</div>
 	<div class="modal fade" id="controls" tabindex="-1" aria-hidden="true">
 		<div id="controls__dialog" class="modal-dialog modal-dialog-centered">

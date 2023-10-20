@@ -8,11 +8,12 @@ import NowPlayingPage from './nowplaying-page';
 import SettingsPage from './settings-page';
 import LibraryPage from './library-page';
 import RadioPage from './radio-page';
-import ScreensaverPage from './screensaver-page';
+import BounceScreensaver from './bounce-screensaver';
+//import WeatherScreensaver from './weather-screensaver';
 import ControlsDialog from './controls-dialog';
 
-const SS_ON = false;
-const SS_DELAY = 1500;
+const SS_ON = true;
+const SS_DELAY = 60000;
 
 class FmuLcd {
 	constructor(el) {
@@ -21,6 +22,7 @@ class FmuLcd {
 
 		this.dom = {
 			el,
+			inner: el.querySelector('#app__inner'),
 			main: el.querySelector('#main'),
 			main_nav: el.querySelector('#main-nav'),
 			nav_links: el.querySelectorAll('#main-nav a:not([data-bs-toggle="modal"])')
@@ -33,9 +35,13 @@ class FmuLcd {
 		window.addEventListener('mpdstatus', this.onMpdStatus.bind(this));
 		window.addEventListener('hashchange', this.onHashChange.bind(this));
 
+		this.lastPage = null;
 		this.ssActivityListener = this.activityCheck.bind(this);
+		this.removeScreensaverDelegate = this.removeScreensaver.bind(this);
+
 		this.ssTimerOn = false;
 		this.ssTimeoutID = null;
+		this.ss = null;
 
 		if (SS_ON) {
 			this.turnOnScreensaverTimer();
@@ -71,10 +77,28 @@ class FmuLcd {
 		console.log('addScreensaver');
 		if (!this.ss) {
 			console.log('app dom', this.dom);
-			const ss = new ScreensaverPage();
-			this.dom.el.appendChild(ss.dom.el);
-			//ss.initDom();
+			const ss = new BounceScreensaver();
+
+			//this.dom.el.appendChild(ss.dom.el);
+			//this.dom.el.innerHTML = ss.dom.el.outerHTML;
+			this.lastPage = this.dom.el.replaceChild(ss.dom.el, this.dom.inner);
+
 			ss.initAnime();
+			this.ss = ss;
+			window.addEventListener('click', this.removeScreensaverDelegate);
+		}
+	}
+
+	removeScreensaver() {
+		console.log('removeScreensaver', this.ss);
+		if (this.ss) {
+
+			//this.ss.dom.el.remove();
+			this.dom.el.replaceChild(this.lastPage, this.ss.dom.el);
+
+			this.ss = null;
+			window.removeEventListener('click', this.removeScreensaverDelegate);
+			this.turnOnScreensaverTimer();
 		}
 	}
 
@@ -86,6 +110,10 @@ class FmuLcd {
 
 		if (typeof page.onMpdStatus === 'function') {
 			page.onMpdStatus(evt);
+		}
+
+		if (this.ss && typeof this.ss.onMpdStatus === 'function') {
+			this.ss.onMpdStatus(evt);
 		}
 	}
 
