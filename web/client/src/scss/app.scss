@@ -87,15 +87,25 @@ body {
 	width: 100%;
 	height: 100%;
 	flex: 0 0 auto;
-	display: flex;
-	flex-flow: column nowrap;
-	position: relative;
 
 	@include responsiveQuery(m) {
-		flex-flow: row nowrap;
 		width: 800px;
 		height: 480px;
 		flex: 0 0 480px;
+	}
+
+	&__inner,
+	#screensaver {
+		width: 100%;
+		height: 100%;
+		flex: 0 0 auto;
+		display: flex;
+		flex-flow: column nowrap;
+		position: relative;
+
+		@include responsiveQuery(m) {
+			flex-flow: row nowrap;
+		}
 	}
 }
 
@@ -419,14 +429,18 @@ body {
 // Screensaver
 //
 #screensaver {
-	position: absolute;
-	left: 0;
-	top: 0;
-	width: 800px;
-	height: 480px;
+	// position: absolute;
+	// left: 0;
+	// top: 0;
+	// width: 800px;
+	// height: 480px;
 
 	&__inner {
-		
+		position: absolute;
+		left: 0;
+		top: 0;
+		width: 800px;
+		height: 480px;
 	}
 
 	&__canvas {
@@ -437,9 +451,23 @@ body {
 	}
 
 	&__track {
-		width: 800px;
-		height: 55px;
-		background: map-get($theme_colors, 'near_black');
+		//width: 800px;
+		//height: 55px;
+		//background: map-get($theme_colors, 'near_black');
+	
+		margin: 0;
+		padding: 0;
+		padding-left: 100%;
+		position: absolute;
+		bottom: 15px;
+		display: block;
+		white-space: nowrap;
+		animation: track_scroll_anime 20s infinite linear;
+
+		&.paused,
+		&:hover {
+			animation-play-state: paused;
+		}
 	}
 
 	&__bouncer {

@@ -44,7 +44,7 @@ class Server(object):
 				(r"/api/controls/?(.*)", ControlsEndpoint, {"app": self.app}),
 			],
 			debug=False,
-			autoreload=True,
+			autoreload=False,
 			template_path="web/templates"
 		)
 		http_server = HTTPServer(app)
