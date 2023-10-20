@@ -22,11 +22,13 @@ export default class BounceScreensaver {
 		this.fpsInterval = 1000 / this.fps;
 		this.lastRender = null;
 		this.active = false;
+		this.inited = false;
 		this.eraseMode = true;
 
 		const el = document.createElement('div');
 
 		el.setAttribute('id', 'screensaver');
+		el.setAttribute('class', 'screensaver');
 
 		el.innerHTML = `
 			<div id="screensaver__inner">
@@ -51,6 +53,13 @@ export default class BounceScreensaver {
 	}
 
 	initAnime() {
+
+		if (this.inited) {
+			this.active = true;
+			this.animeID = window.requestAnimationFrame(this.animate.bind(this));
+			return;
+		}
+
 		const cover = new Image();
 		const bouncer = new Image();
 
@@ -75,6 +84,7 @@ export default class BounceScreensaver {
 				this.bouncer.y = this.bouncer.height / 2 + Math.random() * (425 - this.bouncer.height);
 				console.log('bouncer props', this.bouncer);
 				this.lastRender = Date.now();
+				this.inited = true;
 				this.active = true;
 				this.animeID = window.requestAnimationFrame(this.animate.bind(this));
 			}
@@ -93,6 +103,10 @@ export default class BounceScreensaver {
 		};
 
 		cover.setAttribute('src', '/api/cover');
+	}
+
+	stopAnime() {
+		this.active = false;
 	}
 
 	animate() {

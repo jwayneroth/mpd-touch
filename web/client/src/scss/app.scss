@@ -95,7 +95,7 @@ body {
 	}
 
 	&__inner,
-	#screensaver {
+	.screensaver {
 		width: 100%;
 		height: 100%;
 		flex: 0 0 auto;
@@ -188,6 +188,7 @@ body {
 
 		h2 {
 			margin: 0;
+			white-space: nowrap;
 		}
 	}
 
@@ -474,5 +475,42 @@ body {
 		position: absolute;
 		left: 0;
 		top: 0;
+	}
+}
+
+//
+// Weather Screensaver
+//
+#weather-screensaver {
+	&__inner {
+		position: absolute;
+		left: 0;
+		top: 0;
+		width: 800px;
+		height: 480px;
+		overflow: hidden;
+	}
+
+	&__img {
+		width: 100%;
+		height: auto;
+	}
+
+	&__track {
+		margin: 0;
+		padding: 0;
+		padding-left: 100%;
+		position: absolute;
+		bottom: 15px;
+		z-index: 10;
+		display: block;
+		white-space: nowrap;
+		animation: track_scroll_anime 20s infinite linear;
+		color: map-get($theme_colors, 'near_black');
+		
+		&.paused,
+		&:hover {
+			animation-play-state: paused;
+		}
 	}
 }

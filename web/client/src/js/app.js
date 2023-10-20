@@ -9,11 +9,17 @@ import SettingsPage from './settings-page';
 import LibraryPage from './library-page';
 import RadioPage from './radio-page';
 import BounceScreensaver from './bounce-screensaver';
-//import WeatherScreensaver from './weather-screensaver';
+import WeatherScreensaver from './weather-screensaver';
 import ControlsDialog from './controls-dialog';
 
 const SS_ON = true;
 const SS_DELAY = 60000;
+
+class DynamicSS {
+	constructor(className, opts) {
+		return new classes[className](opts);
+	}
+}
 
 class FmuLcd {
 	constructor(el) {
@@ -29,6 +35,18 @@ class FmuLcd {
 		};
 
 		this.pages = {};
+
+		this.screensaverKeys = ['bounce', 'weather'];
+		this.screensavers = {
+			'bounce': {
+				'class': BounceScreensaver,
+				'instance': null,
+			},
+			'weather': {
+				'class': WeatherScreensaver,
+				'instance': null,
+			}
+		};
 
 		this.onHashChange();
 
@@ -75,29 +93,47 @@ class FmuLcd {
 
 	addScreensaver() {
 		console.log('addScreensaver');
+
 		if (!this.ss) {
 			console.log('app dom', this.dom);
-			const ss = new BounceScreensaver();
+
+			let ss;
+
+			const ssKey = this.screensaverKeys[Math.floor(Math.random() * this.screensaverKeys.length)];
+
+			if (!this.screensavers[ssKey].instance) {
+				ss = new this.screensavers[ssKey].class();
+				this.screensavers[ssKey].instance = ss;
+			} else {
+				ss = this.screensavers[ssKey].instance;
+			}
 
 			//this.dom.el.appendChild(ss.dom.el);
 			//this.dom.el.innerHTML = ss.dom.el.outerHTML;
 			this.lastPage = this.dom.el.replaceChild(ss.dom.el, this.dom.inner);
 
 			ss.initAnime();
+
 			this.ss = ss;
+
 			window.addEventListener('click', this.removeScreensaverDelegate);
 		}
 	}
 
 	removeScreensaver() {
 		console.log('removeScreensaver', this.ss);
+
 		if (this.ss) {
 
 			//this.ss.dom.el.remove();
 			this.dom.el.replaceChild(this.lastPage, this.ss.dom.el);
 
+			this.ss.stopAnime();
+
 			this.ss = null;
+
 			window.removeEventListener('click', this.removeScreensaverDelegate);
+
 			this.turnOnScreensaverTimer();
 		}
 	}

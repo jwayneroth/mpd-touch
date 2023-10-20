@@ -14286,7 +14286,7 @@ body {
   }
 }
 #app__inner,
-#app #screensaver {
+#app .screensaver {
   width: 100%;
   height: 100%;
   flex: 0 0 auto;
@@ -14296,7 +14296,7 @@ body {
 }
 @media only screen and (min-width: 800px) {
   #app__inner,
-  #app #screensaver {
+  #app .screensaver {
     flex-flow: row nowrap;
   }
 }
@@ -15450,6 +15450,7 @@ body {
 }
 #nowplaying__inner h2, #nowplaying__inner .h2 {
   margin: 0;
+  white-space: nowrap;
 }
 #nowplaying__cover {
   flex: 0 0 auto;
@@ -16479,4 +16480,32 @@ body {
   position: absolute;
   left: 0;
   top: 0;
+}
+
+#weather-screensaver__inner {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 800px;
+  height: 480px;
+  overflow: hidden;
+}
+#weather-screensaver__img {
+  width: 100%;
+  height: auto;
+}
+#weather-screensaver__track {
+  margin: 0;
+  padding: 0;
+  padding-left: 100%;
+  position: absolute;
+  bottom: 15px;
+  z-index: 10;
+  display: block;
+  white-space: nowrap;
+  animation: track_scroll_anime 20s infinite linear;
+  color: rgb(10, 5, 0);
+}
+#weather-screensaver__track.paused, #weather-screensaver__track:hover {
+  animation-play-state: paused;
 }

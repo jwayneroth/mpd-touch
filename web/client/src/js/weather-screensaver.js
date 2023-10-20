@@ -10,14 +10,17 @@ export default class WeatherScreensaver {
 		this.fpsInterval = 1000 / this.fps;
 		this.lastRender = null;
 		this.active = false;
+		this.inited = false;
 
 		const el = document.createElement('div');
 
 		el.setAttribute('id', 'weather-screensaver');
+		el.setAttribute('class', 'screensaver');
 
 		el.innerHTML = `
 			<div id="weather-screensaver__inner">
-				<div id="weather-screensaver__frames" class="weather-anime"></div>
+				<!--<div id="weather-screensaver__frames" class="weather-anime"></div>-->
+				<img id="weather-screensaver__img" src="https://cdn.star.nesdis.noaa.gov/GOES16/ABI/SECTOR/ne/GEOCOLOR/GOES16-NE-GEOCOLOR-600x600.gif">
 				<h2 id="weather-screensaver__track"></h2>
 			</div>
 		`;
@@ -25,18 +28,23 @@ export default class WeatherScreensaver {
 		this.dom = {
 			el,
 			inner: el.querySelector('#weather-screensaver__inner'),
-			frames: el.querySelector('#weather-screensaver__frames'),
+			//frames: el.querySelector('#weather-screensaver__frames'),
 			track: el.querySelector('#weather-screensaver__track'),
 		}
 	}
 
 	// called by app
 	initAnime() {
-
-
-		this.lastRender = Date.now();
+		this.inited = true;
+		// this.lastRender = Date.now();
+		// this.active = true;
+		// this.animeID = window.requestAnimationFrame(this.animate.bind(this));
 		this.active = true;
-		this.animeID = window.requestAnimationFrame(this.animate.bind(this));
+
+	}
+
+	stopAnime() {
+		this.active = false;
 	}
 
 	animate() {
@@ -51,6 +59,14 @@ export default class WeatherScreensaver {
 
 
 		}
+	}
+
+	onMpdStatus(evt) {
+		const status = evt.detail;
+
+		console.log('Screensaver::onMpdStatus', status);
+
+		this.dom.track.innerHTML = status.now_playing.title;
 	}
 }
 

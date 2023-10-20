@@ -37,13 +37,14 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _library_page__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./library-page */ "./src/js/library-page.js");
 /* harmony import */ var _radio_page__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./radio-page */ "./src/js/radio-page.js");
 /* harmony import */ var _bounce_screensaver__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./bounce-screensaver */ "./src/js/bounce-screensaver.js");
-/* harmony import */ var _controls_dialog__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./controls-dialog */ "./src/js/controls-dialog.js");
+/* harmony import */ var _weather_screensaver__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./weather-screensaver */ "./src/js/weather-screensaver.js");
+/* harmony import */ var _controls_dialog__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./controls-dialog */ "./src/js/controls-dialog.js");
 function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, _toPropertyKey(descriptor.key), descriptor); } }
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
 function _toPropertyKey(arg) { var key = _toPrimitive(arg, "string"); return _typeof(key) === "symbol" ? key : String(key); }
 function _toPrimitive(input, hint) { if (_typeof(input) !== "object" || input === null) return input; var prim = input[Symbol.toPrimitive]; if (prim !== undefined) { var res = prim.call(input, hint || "default"); if (_typeof(res) !== "object") return res; throw new TypeError("@@toPrimitive must return a primitive value."); } return (hint === "string" ? String : Number)(input); }
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 
 
@@ -53,10 +54,14 @@ function _toPrimitive(input, hint) { if (_typeof(input) !== "object" || input ==
 
 
 
-//import WeatherScreensaver from './weather-screensaver';
+
 
 var SS_ON = true;
 var SS_DELAY = 60000;
+var DynamicSS = /*#__PURE__*/_createClass(function DynamicSS(className, opts) {
+  _classCallCheck(this, DynamicSS);
+  return new classes[className](opts);
+});
 var FmuLcd = /*#__PURE__*/function () {
   function FmuLcd(el) {
     _classCallCheck(this, FmuLcd);
@@ -69,6 +74,17 @@ var FmuLcd = /*#__PURE__*/function () {
       nav_links: el.querySelectorAll('#main-nav a:not([data-bs-toggle="modal"])')
     };
     this.pages = {};
+    this.screensaverKeys = ['bounce', 'weather'];
+    this.screensavers = {
+      'bounce': {
+        'class': _bounce_screensaver__WEBPACK_IMPORTED_MODULE_8__["default"],
+        'instance': null
+      },
+      'weather': {
+        'class': _weather_screensaver__WEBPACK_IMPORTED_MODULE_9__["default"],
+        'instance': null
+      }
+    };
     this.onHashChange();
     window.addEventListener('mpdstatus', this.onMpdStatus.bind(this));
     window.addEventListener('hashchange', this.onHashChange.bind(this));
@@ -118,7 +134,14 @@ var FmuLcd = /*#__PURE__*/function () {
       console.log('addScreensaver');
       if (!this.ss) {
         console.log('app dom', this.dom);
-        var ss = new _bounce_screensaver__WEBPACK_IMPORTED_MODULE_8__["default"]();
+        var ss;
+        var ssKey = this.screensaverKeys[Math.floor(Math.random() * this.screensaverKeys.length)];
+        if (!this.screensavers[ssKey].instance) {
+          ss = new this.screensavers[ssKey]["class"]();
+          this.screensavers[ssKey].instance = ss;
+        } else {
+          ss = this.screensavers[ssKey].instance;
+        }
 
         //this.dom.el.appendChild(ss.dom.el);
         //this.dom.el.innerHTML = ss.dom.el.outerHTML;
@@ -135,6 +158,7 @@ var FmuLcd = /*#__PURE__*/function () {
       if (this.ss) {
         //this.ss.dom.el.remove();
         this.dom.el.replaceChild(this.lastPage, this.ss.dom.el);
+        this.ss.stopAnime();
         this.ss = null;
         window.removeEventListener('click', this.removeScreensaverDelegate);
         this.turnOnScreensaverTimer();
@@ -237,7 +261,7 @@ window.addEventListener('load', function () {
   }
   var controls = document.querySelector('#controls');
   if (controls) {
-    new _controls_dialog__WEBPACK_IMPORTED_MODULE_9__["default"](controls);
+    new _controls_dialog__WEBPACK_IMPORTED_MODULE_10__["default"](controls);
   }
 });
 
@@ -276,9 +300,11 @@ var BounceScreensaver = /*#__PURE__*/function () {
     this.fpsInterval = 1000 / this.fps;
     this.lastRender = null;
     this.active = false;
+    this.inited = false;
     this.eraseMode = true;
     var el = document.createElement('div');
     el.setAttribute('id', 'screensaver');
+    el.setAttribute('class', 'screensaver');
     el.innerHTML = "\n\t\t\t<div id=\"screensaver__inner\">\n\t\t\t\t<canvas id=\"screensaver__canvas\" width=\"800\" height=\"425\"></canvas>\n\t\t\t\t<h2 id=\"screensaver__track\"></h2>\n\t\t\t\t<div id=\"screensaver__bouncer\"></div>\n\t\t\t</div>\n\t\t";
     this.dom = {
       el: el,
@@ -297,6 +323,11 @@ var BounceScreensaver = /*#__PURE__*/function () {
     key: "initAnime",
     value: function initAnime() {
       var _this = this;
+      if (this.inited) {
+        this.active = true;
+        this.animeID = window.requestAnimationFrame(this.animate.bind(this));
+        return;
+      }
       var cover = new Image();
       var bouncer = new Image();
       cover.onload = function () {
@@ -316,6 +347,7 @@ var BounceScreensaver = /*#__PURE__*/function () {
           _this.bouncer.y = _this.bouncer.height / 2 + Math.random() * (425 - _this.bouncer.height);
           console.log('bouncer props', _this.bouncer);
           _this.lastRender = Date.now();
+          _this.inited = true;
           _this.active = true;
           _this.animeID = window.requestAnimationFrame(_this.animate.bind(_this));
         };
@@ -330,6 +362,11 @@ var BounceScreensaver = /*#__PURE__*/function () {
         bottom: null
       };
       cover.setAttribute('src', '/api/cover');
+    }
+  }, {
+    key: "stopAnime",
+    value: function stopAnime() {
+      this.active = false;
     }
   }, {
     key: "animate",
@@ -1165,6 +1202,128 @@ var SettingsPage = /*#__PURE__*/function () {
   return SettingsPage;
 }();
 
+
+/***/ }),
+
+/***/ "./src/js/weather-screensaver.js":
+/*!***************************************!*\
+  !*** ./src/js/weather-screensaver.js ***!
+  \***************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ WeatherScreensaver)
+/* harmony export */ });
+function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, _toPropertyKey(descriptor.key), descriptor); } }
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
+function _toPropertyKey(arg) { var key = _toPrimitive(arg, "string"); return _typeof(key) === "symbol" ? key : String(key); }
+function _toPrimitive(input, hint) { if (_typeof(input) !== "object" || input === null) return input; var prim = input[Symbol.toPrimitive]; if (prim !== undefined) { var res = prim.call(input, hint || "default"); if (_typeof(res) !== "object") return res; throw new TypeError("@@toPrimitive must return a primitive value."); } return (hint === "string" ? String : Number)(input); }
+var FPS = 18;
+var WeatherScreensaver = /*#__PURE__*/function () {
+  function WeatherScreensaver() {
+    _classCallCheck(this, WeatherScreensaver);
+    console.log('WeatherScreensaver::init');
+    this.el = null;
+    this.fps = FPS;
+    this.fpsInterval = 1000 / this.fps;
+    this.lastRender = null;
+    this.active = false;
+    this.inited = false;
+    var el = document.createElement('div');
+    el.setAttribute('id', 'weather-screensaver');
+    el.setAttribute('class', 'screensaver');
+    el.innerHTML = "\n\t\t\t<div id=\"weather-screensaver__inner\">\n\t\t\t\t<!--<div id=\"weather-screensaver__frames\" class=\"weather-anime\"></div>-->\n\t\t\t\t<img id=\"weather-screensaver__img\" src=\"https://cdn.star.nesdis.noaa.gov/GOES16/ABI/SECTOR/ne/GEOCOLOR/GOES16-NE-GEOCOLOR-600x600.gif\">\n\t\t\t\t<h2 id=\"weather-screensaver__track\"></h2>\n\t\t\t</div>\n\t\t";
+    this.dom = {
+      el: el,
+      inner: el.querySelector('#weather-screensaver__inner'),
+      //frames: el.querySelector('#weather-screensaver__frames'),
+      track: el.querySelector('#weather-screensaver__track')
+    };
+  }
+
+  // called by app
+  _createClass(WeatherScreensaver, [{
+    key: "initAnime",
+    value: function initAnime() {
+      this.inited = true;
+      // this.lastRender = Date.now();
+      // this.active = true;
+      // this.animeID = window.requestAnimationFrame(this.animate.bind(this));
+      this.active = true;
+    }
+  }, {
+    key: "stopAnime",
+    value: function stopAnime() {
+      this.active = false;
+    }
+  }, {
+    key: "animate",
+    value: function animate() {
+      if (!this.active) return;
+      this.animeID = window.requestAnimationFrame(this.animate.bind(this));
+      var now = Date.now();
+      var elapsed = now - this.lastRender;
+      if (elapsed > this.fpsInterval) {
+        this.lastRender = now - elapsed % this.fpsInterval;
+      }
+    }
+  }, {
+    key: "onMpdStatus",
+    value: function onMpdStatus(evt) {
+      var status = evt.detail;
+      console.log('Screensaver::onMpdStatus', status);
+      this.dom.track.innerHTML = status.now_playing.title;
+    }
+  }]);
+  return WeatherScreensaver;
+}();
+
+var ScreensaverBase = /*#__PURE__*/function () {
+  function ScreensaverBase() {
+    _classCallCheck(this, ScreensaverBase);
+    console.log('ScreensaverBase::init');
+    this.el = null;
+    this.fps = FPS;
+    this.fpsInterval = 1000 / this.fps;
+    this.lastRender = null;
+    this.active = false;
+    var el = document.createElement('div');
+    el.setAttribute('id', 'screensaver');
+    el.innerHTML = "\n\t\t\t<div id=\"screensaver__inner\">\n\t\t\t\t<h2 id=\"screensaver__track\"></h2>\n\t\t\t</div>\n\t\t";
+    this.dom = {
+      el: el,
+      inner: el.querySelector('#screensaver__inner'),
+      track: el.querySelector('#screensaver__track')
+    };
+    console.log('ss dom', this.dom);
+  }
+
+  // called by app
+  _createClass(ScreensaverBase, [{
+    key: "initAnime",
+    value: function initAnime() {
+      this.lastRender = Date.now();
+      this.active = true;
+      this.animeID = window.requestAnimationFrame(this.animate.bind(this));
+    }
+  }, {
+    key: "animate",
+    value: function animate() {
+      if (!this.active) return;
+      this.animeID = window.requestAnimationFrame(this.animate.bind(this));
+      var now = Date.now();
+      var elapsed = now - this.lastRender;
+      if (elapsed > this.fpsInterval) {
+        this.lastRender = now - elapsed % this.fpsInterval;
+      }
+    }
+  }]);
+  return ScreensaverBase;
+}();
 
 /***/ }),
 
