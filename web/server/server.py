@@ -44,7 +44,7 @@ class Server(object):
 				(r"/api/controls/?(.*)", ControlsEndpoint, {"app": self.app}),
 			],
 			debug=False,
-			autoreload=True,
+			autoreload=False,
 			template_path="web/templates"
 		)
 		http_server = HTTPServer(app)
@@ -55,6 +55,7 @@ class Server(object):
 		asyncio.run(self.start_server())
 
 	def update(self):
+		#logger.debug("server::update %d clients" % len(self.web_clients))
 		if len(self.web_clients) > 0:
 			try:
 				for c in self.web_clients:
@@ -72,7 +73,8 @@ class Server(object):
 			except Exception as e:
 				logging.debug(e)
 		else:
-			logger.debug("no clients to update!")
+			pass
+			#logger.debug("no clients to update!")
 
 if __name__ == "__main__":
 	pass
