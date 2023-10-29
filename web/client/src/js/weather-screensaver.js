@@ -1,9 +1,10 @@
 const FPS = 18;
 
 export default class WeatherScreensaver {
-	constructor() {
+	constructor(app) {
 		console.log('WeatherScreensaver::init');
 
+		this.app = app;
 		this.el = null;
 
 		this.fps = FPS;
@@ -31,6 +32,8 @@ export default class WeatherScreensaver {
 			//frames: el.querySelector('#weather-screensaver__frames'),
 			track: el.querySelector('#weather-screensaver__track'),
 		}
+
+		this.onMpdStatus(this.app.lastMpdStatus);
 	}
 
 	// called by app
@@ -61,10 +64,11 @@ export default class WeatherScreensaver {
 		}
 	}
 
-	onMpdStatus(evt) {
-		const status = evt.detail;
+	onMpdStatus(status) {
 
 		console.log('Screensaver::onMpdStatus', status);
+
+		if (!status || !status.hasOwnProperty('now_playing')) return;
 
 		this.dom.track.innerHTML = status.now_playing.title;
 	}

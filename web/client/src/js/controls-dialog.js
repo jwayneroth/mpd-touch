@@ -30,8 +30,8 @@ export default class ControlsDialog {
 		window.addEventListener('mpdstatus', this.onMpdStatus.bind(this));
 	}
 
-	onMpdStatus(evt) {
-		console.log('ControlsDialog::onMpdStatus', evt.detail);
+	onMpdStatus(status) {
+		console.log('ControlsDialog::onMpdStatus', status);
 	}
 
 	controlClick(evt) {

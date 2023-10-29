@@ -24,8 +24,7 @@ export default class NowPlayingPage {
 		console.log('NowPlayingPage dom', this.dom);
 	}
 
-	onMpdStatus(evt) {
-		const status = evt.detail;
+	onMpdStatus(status) {
 
 		console.log('NowPlayingPage::onMpdStatus', status);
 

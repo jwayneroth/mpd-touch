@@ -225,6 +225,7 @@ body {
 #settings {
 
 	&__nav {
+		width: 100%;
 
 		li {
 			display: block;
@@ -235,7 +236,7 @@ body {
 			flex-flow: row nowrap;
 			justify-content: flex-start;
 			align-items: center;
-			font-size: pxToRem(32);
+			font-size: pxToRem(28);
 			margin-bottom: .4em;
 
 			span.icon {
@@ -251,6 +252,14 @@ body {
 				color: map-get($theme_colors, 'lemon');
 			}
 		}
+	}
+
+	&__web {
+		position: absolute;
+		left: 50%;
+		top: 0;
+		width: 50%;
+		height: 100%;
 	}
 }
 
@@ -430,25 +439,32 @@ body {
 // Screensaver
 //
 #screensaver {
-	// position: absolute;
-	// left: 0;
-	// top: 0;
-	// width: 800px;
-	// height: 480px;
+	width: 100%;
+	flex: 1 0 auto;
+	position: relative;
+	display: flex;
+	flex-flow: column nowrap;
+	justify-content: center;
 
-	&__inner {
+	@include responsiveQuery(m) {
 		position: absolute;
 		left: 0;
 		top: 0;
 		width: 800px;
 		height: 480px;
+		overflow: hidden;
 	}
 
 	&__canvas {
 		display: block;
-		width: 800px;
-		height: 425px;
+		width: 100%;
+		max-width: 800px;
+		height: auto;
 		background: map-get($theme_colors, 'near_black');
+
+		@include responsiveQuery(m) {
+		
+		}
 	}
 
 	&__track {
@@ -482,13 +498,23 @@ body {
 // Weather Screensaver
 //
 #weather-screensaver {
+
 	&__inner {
-		position: absolute;
-		left: 0;
-		top: 0;
-		width: 800px;
-		height: 480px;
-		overflow: hidden;
+		width: 100%;
+		flex: 1 0 auto;
+		position: relative;
+		display: flex;
+		flex-flow: column nowrap;
+		justify-content: center;
+
+		@include responsiveQuery(m) {
+			position: absolute;
+			left: 0;
+			top: 0;
+			width: 800px;
+			height: 480px;
+			overflow: hidden;
+		}
 	}
 
 	&__img {
@@ -506,11 +532,16 @@ body {
 		display: block;
 		white-space: nowrap;
 		animation: track_scroll_anime 20s infinite linear;
-		color: map-get($theme_colors, 'near_black');
-		
+		color: #fff;
+
 		&.paused,
 		&:hover {
 			animation-play-state: paused;
+		}
+
+		@include responsiveQuery(m) {
+			color: map-get($theme_colors, 'near_black');
+			text-shadow: 2px 1px 4px #fff;
 		}
 	}
 }

@@ -11,9 +11,10 @@ const BOUNCER_IMAGES = [
 ];
 
 export default class BounceScreensaver {
-	constructor() {
+	constructor(app) {
 		console.log('BounceScreensaver::init');
 
+		this.app = app;
 		this.el = null;
 		this.bouncer = null;
 		this.cover = null;
@@ -48,6 +49,8 @@ export default class BounceScreensaver {
 
 		this.ctx = this.dom.canvas.getContext('2d');
 		this.ctx.fillStyle = 'yellow'; //'rgb(10,5,0)';
+
+		this.onMpdStatus(this.app.lastMpdStatus);
 
 		console.log('ss dom', this.dom);
 	}
@@ -254,10 +257,11 @@ export default class BounceScreensaver {
 		return -1
 	}
 
-	onMpdStatus(evt) {
-		const status = evt.detail;
+	onMpdStatus(status) {
 
 		console.log('Screensaver::onMpdStatus', status);
+
+		if (!status || !status.hasOwnProperty('now_playing')) return;
 
 		this.dom.track.innerHTML = status.now_playing.title;
 	}

@@ -40,11 +40,11 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _weather_screensaver__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./weather-screensaver */ "./src/js/weather-screensaver.js");
 /* harmony import */ var _controls_dialog__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./controls-dialog */ "./src/js/controls-dialog.js");
 function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, _toPropertyKey(descriptor.key), descriptor); } }
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
 function _toPropertyKey(arg) { var key = _toPrimitive(arg, "string"); return _typeof(key) === "symbol" ? key : String(key); }
 function _toPrimitive(input, hint) { if (_typeof(input) !== "object" || input === null) return input; var prim = input[Symbol.toPrimitive]; if (prim !== undefined) { var res = prim.call(input, hint || "default"); if (_typeof(res) !== "object") return res; throw new TypeError("@@toPrimitive must return a primitive value."); } return (hint === "string" ? String : Number)(input); }
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 
 
@@ -58,14 +58,24 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 var SS_ON = true;
 var SS_DELAY = 60000;
-var DynamicSS = /*#__PURE__*/_createClass(function DynamicSS(className, opts) {
-  _classCallCheck(this, DynamicSS);
-  return new classes[className](opts);
-});
+
+// class DynamicSS {
+// 	constructor(className, opts) {
+// 		return new classes[className](opts);
+// 	}
+// }
 var FmuLcd = /*#__PURE__*/function () {
   function FmuLcd(el) {
     _classCallCheck(this, FmuLcd);
     this.currentPageName = null;
+    this.lastMpdStatus = null;
+
+    // testing
+    this.lastMpdStatus = {
+      now_playing: {
+        title: 'testing track'
+      }
+    };
     this.dom = {
       el: el,
       inner: el.querySelector('#app__inner'),
@@ -137,7 +147,7 @@ var FmuLcd = /*#__PURE__*/function () {
         var ss;
         var ssKey = this.screensaverKeys[Math.floor(Math.random() * this.screensaverKeys.length)];
         if (!this.screensavers[ssKey].instance) {
-          ss = new this.screensavers[ssKey]["class"]();
+          ss = new this.screensavers[ssKey]["class"](this);
           this.screensavers[ssKey].instance = ss;
         } else {
           ss = this.screensavers[ssKey].instance;
@@ -167,13 +177,15 @@ var FmuLcd = /*#__PURE__*/function () {
   }, {
     key: "onMpdStatus",
     value: function onMpdStatus(evt) {
+      var status = evt.detail;
+      this.lastMpdStatus = status;
       if (!this.pages.hasOwnProperty(this.currentPageName)) return;
       var page = this.pages[this.currentPageName];
       if (typeof page.onMpdStatus === 'function') {
-        page.onMpdStatus(evt);
+        page.onMpdStatus(status);
       }
       if (this.ss && typeof this.ss.onMpdStatus === 'function') {
-        this.ss.onMpdStatus(evt);
+        this.ss.onMpdStatus(status);
       }
     }
   }, {
@@ -289,9 +301,10 @@ function _toPrimitive(input, hint) { if (_typeof(input) !== "object" || input ==
 var FPS = 18;
 var BOUNCER_IMAGES = ['raspberrypi.png', 'ra.png', 'ra-demons.png', 'gd-face.png', 'gd-bolt.png'];
 var BounceScreensaver = /*#__PURE__*/function () {
-  function BounceScreensaver() {
+  function BounceScreensaver(app) {
     _classCallCheck(this, BounceScreensaver);
     console.log('BounceScreensaver::init');
+    this.app = app;
     this.el = null;
     this.bouncer = null;
     this.cover = null;
@@ -317,6 +330,7 @@ var BounceScreensaver = /*#__PURE__*/function () {
     this.ctx = this.dom.canvas.getContext('2d');
     this.ctx.fillStyle = 'yellow'; //'rgb(10,5,0)';
 
+    this.onMpdStatus(this.app.lastMpdStatus);
     console.log('ss dom', this.dom);
   }
   _createClass(BounceScreensaver, [{
@@ -508,9 +522,9 @@ var BounceScreensaver = /*#__PURE__*/function () {
     }
   }, {
     key: "onMpdStatus",
-    value: function onMpdStatus(evt) {
-      var status = evt.detail;
+    value: function onMpdStatus(status) {
       console.log('Screensaver::onMpdStatus', status);
+      if (!status || !status.hasOwnProperty('now_playing')) return;
       this.dom.track.innerHTML = status.now_playing.title;
     }
   }]);
@@ -603,8 +617,8 @@ var ControlsDialog = /*#__PURE__*/function () {
   }
   _createClass(ControlsDialog, [{
     key: "onMpdStatus",
-    value: function onMpdStatus(evt) {
-      console.log('ControlsDialog::onMpdStatus', evt.detail);
+    value: function onMpdStatus(status) {
+      console.log('ControlsDialog::onMpdStatus', status);
     }
   }, {
     key: "controlClick",
@@ -968,8 +982,7 @@ var NowPlayingPage = /*#__PURE__*/function () {
     }
   }, {
     key: "onMpdStatus",
-    value: function onMpdStatus(evt) {
-      var status = evt.detail;
+    value: function onMpdStatus(status) {
       console.log('NowPlayingPage::onMpdStatus', status);
       if (status.now_playing.artist && status.now_playing.artist != '') {
         this.dom.artist.innerHTML = status.now_playing.artist;
@@ -1182,6 +1195,12 @@ var SettingsPage = /*#__PURE__*/function () {
     key: "initDom",
     value: function initDom(el) {
       this.el = el;
+      var ssSettings = document.createElement('div');
+      ssSettings.setAttribute('id', 'settings__web');
+      ssSettings.innerHTML = "\n\t\t\t<h3>Screensaver</h3>\n\t\t\t<div>\n\t\t\t\t<input type=\"radio\" id=\"ss_on\" name=\"ss_on_off\" value=\"on\">\n\t\t\t\t<label for=\"ss_on\">On</label><br>\n\t\t\t\t<input type=\"radio\" id=\"ss_off\" name=\"ss_on_off\" value=\"off\">\n\t\t\t\t<label for=\"ss_off\">Off</label>\n\t\t\t</div>\n\t\t\t<label for=\"ss_type\">Type: </label>\n\t\t\t<select name=\"ss_type\" id=\"ss_type\">\n\t\t\t\t<option value=\"random\">Random</option>\n\t\t\t\t<option value=\"bouncer\">Bouncer</option>\n\t\t\t\t<option value=\"weather\">Weather</option>\n\t\t\t</select>\n\t\t";
+
+      //this.el.appendChild(ssSettings);
+
       var links = this.el.querySelectorAll('a');
       var i;
       for (i = 0; i < links.length; i++) {
@@ -1193,6 +1212,10 @@ var SettingsPage = /*#__PURE__*/function () {
     value: function anchorClick(evt) {
       evt.preventDefault();
       console.log('settings link click', evt.currentTarget.dataset.name);
+      var btnName = evt.currentTarget.dataset.name;
+      if (btnName == 'settings') {
+        return false;
+      }
       _api__WEBPACK_IMPORTED_MODULE_0__.axios.get(_api__WEBPACK_IMPORTED_MODULE_0__.API_URL + '/settings/' + evt.currentTarget.dataset.name).then(function (response) {
         return console.log(response.data);
       });
@@ -1224,9 +1247,10 @@ function _toPropertyKey(arg) { var key = _toPrimitive(arg, "string"); return _ty
 function _toPrimitive(input, hint) { if (_typeof(input) !== "object" || input === null) return input; var prim = input[Symbol.toPrimitive]; if (prim !== undefined) { var res = prim.call(input, hint || "default"); if (_typeof(res) !== "object") return res; throw new TypeError("@@toPrimitive must return a primitive value."); } return (hint === "string" ? String : Number)(input); }
 var FPS = 18;
 var WeatherScreensaver = /*#__PURE__*/function () {
-  function WeatherScreensaver() {
+  function WeatherScreensaver(app) {
     _classCallCheck(this, WeatherScreensaver);
     console.log('WeatherScreensaver::init');
+    this.app = app;
     this.el = null;
     this.fps = FPS;
     this.fpsInterval = 1000 / this.fps;
@@ -1243,6 +1267,7 @@ var WeatherScreensaver = /*#__PURE__*/function () {
       //frames: el.querySelector('#weather-screensaver__frames'),
       track: el.querySelector('#weather-screensaver__track')
     };
+    this.onMpdStatus(this.app.lastMpdStatus);
   }
 
   // called by app
@@ -1273,9 +1298,9 @@ var WeatherScreensaver = /*#__PURE__*/function () {
     }
   }, {
     key: "onMpdStatus",
-    value: function onMpdStatus(evt) {
-      var status = evt.detail;
+    value: function onMpdStatus(status) {
       console.log('Screensaver::onMpdStatus', status);
+      if (!status || !status.hasOwnProperty('now_playing')) return;
       this.dom.track.innerHTML = status.now_playing.title;
     }
   }]);

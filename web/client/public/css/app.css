@@ -15476,6 +15476,9 @@ body {
   animation-play-state: paused;
 }
 
+#settings__nav {
+  width: 100%;
+}
 #settings__nav li {
   display: block;
 }
@@ -15484,7 +15487,7 @@ body {
   flex-flow: row nowrap;
   justify-content: flex-start;
   align-items: center;
-  font-size: 2rem;
+  font-size: 1.75rem;
   margin-bottom: 0.4em;
 }
 #settings__nav a span.icon {
@@ -16305,6 +16308,13 @@ body {
 #settings__nav a.active cpan.icon::before {
   color: rgb(246, 248, 63);
 }
+#settings__web {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  width: 50%;
+  height: 100%;
+}
 
 #library__nav a.new-playlist,
 #radio__nav a.new-playlist {
@@ -16450,17 +16460,29 @@ body {
   align-items: center;
 }
 
-#screensaver__inner {
-  position: absolute;
-  left: 0;
-  top: 0;
-  width: 800px;
-  height: 480px;
+#screensaver {
+  width: 100%;
+  flex: 1 0 auto;
+  position: relative;
+  display: flex;
+  flex-flow: column nowrap;
+  justify-content: center;
+}
+@media only screen and (min-width: 800px) {
+  #screensaver {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 800px;
+    height: 480px;
+    overflow: hidden;
+  }
 }
 #screensaver__canvas {
   display: block;
-  width: 800px;
-  height: 425px;
+  width: 100%;
+  max-width: 800px;
+  height: auto;
   background: rgb(10, 5, 0);
 }
 #screensaver__track {
@@ -16483,12 +16505,22 @@ body {
 }
 
 #weather-screensaver__inner {
-  position: absolute;
-  left: 0;
-  top: 0;
-  width: 800px;
-  height: 480px;
-  overflow: hidden;
+  width: 100%;
+  flex: 1 0 auto;
+  position: relative;
+  display: flex;
+  flex-flow: column nowrap;
+  justify-content: center;
+}
+@media only screen and (min-width: 800px) {
+  #weather-screensaver__inner {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 800px;
+    height: 480px;
+    overflow: hidden;
+  }
 }
 #weather-screensaver__img {
   width: 100%;
@@ -16504,8 +16536,14 @@ body {
   display: block;
   white-space: nowrap;
   animation: track_scroll_anime 20s infinite linear;
-  color: rgb(10, 5, 0);
+  color: #fff;
 }
 #weather-screensaver__track.paused, #weather-screensaver__track:hover {
   animation-play-state: paused;
+}
+@media only screen and (min-width: 800px) {
+  #weather-screensaver__track {
+    color: rgb(10, 5, 0);
+    text-shadow: 2px 1px 4px #fff;
+  }
 }

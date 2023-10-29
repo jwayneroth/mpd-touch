@@ -15,16 +15,24 @@ import ControlsDialog from './controls-dialog';
 const SS_ON = true;
 const SS_DELAY = 60000;
 
-class DynamicSS {
-	constructor(className, opts) {
-		return new classes[className](opts);
-	}
-}
+// class DynamicSS {
+// 	constructor(className, opts) {
+// 		return new classes[className](opts);
+// 	}
+// }
 
 class FmuLcd {
 	constructor(el) {
 
 		this.currentPageName = null;
+		this.lastMpdStatus = null;
+
+		// testing
+		this.lastMpdStatus = {
+			now_playing: {
+				title: 'testing track',
+			},
+		};
 
 		this.dom = {
 			el,
@@ -102,7 +110,7 @@ class FmuLcd {
 			const ssKey = this.screensaverKeys[Math.floor(Math.random() * this.screensaverKeys.length)];
 
 			if (!this.screensavers[ssKey].instance) {
-				ss = new this.screensavers[ssKey].class();
+				ss = new this.screensavers[ssKey].class(this);
 				this.screensavers[ssKey].instance = ss;
 			} else {
 				ss = this.screensavers[ssKey].instance;
@@ -140,16 +148,20 @@ class FmuLcd {
 
 	onMpdStatus(evt) {
 
+		const status = evt.detail;
+
+		this.lastMpdStatus = status;
+
 		if (!this.pages.hasOwnProperty(this.currentPageName)) return;
 
 		const page = this.pages[this.currentPageName];
 
 		if (typeof page.onMpdStatus === 'function') {
-			page.onMpdStatus(evt);
+			page.onMpdStatus(status);
 		}
 
 		if (this.ss && typeof this.ss.onMpdStatus === 'function') {
-			this.ss.onMpdStatus(evt);
+			this.ss.onMpdStatus(status);
 		}
 	}
 
