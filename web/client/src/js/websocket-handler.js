@@ -39,8 +39,11 @@ export default class WebSocketHandler {
 		if (webSocket !== null) {
 			webSocket.close();
 			webSocket = null;
+			console.log("webSocket closed in client");
+
+			// try to reopen once ?
+			this.openWebSocket();
 		}
-		console.log("webSocket closed in client");
 	}
 
 	/**
