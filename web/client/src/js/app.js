@@ -25,14 +25,10 @@ class FmuLcd {
 	constructor(el) {
 
 		this.currentPageName = null;
-		this.lastMpdStatus = null;
 
-		// testing
-		this.lastMpdStatus = {
-			now_playing: {
-				title: 'testing track',
-			},
-		};
+		this.lastMpdStatus = (window.initialMpdStatus || null);
+
+		console.log('initialMpdStatus', window.initialMpdStatus);
 
 		this.dom = {
 			el,

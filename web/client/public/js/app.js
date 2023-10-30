@@ -68,14 +68,8 @@ var FmuLcd = /*#__PURE__*/function () {
   function FmuLcd(el) {
     _classCallCheck(this, FmuLcd);
     this.currentPageName = null;
-    this.lastMpdStatus = null;
-
-    // testing
-    this.lastMpdStatus = {
-      now_playing: {
-        title: 'testing track'
-      }
-    };
+    this.lastMpdStatus = window.initialMpdStatus || null;
+    console.log('initialMpdStatus', window.initialMpdStatus);
     this.dom = {
       el: el,
       inner: el.querySelector('#app__inner'),
@@ -1373,6 +1367,7 @@ window.webSocket = null;
 var WebSocketHandler = /*#__PURE__*/function () {
   function WebSocketHandler() {
     _classCallCheck(this, WebSocketHandler);
+    this.retries = 0;
   }
   _createClass(WebSocketHandler, [{
     key: "checkInitSocket",
@@ -1415,7 +1410,10 @@ var WebSocketHandler = /*#__PURE__*/function () {
         console.log("webSocket closed in client");
 
         // try to reopen once ?
-        this.openWebSocket();
+        if (this.retries == 0) {
+          this.retries++;
+          this.openWebSocket();
+        }
       }
     }
 

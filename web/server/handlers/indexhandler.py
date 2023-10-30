@@ -8,5 +8,21 @@ class IndexHandler(RequestHandler):
 		self.app = app
 
 	def get(self):
-		self.render("index.html", title="FMULCD")
+		volume = mpd.volume
+		playing_type = mpd.now_playing.playing_type
+		title = mpd.now_playing.title
+		artist = mpd.now_playing.artist
+		name = mpd.now_playing.name
+		album = mpd.now_playing.album
+
+		self.render(
+			"index.html",
+			title="FMULCD",
+			volume=volume,
+			playing_type=playing_type,
+			artist=artist,
+			name=name,
+			album=album,
+			track=title
+		)
 

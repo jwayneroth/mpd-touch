@@ -2,7 +2,9 @@
 window.webSocket = null;
 
 export default class WebSocketHandler {
-	constructor() { }
+	constructor() {
+		this.retries = 0;
+	}
 
 	checkInitSocket() {
 		if (window.webSocket == null) {
@@ -42,7 +44,10 @@ export default class WebSocketHandler {
 			console.log("webSocket closed in client");
 
 			// try to reopen once ?
-			this.openWebSocket();
+			if (this.retries == 0) {
+				this.retries++;
+				this.openWebSocket();
+			}
 		}
 	}
 

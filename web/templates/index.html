@@ -8,6 +8,18 @@
 	<link rel='apple-touch-icon' href='assets/images/favicon.png'/>
 	<link rel="stylesheet" type="text/css" href="assets/css/app.css">
 	<script type="text/javascript" src="assets/js/app.js"></script>
+	<script type="text/javascript">
+		window.initialMpdStatus = {
+			"volume": {{ volume }},
+			"now_playing": {
+				"type": "{{ playing_type }}",
+				"title": "{{ track }}",
+				"artist": "{{ artist }}",
+				"name": "{{ name }}",
+				"album": "{{ album }}"
+			}
+		};
+	</script>
 	<title>{{ title }}</title>
 </head>
 <body class="{% if request.uri[1:] != '' %}{{ request.uri[1:] }}{% else %}home{% end %}">
