@@ -27,7 +27,7 @@ export default class ControlsDialog {
 
 		el.addEventListener('shown.bs.modal', this.onModalShown.bind(this));
 
-		window.addEventListener('mpdstatus', this.onMpdStatus.bind(this));
+		//window.addEventListener('mpdstatus', this.onMpdStatus.bind(this));
 	}
 
 	onMpdStatus(status) {
