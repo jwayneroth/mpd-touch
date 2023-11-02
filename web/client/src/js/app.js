@@ -148,6 +148,8 @@ class FmuLcd {
 
 		this.lastMpdStatus = status;
 
+		console.log('app::onMpdStatus', evt, status);
+
 		if (!this.pages.hasOwnProperty(this.currentPageName)) return;
 
 		const page = this.pages[this.currentPageName];
