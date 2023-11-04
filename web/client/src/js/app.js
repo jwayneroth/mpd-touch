@@ -13,7 +13,7 @@ import WeatherScreensaver from './weather-screensaver';
 import ControlsDialog from './controls-dialog';
 
 const SS_ON = true;
-const SS_DELAY = 60000;
+const SS_DELAY = 480000;
 
 // class DynamicSS {
 // 	constructor(className, opts) {

@@ -57,7 +57,7 @@ function _toPrimitive(input, hint) { if (_typeof(input) !== "object" || input ==
 
 
 var SS_ON = true;
-var SS_DELAY = 60000;
+var SS_DELAY = 480000;
 
 // class DynamicSS {
 // 	constructor(className, opts) {
@@ -1021,6 +1021,19 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
 function _toPropertyKey(arg) { var key = _toPrimitive(arg, "string"); return _typeof(key) === "symbol" ? key : String(key); }
 function _toPrimitive(input, hint) { if (_typeof(input) !== "object" || input === null) return input; var prim = input[Symbol.toPrimitive]; if (prim !== undefined) { var res = prim.call(input, hint || "default"); if (_typeof(res) !== "object") return res; throw new TypeError("@@toPrimitive must return a primitive value."); } return (hint === "string" ? String : Number)(input); }
 
+var FMU_STREAMS = [{
+  'appTitle': "WFMU",
+  'statusURL': 'https://wfmu.org/wp-content/themes/wfmu-theme/status/main.json'
+}, {
+  'appTitle': "GtDR",
+  'statusURL': 'https://wfmu.org/wp-content/themes/wfmu-theme/status/drummer.json'
+}, {
+  'appTitle': "Rock 'n Soul",
+  'statusURL': 'https://wfmu.org/wp-content/themes/wfmu-theme/status/rockSoul.json'
+}, {
+  'appTitle': "Sheena",
+  'statusURL': 'https://wfmu.org/wp-content/themes/wfmu-theme/status/sheena.json'
+}];
 
 /**
  * Radio Page
@@ -1043,7 +1056,59 @@ var RadioPage = /*#__PURE__*/function () {
         archivesPanel: el.querySelector('#radio__archives')
       };
       this.dom.archivesTab.addEventListener('shown.bs.tab', this.onArchivesShown.bind(this));
+      this.initStreamsStatus();
       this.initStreamsPanelButtons();
+    }
+  }, {
+    key: "initStreamsStatus",
+    value: function initStreamsStatus() {
+      var streamTitles = FMU_STREAMS.map(function (s) {
+        return s.appTitle;
+      });
+      var streams = this.dom.streamsPanel.querySelectorAll('li');
+      var stream, div, idx, title, url, ico, i;
+      for (i = 0; i < streams.length; i++) {
+        stream = streams[i];
+        idx = streamTitles.indexOf(stream.dataset.title);
+        if (idx > -1) {
+          title = FMU_STREAMS[idx].appTitle;
+          url = FMU_STREAMS[idx].statusURL;
+          div = document.createElement('div');
+          div.classList.add('listennow-current-track');
+          div.innerHTML += "\n\t\t\t\t\t<p class=\"current-title\"></p>\n\t\t\t\t\t<p class=\"show-title\"></p>\n\t\t\t\t";
+          ico = document.createElement('a');
+          ico.classList.add('refresh');
+          ico.dataset.title = title;
+          ico.innerHTML = "<span class=\"icon repeat\"></span>";
+          ico.addEventListener('click', this.getStreamStatus.bind(this, title, url));
+          stream.appendChild(div);
+          stream.appendChild(ico);
+          this.getStreamStatus(title, url);
+        }
+      }
+    }
+  }, {
+    key: "getStreamStatus",
+    value: function getStreamStatus(title, url) {
+      var params = {
+        title: title,
+        url: url
+      };
+      _api__WEBPACK_IMPORTED_MODULE_0__.axios.get(_api__WEBPACK_IMPORTED_MODULE_0__.API_URL + '/radio/status', {
+        params: params
+      }).then(this.onStreamStatus.bind(this));
+    }
+  }, {
+    key: "onStreamStatus",
+    value: function onStreamStatus(response) {
+      console.log(response.data);
+      var _response$data = response.data,
+        title = _response$data.title,
+        status = _response$data.status;
+      var div = this.dom.streamsPanel.querySelector('li[data-title="' + title + '"] .listennow-current-track');
+      var track = _typeof(status.artist) !== 'object' ? status.title + ' by ' + status.artist : status.song;
+      div.querySelector('.current-title').innerHTML = "<strong>".concat(track, "</strong>");
+      div.querySelector('.show-title').innerHTML = "on <a href=\"https://www.wfmu.org/playlists/shows/".concat(status.playlist['@attributes'].id, "\" target=\"_blank\">").concat(status.show, "</a>");
     }
 
     //
@@ -1143,10 +1208,10 @@ var RadioPage = /*#__PURE__*/function () {
       var ul = document.createElement('ul');
       var i;
       for (i = 0; i < archives.length; i++) {
-        ul.innerHTML += "\n\t\t\t<li>\n\t\t\t\t<a class=\"archive\" href data-url=\"".concat(encodeURI(archives[i].url), "\">\n\t\t\t\t\t<span>").concat(archives[i].title, "</span>\n\t\t\t\t</a>\n\t\t\t</li>\n\t\t\t");
+        ul.innerHTML += "\n\t\t\t\t< li >\n\t\t\t\t<a class=\"archive\" href data-url=\"".concat(encodeURI(archives[i].url), "\">\n\t\t\t\t\t<span>").concat(archives[i].title, "</span>\n\t\t\t\t</a>\n\t\t\t\t\t</li >\n\t\t\t\t\t");
       }
       this.dom.archivesPanel.innerHTML = '';
-      this.dom.archivesPanel.innerHTML = "\n\t\t<div class=\"button-row\">\n\t\t\t<a href class=\"refresh-archives icon-button\">\n\t\t\t\t<span class=\"icon refresh\"></span>\n\t\t\t\t<span class=\"txt\">refresh</span>\n\t\t\t</a>\n\t\t</div>\n\t\t";
+      this.dom.archivesPanel.innerHTML = "\n\t\t\t\t\t< div class= \"button-row\" >\n\t\t\t\t\t<a href class=\"refresh-archives icon-button\">\n\t\t\t\t\t\t<span class=\"icon refresh\"></span>\n\t\t\t\t\t\t<span class=\"txt\">refresh</span>\n\t\t\t\t\t</a>\n\t\t</div >\n\t\t\t\t\t";
       this.dom.archivesPanel.appendChild(ul);
       this.initArchivesPanelButtons();
       this.archivesLoaded = true;
@@ -5607,9 +5672,12 @@ module.exports = Array.isArray || function (arr) {
 /*!***************************!*\
   !*** ./src/scss/app.scss ***!
   \***************************/
-/***/ (() => {
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
-throw new Error("Module build failed (from ./node_modules/mini-css-extract-plugin/dist/loader.js):\nModuleError: Module Error (from ./node_modules/sass-loader/dist/cjs.js):\nCannot read properties of undefined (reading 'indexOf')\n    at Object.emitError (/home/jwr/pydocs/fmulcd/web/client/node_modules/webpack/lib/NormalModule.js:614:6)\n    at getSassImplementation (/home/jwr/pydocs/fmulcd/web/client/node_modules/sass-loader/dist/utils.js:63:21)\n    at Object.loader (/home/jwr/pydocs/fmulcd/web/client/node_modules/sass-loader/dist/index.js:29:59)");
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+// extracted by mini-css-extract-plugin
+
 
 /***/ }),
 
@@ -8865,7 +8933,42 @@ module.exports = axios;
 /******/ 		return module.exports;
 /******/ 	}
 /******/ 	
+/******/ 	// expose the modules object (__webpack_modules__)
+/******/ 	__webpack_require__.m = __webpack_modules__;
+/******/ 	
 /************************************************************************/
+/******/ 	/* webpack/runtime/chunk loaded */
+/******/ 	(() => {
+/******/ 		var deferred = [];
+/******/ 		__webpack_require__.O = (result, chunkIds, fn, priority) => {
+/******/ 			if(chunkIds) {
+/******/ 				priority = priority || 0;
+/******/ 				for(var i = deferred.length; i > 0 && deferred[i - 1][2] > priority; i--) deferred[i] = deferred[i - 1];
+/******/ 				deferred[i] = [chunkIds, fn, priority];
+/******/ 				return;
+/******/ 			}
+/******/ 			var notFulfilled = Infinity;
+/******/ 			for (var i = 0; i < deferred.length; i++) {
+/******/ 				var [chunkIds, fn, priority] = deferred[i];
+/******/ 				var fulfilled = true;
+/******/ 				for (var j = 0; j < chunkIds.length; j++) {
+/******/ 					if ((priority & 1 === 0 || notFulfilled >= priority) && Object.keys(__webpack_require__.O).every((key) => (__webpack_require__.O[key](chunkIds[j])))) {
+/******/ 						chunkIds.splice(j--, 1);
+/******/ 					} else {
+/******/ 						fulfilled = false;
+/******/ 						if(priority < notFulfilled) notFulfilled = priority;
+/******/ 					}
+/******/ 				}
+/******/ 				if(fulfilled) {
+/******/ 					deferred.splice(i--, 1)
+/******/ 					var r = fn();
+/******/ 					if (r !== undefined) result = r;
+/******/ 				}
+/******/ 			}
+/******/ 			return result;
+/******/ 		};
+/******/ 	})();
+/******/ 	
 /******/ 	/* webpack/runtime/compat get default export */
 /******/ 	(() => {
 /******/ 		// getDefaultExport function for compatibility with non-harmony modules
@@ -8918,13 +9021,68 @@ module.exports = axios;
 /******/ 		};
 /******/ 	})();
 /******/ 	
+/******/ 	/* webpack/runtime/jsonp chunk loading */
+/******/ 	(() => {
+/******/ 		// no baseURI
+/******/ 		
+/******/ 		// object to store loaded and loading chunks
+/******/ 		// undefined = chunk not loaded, null = chunk preloaded/prefetched
+/******/ 		// [resolve, reject, Promise] = chunk loading, 0 = chunk loaded
+/******/ 		var installedChunks = {
+/******/ 			"/public/js/app": 0,
+/******/ 			"public/css/app": 0
+/******/ 		};
+/******/ 		
+/******/ 		// no chunk on demand loading
+/******/ 		
+/******/ 		// no prefetching
+/******/ 		
+/******/ 		// no preloaded
+/******/ 		
+/******/ 		// no HMR
+/******/ 		
+/******/ 		// no HMR manifest
+/******/ 		
+/******/ 		__webpack_require__.O.j = (chunkId) => (installedChunks[chunkId] === 0);
+/******/ 		
+/******/ 		// install a JSONP callback for chunk loading
+/******/ 		var webpackJsonpCallback = (parentChunkLoadingFunction, data) => {
+/******/ 			var [chunkIds, moreModules, runtime] = data;
+/******/ 			// add "moreModules" to the modules object,
+/******/ 			// then flag all "chunkIds" as loaded and fire callback
+/******/ 			var moduleId, chunkId, i = 0;
+/******/ 			if(chunkIds.some((id) => (installedChunks[id] !== 0))) {
+/******/ 				for(moduleId in moreModules) {
+/******/ 					if(__webpack_require__.o(moreModules, moduleId)) {
+/******/ 						__webpack_require__.m[moduleId] = moreModules[moduleId];
+/******/ 					}
+/******/ 				}
+/******/ 				if(runtime) var result = runtime(__webpack_require__);
+/******/ 			}
+/******/ 			if(parentChunkLoadingFunction) parentChunkLoadingFunction(data);
+/******/ 			for(;i < chunkIds.length; i++) {
+/******/ 				chunkId = chunkIds[i];
+/******/ 				if(__webpack_require__.o(installedChunks, chunkId) && installedChunks[chunkId]) {
+/******/ 					installedChunks[chunkId][0]();
+/******/ 				}
+/******/ 				installedChunks[chunkId] = 0;
+/******/ 			}
+/******/ 			return __webpack_require__.O(result);
+/******/ 		}
+/******/ 		
+/******/ 		var chunkLoadingGlobal = self["webpackChunkfmulcd_web_client"] = self["webpackChunkfmulcd_web_client"] || [];
+/******/ 		chunkLoadingGlobal.forEach(webpackJsonpCallback.bind(null, 0));
+/******/ 		chunkLoadingGlobal.push = webpackJsonpCallback.bind(null, chunkLoadingGlobal.push.bind(chunkLoadingGlobal));
+/******/ 	})();
+/******/ 	
 /************************************************************************/
 /******/ 	
 /******/ 	// startup
 /******/ 	// Load entry module and return exports
-/******/ 	__webpack_require__("./src/js/app.js");
-/******/ 	// This entry module doesn't tell about it's top-level declarations so it can't be inlined
-/******/ 	var __webpack_exports__ = __webpack_require__("./src/scss/app.scss");
+/******/ 	// This entry module depends on other loaded chunks and execution need to be delayed
+/******/ 	__webpack_require__.O(undefined, ["public/css/app"], () => (__webpack_require__("./src/js/app.js")))
+/******/ 	var __webpack_exports__ = __webpack_require__.O(undefined, ["public/css/app"], () => (__webpack_require__("./src/scss/app.scss")))
+/******/ 	__webpack_exports__ = __webpack_require__.O(__webpack_exports__);
 /******/ 	
 /******/ })()
 ;

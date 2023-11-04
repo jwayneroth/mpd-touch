@@ -9,7 +9,7 @@
 		<div id="radio__streams" class="tab-pane fade show active" aria-labelledby="artists-tab" role="tabpanel" tabindex="0">
 			<ul>
 				{% for station in stations %}
-				<li>
+				<li data-title="{{ station['title'] }}">
 					<a href class="stream" data-url="{{ url_escape(station['url']) }}">
 						<span>{{ station['title'] }}</span>
 					</a>

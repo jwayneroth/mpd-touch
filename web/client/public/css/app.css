@@ -15,6 +15,13 @@
   font-display: swap;
   src: url(/assets/fonts/Montserrat/Montserrat-Medium.ttf);
 }
+@font-face {
+  font-family: "Montserrat";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url(/assets/fonts/Montserrat/Montserrat-Bold.ttf);
+}
 /*!
  * Bootstrap  v5.3.2 (https://getbootstrap.com/)
  * Copyright 2011-2023 The Bootstrap Authors
@@ -13408,6 +13415,10 @@ textarea.form-control-lg {
   background: rgb(60, 50, 65);
 }
 
+strong {
+  font-weight: bold;
+}
+
 ul {
   margin: 0;
   padding: 0;
@@ -16418,15 +16429,30 @@ body {
 }
 #library #radio__streams ul li,
 #radio #radio__streams ul li {
+  align-items: stretch;
   flex: 0 1 auto;
-  width: 50%;
+  width: 100%;
 }
-@media only screen and (min-width: 800px) {
-  #library #radio__streams ul li,
-  #radio #radio__streams ul li {
-    flex: 1 1 33.33%;
-    width: 33.33%;
-  }
+#library #radio__streams ul li a.stream,
+#radio #radio__streams ul li a.stream {
+  flex: 1 1 35%;
+}
+#library #radio__streams ul li .listennow-current-track,
+#radio #radio__streams ul li .listennow-current-track {
+  flex: 1 0 60%;
+  font-size: 0.8em;
+}
+#library #radio__streams ul li .listennow-current-track p,
+#radio #radio__streams ul li .listennow-current-track p {
+  margin-bottom: 0;
+}
+#library #radio__streams ul li a.refresh,
+#radio #radio__streams ul li a.refresh {
+  flex: 1 1 5%;
+}
+#library #radio__streams ul li a.refresh span::before,
+#radio #radio__streams ul li a.refresh span::before {
+  font-size: 20px;
 }
 #library #radio__archives .refresh-archives,
 #radio #radio__archives .refresh-archives {

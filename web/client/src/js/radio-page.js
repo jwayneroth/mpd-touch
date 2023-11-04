@@ -1,5 +1,25 @@
 import { axios, API_URL } from './api';
 
+const FMU_STREAMS = [
+	{
+		'appTitle': "WFMU",
+		'statusURL': 'https://wfmu.org/wp-content/themes/wfmu-theme/status/main.json',
+	},
+	{
+		'appTitle': "GtDR",
+		'statusURL': 'https://wfmu.org/wp-content/themes/wfmu-theme/status/drummer.json',
+	},
+	{
+		'appTitle': "Rock 'n Soul",
+		'statusURL': 'https://wfmu.org/wp-content/themes/wfmu-theme/status/rockSoul.json',
+	},
+	{
+		'appTitle': "Sheena",
+		'statusURL': 'https://wfmu.org/wp-content/themes/wfmu-theme/status/sheena.json',
+	}
+];
+
+
 /**
  * Radio Page
  */
@@ -25,7 +45,65 @@ export default class RadioPage {
 
 		this.dom.archivesTab.addEventListener('shown.bs.tab', this.onArchivesShown.bind(this));
 
+		this.initStreamsStatus();
+
 		this.initStreamsPanelButtons();
+	}
+
+	initStreamsStatus() {
+
+		const streamTitles = FMU_STREAMS.map(s => s.appTitle);
+		const streams = this.dom.streamsPanel.querySelectorAll('li');
+
+		let stream, div, idx, title, url, ico, i;
+
+		for (i = 0; i < streams.length; i++) {
+
+			stream = streams[i];
+
+			idx = streamTitles.indexOf(stream.dataset.title);
+
+			if (idx > -1) {
+
+				title = FMU_STREAMS[idx].appTitle;
+				url = FMU_STREAMS[idx].statusURL;
+
+				div = document.createElement('div');
+				div.classList.add('listennow-current-track');
+				div.innerHTML += `
+					<p class="current-title"></p>
+					<p class="show-title"></p>
+				`;
+				ico = document.createElement('a');
+				ico.classList.add('refresh');
+				ico.dataset.title = title;
+				ico.innerHTML = `<span class="icon repeat"></span>`;
+				ico.addEventListener('click', this.getStreamStatus.bind(this, title, url));
+
+				stream.appendChild(div);
+				stream.appendChild(ico);
+
+				this.getStreamStatus(title, url);
+			}
+		}
+	}
+
+	getStreamStatus(title, url) {
+		const params = { title, url };
+		axios.get(API_URL + '/radio/status', { params }).then(this.onStreamStatus.bind(this));
+	}
+
+	onStreamStatus(response) {
+		console.log(response.data);
+
+		const { title, status } = response.data;
+
+		const div = this.dom.streamsPanel.querySelector('li[data-title="' + title + '"] .listennow-current-track');
+
+		const track = (typeof status.artist !== 'object') ? status.title + ' by ' + status.artist : status.song;
+
+		div.querySelector('.current-title').innerHTML = `<strong>${track}</strong>`;
+		div.querySelector('.show-title').innerHTML = `on <a href="https://www.wfmu.org/playlists/shows/${status.playlist['@attributes'].id}" target="_blank">${status.show}</a>`;
 	}
 
 	//
@@ -88,9 +166,13 @@ export default class RadioPage {
 
 	streamClick(evt) {
 		console.log('stream link click', evt.currentTarget.dataset.url);
+
 		evt.preventDefault();
+
 		const stream = evt.currentTarget.dataset.url;
+
 		this.apiCall('stream', { stream }, () => this.gotoNowPlaying());
+
 		return false;
 	}
 
@@ -114,24 +196,24 @@ export default class RadioPage {
 
 		for (i = 0; i < archives.length; i++) {
 			ul.innerHTML += `
-			<li>
+				< li >
 				<a class="archive" href data-url="${encodeURI(archives[i].url)}">
 					<span>${archives[i].title}</span>
 				</a>
-			</li>
-			`;
+					</li >
+					`;
 		}
 
 		this.dom.archivesPanel.innerHTML = '';
 
 		this.dom.archivesPanel.innerHTML = `
-		<div class="button-row">
-			<a href class="refresh-archives icon-button">
-				<span class="icon refresh"></span>
-				<span class="txt">refresh</span>
-			</a>
-		</div>
-		`;
+					< div class= "button-row" >
+					<a href class="refresh-archives icon-button">
+						<span class="icon refresh"></span>
+						<span class="txt">refresh</span>
+					</a>
+		</div >
+					`;
 
 		this.dom.archivesPanel.appendChild(ul);
 
