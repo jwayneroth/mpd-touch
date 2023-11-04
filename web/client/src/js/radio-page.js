@@ -176,7 +176,7 @@ export default class RadioPage {
 		this.apiCall('stream', { stream }, () => {
 			const streamTitles = FMU_STREAMS.map(s => s.appTitle);
 			console.log(streamTitles, title);
-			if (streamTitles.indexOf(title) === -1){
+			if (streamTitles.indexOf(title) == -1){
 			 this.gotoNowPlaying();
 			}
 		});

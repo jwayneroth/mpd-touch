@@ -1187,7 +1187,7 @@ var RadioPage = /*#__PURE__*/function () {
           return s.appTitle;
         });
         console.log(streamTitles, title);
-        if (streamTitles.indexOf(title) === -1) {
+        if (streamTitles.indexOf(title) == -1) {
           _this2.gotoNowPlaying();
         }
       });
