@@ -166,13 +166,9 @@ export default class RadioPage {
 
 	streamClick(evt) {
 		console.log('stream link click', evt.currentTarget.dataset.url);
-
 		evt.preventDefault();
-
 		const stream = evt.currentTarget.dataset.url;
-
 		this.apiCall('stream', { stream }, () => this.gotoNowPlaying());
-
 		return false;
 	}
 
@@ -196,24 +192,22 @@ export default class RadioPage {
 
 		for (i = 0; i < archives.length; i++) {
 			ul.innerHTML += `
-				< li >
-				<a class="archive" href data-url="${encodeURI(archives[i].url)}">
-					<span>${archives[i].title}</span>
-				</a>
-					</li >
-					`;
+				<li>
+					<a class="archive" href data-url="${encodeURI(archives[i].url)}">
+						<span>${archives[i].title}</span>
+					</a>
+				</li>`;
 		}
 
 		this.dom.archivesPanel.innerHTML = '';
 
 		this.dom.archivesPanel.innerHTML = `
-					< div class= "button-row" >
-					<a href class="refresh-archives icon-button">
-						<span class="icon refresh"></span>
-						<span class="txt">refresh</span>
-					</a>
-		</div >
-					`;
+			<div class= "button-row">
+				<a href class="refresh-archives icon-button">
+					<span class="icon refresh"></span>
+					<span class="txt">refresh</span>
+				</a>
+			</div>`;
 
 		this.dom.archivesPanel.appendChild(ul);
 

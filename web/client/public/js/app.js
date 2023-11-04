@@ -1208,10 +1208,10 @@ var RadioPage = /*#__PURE__*/function () {
       var ul = document.createElement('ul');
       var i;
       for (i = 0; i < archives.length; i++) {
-        ul.innerHTML += "\n\t\t\t\t< li >\n\t\t\t\t<a class=\"archive\" href data-url=\"".concat(encodeURI(archives[i].url), "\">\n\t\t\t\t\t<span>").concat(archives[i].title, "</span>\n\t\t\t\t</a>\n\t\t\t\t\t</li >\n\t\t\t\t\t");
+        ul.innerHTML += "\n\t\t\t\t<li>\n\t\t\t\t\t<a class=\"archive\" href data-url=\"".concat(encodeURI(archives[i].url), "\">\n\t\t\t\t\t\t<span>").concat(archives[i].title, "</span>\n\t\t\t\t\t</a>\n\t\t\t\t</li>");
       }
       this.dom.archivesPanel.innerHTML = '';
-      this.dom.archivesPanel.innerHTML = "\n\t\t\t\t\t< div class= \"button-row\" >\n\t\t\t\t\t<a href class=\"refresh-archives icon-button\">\n\t\t\t\t\t\t<span class=\"icon refresh\"></span>\n\t\t\t\t\t\t<span class=\"txt\">refresh</span>\n\t\t\t\t\t</a>\n\t\t</div >\n\t\t\t\t\t";
+      this.dom.archivesPanel.innerHTML = "\n\t\t\t<div class= \"button-row\">\n\t\t\t\t<a href class=\"refresh-archives icon-button\">\n\t\t\t\t\t<span class=\"icon refresh\"></span>\n\t\t\t\t\t<span class=\"txt\">refresh</span>\n\t\t\t\t</a>\n\t\t\t</div>";
       this.dom.archivesPanel.appendChild(ul);
       this.initArchivesPanelButtons();
       this.archivesLoaded = true;
