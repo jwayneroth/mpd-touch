@@ -1177,8 +1177,8 @@ var RadioPage = /*#__PURE__*/function () {
     key: "streamClick",
     value: function streamClick(evt, title, stream) {
       var _this2 = this;
-      console.log('radioPage::streamClick', evt, title, stream);
-      evt.preventDefault();
+      console.log('radioPage::streamClick', title, stream);
+      //evt.preventDefault();
       // const stream = evt.currentTarget.dataset.url;
       this.apiCall('stream', {
         stream: stream

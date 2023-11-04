@@ -170,8 +170,8 @@ export default class RadioPage {
 	}
 
 	streamClick(evt, title, stream) {
-		console.log('radioPage::streamClick', evt, title, stream);
-		evt.preventDefault();
+		console.log('radioPage::streamClick', title, stream);
+		//evt.preventDefault();
 		// const stream = evt.currentTarget.dataset.url;
 		this.apiCall('stream', { stream }, () => {
 			const streamTitles = FMU_STREAMS.map(s => s.appTitle);
