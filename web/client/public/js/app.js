@@ -1175,7 +1175,7 @@ var RadioPage = /*#__PURE__*/function () {
     }
   }, {
     key: "streamClick",
-    value: function streamClick(evt, title, stream) {
+    value: function streamClick(title, stream) {
       var _this2 = this;
       console.log('radioPage::streamClick', title, stream);
       //evt.preventDefault();

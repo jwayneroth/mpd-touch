@@ -169,7 +169,7 @@ export default class RadioPage {
 		this.apiCall('archives', {}, this.populateArchivesPanel.bind(this));
 	}
 
-	streamClick(evt, title, stream) {
+	streamClick(title, stream) {
 		console.log('radioPage::streamClick', title, stream);
 		//evt.preventDefault();
 		// const stream = evt.currentTarget.dataset.url;
