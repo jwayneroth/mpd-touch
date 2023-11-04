@@ -123,7 +123,10 @@ export default class RadioPage {
 			title = streams[i].dataset.title;
 			anchor = streams[i].querySelector('a.stream');
 			url = anchor.dataset.url;
-			anchor.addEventListener('click', this.streamClick.bind(this, title, url));
+			anchor.addEventListener('click', evt => {
+				evt.preventDefault();
+				this.streamClick.bind(this, title, url);
+			});
 		}
 	}
 

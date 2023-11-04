@@ -1117,6 +1117,7 @@ var RadioPage = /*#__PURE__*/function () {
   }, {
     key: "initStreamsPanelButtons",
     value: function initStreamsPanelButtons() {
+      var _this = this;
       var i;
       var el = this.dom.streamsPanel;
       var streams = el.querySelectorAll('li');
@@ -1125,13 +1126,16 @@ var RadioPage = /*#__PURE__*/function () {
         title = streams[i].dataset.title;
         anchor = streams[i].querySelector('a.stream');
         url = anchor.dataset.url;
-        anchor.addEventListener('click', this.streamClick.bind(this, title, url));
+        anchor.addEventListener('click', function (evt) {
+          evt.preventDefault();
+          _this.streamClick.bind(_this, title, url);
+        });
       }
     }
   }, {
     key: "initArchivesPanelButtons",
     value: function initArchivesPanelButtons() {
-      var _this = this;
+      var _this2 = this;
       var i;
       var el = this.dom.archivesPanel;
       var archive = el.querySelectorAll('a.archive');
@@ -1142,7 +1146,7 @@ var RadioPage = /*#__PURE__*/function () {
       for (i = 0; i < refreshButton.length; i++) {
         refreshButton[i].addEventListener('click', function (evt) {
           evt.preventDefault();
-          _this.apiCall('archives', {}, _this.populateArchivesPanel.bind(_this));
+          _this2.apiCall('archives', {}, _this2.populateArchivesPanel.bind(_this2));
           return false;
         });
       }
@@ -1176,7 +1180,7 @@ var RadioPage = /*#__PURE__*/function () {
   }, {
     key: "streamClick",
     value: function streamClick(title, stream) {
-      var _this2 = this;
+      var _this3 = this;
       console.log('radioPage::streamClick', title, stream);
       //evt.preventDefault();
       // const stream = evt.currentTarget.dataset.url;
@@ -1189,7 +1193,7 @@ var RadioPage = /*#__PURE__*/function () {
         var is_status_stream = streamTitles.indexOf(title);
         console.log(streamTitles, title, is_status_stream);
         if (is_status_stream == -1) {
-          _this2.gotoNowPlaying();
+          _this3.gotoNowPlaying();
         }
       });
       return false;
@@ -1197,14 +1201,14 @@ var RadioPage = /*#__PURE__*/function () {
   }, {
     key: "archiveClick",
     value: function archiveClick(evt) {
-      var _this3 = this;
+      var _this4 = this;
       console.log('archive link click', evt.currentTarget.dataset.url);
       evt.preventDefault();
       var archive = evt.currentTarget.dataset.url;
       this.apiCall('archive', {
         archive: archive
       }, function () {
-        return _this3.gotoNowPlaying();
+        return _this4.gotoNowPlaying();
       });
       return false;
     }
