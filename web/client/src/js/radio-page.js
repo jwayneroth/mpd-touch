@@ -115,10 +115,15 @@ export default class RadioPage {
 
 		const el = this.dom.streamsPanel;
 
-		const streams = el.querySelectorAll('a.stream');
+		const streams = el.querySelectorAll('li');
+
+		let anchor, title, url;
 
 		for (i = 0; i < streams.length; i++) {
-			streams[i].addEventListener('click', this.streamClick.bind(this));
+			title = streams[i].dataset.title;
+			anchor = streams[i].querySelector('a.stream');
+			url = anchor.dataset.url;
+			anchor.addEventListener('click', this.streamClick.bind(this, title, url));
 		}
 	}
 
@@ -164,11 +169,16 @@ export default class RadioPage {
 		this.apiCall('archives', {}, this.populateArchivesPanel.bind(this));
 	}
 
-	streamClick(evt) {
-		console.log('stream link click', evt.currentTarget.dataset.url);
+	streamClick(evt, title, stream) {
+		console.log('radioPage::streamClick', evt, title, stream);
 		evt.preventDefault();
-		const stream = evt.currentTarget.dataset.url;
-		this.apiCall('stream', { stream }, () => this.gotoNowPlaying());
+		// const stream = evt.currentTarget.dataset.url;
+		this.apiCall('stream', { stream }, () => {
+			const streamTitles = FMU_STREAMS.map(s => s.appTitle);
+			if (streamTitles.indexOf(title) === -1){
+			 this.gotoNowPlaying();
+			}
+		});
 		return false;
 	}
 

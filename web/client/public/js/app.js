@@ -1119,9 +1119,13 @@ var RadioPage = /*#__PURE__*/function () {
     value: function initStreamsPanelButtons() {
       var i;
       var el = this.dom.streamsPanel;
-      var streams = el.querySelectorAll('a.stream');
+      var streams = el.querySelectorAll('li');
+      var anchor, title, url;
       for (i = 0; i < streams.length; i++) {
-        streams[i].addEventListener('click', this.streamClick.bind(this));
+        title = streams[i].dataset.title;
+        anchor = streams[i].querySelector('a.stream');
+        url = anchor.dataset.url;
+        anchor.addEventListener('click', this.streamClick.bind(this, title, url));
       }
     }
   }, {
@@ -1171,15 +1175,20 @@ var RadioPage = /*#__PURE__*/function () {
     }
   }, {
     key: "streamClick",
-    value: function streamClick(evt) {
+    value: function streamClick(evt, title, stream) {
       var _this2 = this;
-      console.log('stream link click', evt.currentTarget.dataset.url);
+      console.log('radioPage::streamClick', evt, title, stream);
       evt.preventDefault();
-      var stream = evt.currentTarget.dataset.url;
+      // const stream = evt.currentTarget.dataset.url;
       this.apiCall('stream', {
         stream: stream
       }, function () {
-        return _this2.gotoNowPlaying();
+        var streamTitles = FMU_STREAMS.map(function (s) {
+          return s.appTitle;
+        });
+        if (streamTitles.indexOf(title) === -1) {
+          _this2.gotoNowPlaying();
+        }
       });
       return false;
     }
