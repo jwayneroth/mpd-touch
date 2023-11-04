@@ -9,4 +9,4 @@ images/default_covers/*
 creds.txt
 node_modules
 #web/client/public
-
+web/client/package-lock.json
