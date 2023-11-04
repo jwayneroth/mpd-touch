@@ -3,6 +3,7 @@ from tornado.escape import url_unescape
 import feedparser
 import re
 import urllib
+import json
 
 from lib.mpd_client import *
 from web.server.constants import *
@@ -29,7 +30,7 @@ class RadioEndpoint(RequestHandler):
 			mpd.radio_station_start(stream)
 			self.finish()
 
-		if resource == "archive":
+		elif resource == "archive":
 			archive = url_unescape(self.get_argument('archive'))
 			try:
 				res = self.url_opener.urlopen( archive )
@@ -55,6 +56,21 @@ class RadioEndpoint(RequestHandler):
 			except:
 				pass
 			self.write({'archives': archives})
+
+		elif resource == "status":
+			title = url_unescape(self.get_argument('title'))
+			url = url_unescape(self.get_argument('url'))
+			url_opener = urllib.request
+			try:
+				res = self.url_opener.urlopen( url )
+				html = res.read()
+			except:
+				logger.debug("error opening stream status json")
+				return
+
+			stripped = str(html, 'utf-8').strip()
+
+			self.write({'title': title, 'status': json.loads(stripped)})
 
 		# except:
 		# 	self.set_status(500)

@@ -26,6 +26,10 @@
 	background: map-get($theme_colors, 'purple');
 }
 
+strong {
+	font-weight: bold;
+}
+
 ul {
 	margin: 0;
 	padding: 0;
@@ -381,12 +385,33 @@ body {
 			}
 
 			li {
+				align-items: stretch;
 				flex: 0 1 auto;
-				width: 50%;
+				width: 100%;
 				
+				a.stream {
+					flex: 1 1 35%;
+				}
+
+				.listennow-current-track {
+					flex: 1 0 60%;
+					font-size: .8em;
+
+					p {
+						margin-bottom: 0;
+					}
+				}
+
+				a.refresh {
+					flex: 1 1 5%;
+					span::before {
+						font-size: 20px;
+					}
+				}
+
 				@include responsiveQuery(m) {
-					flex: 1 1 33.33%;
-					width: 33.33%;
+					//flex: 1 1 33.33%;
+					//width: 33.33%;
 				}
 			}
 		}

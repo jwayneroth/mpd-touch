@@ -57,7 +57,7 @@ function _toPrimitive(input, hint) { if (_typeof(input) !== "object" || input ==
 
 
 var SS_ON = true;
-var SS_DELAY = 60000;
+var SS_DELAY = 480000;
 
 // class DynamicSS {
 // 	constructor(className, opts) {
@@ -1021,6 +1021,19 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
 function _toPropertyKey(arg) { var key = _toPrimitive(arg, "string"); return _typeof(key) === "symbol" ? key : String(key); }
 function _toPrimitive(input, hint) { if (_typeof(input) !== "object" || input === null) return input; var prim = input[Symbol.toPrimitive]; if (prim !== undefined) { var res = prim.call(input, hint || "default"); if (_typeof(res) !== "object") return res; throw new TypeError("@@toPrimitive must return a primitive value."); } return (hint === "string" ? String : Number)(input); }
 
+var FMU_STREAMS = [{
+  'appTitle': "WFMU",
+  'statusURL': 'https://wfmu.org/wp-content/themes/wfmu-theme/status/main.json'
+}, {
+  'appTitle': "GtDR",
+  'statusURL': 'https://wfmu.org/wp-content/themes/wfmu-theme/status/drummer.json'
+}, {
+  'appTitle': "Rock 'n Soul",
+  'statusURL': 'https://wfmu.org/wp-content/themes/wfmu-theme/status/rockSoul.json'
+}, {
+  'appTitle': "Sheena",
+  'statusURL': 'https://wfmu.org/wp-content/themes/wfmu-theme/status/sheena.json'
+}];
 
 /**
  * Radio Page
@@ -1043,7 +1056,59 @@ var RadioPage = /*#__PURE__*/function () {
         archivesPanel: el.querySelector('#radio__archives')
       };
       this.dom.archivesTab.addEventListener('shown.bs.tab', this.onArchivesShown.bind(this));
+      this.initStreamsStatus();
       this.initStreamsPanelButtons();
+    }
+  }, {
+    key: "initStreamsStatus",
+    value: function initStreamsStatus() {
+      var streamTitles = FMU_STREAMS.map(function (s) {
+        return s.appTitle;
+      });
+      var streams = this.dom.streamsPanel.querySelectorAll('li');
+      var stream, div, idx, title, url, ico, i;
+      for (i = 0; i < streams.length; i++) {
+        stream = streams[i];
+        idx = streamTitles.indexOf(stream.dataset.title);
+        if (idx > -1) {
+          title = FMU_STREAMS[idx].appTitle;
+          url = FMU_STREAMS[idx].statusURL;
+          div = document.createElement('div');
+          div.classList.add('listennow-current-track');
+          div.innerHTML += "\n\t\t\t\t\t<p class=\"current-title\"></p>\n\t\t\t\t\t<p class=\"show-title\"></p>\n\t\t\t\t";
+          ico = document.createElement('a');
+          ico.classList.add('refresh');
+          ico.dataset.title = title;
+          ico.innerHTML = "<span class=\"icon repeat\"></span>";
+          ico.addEventListener('click', this.getStreamStatus.bind(this, title, url));
+          stream.appendChild(div);
+          stream.appendChild(ico);
+          this.getStreamStatus(title, url);
+        }
+      }
+    }
+  }, {
+    key: "getStreamStatus",
+    value: function getStreamStatus(title, url) {
+      var params = {
+        title: title,
+        url: url
+      };
+      _api__WEBPACK_IMPORTED_MODULE_0__.axios.get(_api__WEBPACK_IMPORTED_MODULE_0__.API_URL + '/radio/status', {
+        params: params
+      }).then(this.onStreamStatus.bind(this));
+    }
+  }, {
+    key: "onStreamStatus",
+    value: function onStreamStatus(response) {
+      console.log(response.data);
+      var _response$data = response.data,
+        title = _response$data.title,
+        status = _response$data.status;
+      var div = this.dom.streamsPanel.querySelector('li[data-title="' + title + '"] .listennow-current-track');
+      var track = _typeof(status.artist) !== 'object' ? status.title + ' by ' + status.artist : status.song;
+      div.querySelector('.current-title').innerHTML = "<strong>".concat(track, "</strong>");
+      div.querySelector('.show-title').innerHTML = "on <a href=\"https://www.wfmu.org/playlists/shows/".concat(status.playlist['@attributes'].id, "\" target=\"_blank\">").concat(status.show, "</a>");
     }
 
     //
@@ -1143,10 +1208,10 @@ var RadioPage = /*#__PURE__*/function () {
       var ul = document.createElement('ul');
       var i;
       for (i = 0; i < archives.length; i++) {
-        ul.innerHTML += "\n\t\t\t<li>\n\t\t\t\t<a class=\"archive\" href data-url=\"".concat(encodeURI(archives[i].url), "\">\n\t\t\t\t\t<span>").concat(archives[i].title, "</span>\n\t\t\t\t</a>\n\t\t\t</li>\n\t\t\t");
+        ul.innerHTML += "\n\t\t\t\t<li>\n\t\t\t\t\t<a class=\"archive\" href data-url=\"".concat(encodeURI(archives[i].url), "\">\n\t\t\t\t\t\t<span>").concat(archives[i].title, "</span>\n\t\t\t\t\t</a>\n\t\t\t\t</li>");
       }
       this.dom.archivesPanel.innerHTML = '';
-      this.dom.archivesPanel.innerHTML = "\n\t\t<div class=\"button-row\">\n\t\t\t<a href class=\"refresh-archives icon-button\">\n\t\t\t\t<span class=\"icon refresh\"></span>\n\t\t\t\t<span class=\"txt\">refresh</span>\n\t\t\t</a>\n\t\t</div>\n\t\t";
+      this.dom.archivesPanel.innerHTML = "\n\t\t\t<div class= \"button-row\">\n\t\t\t\t<a href class=\"refresh-archives icon-button\">\n\t\t\t\t\t<span class=\"icon refresh\"></span>\n\t\t\t\t\t<span class=\"txt\">refresh</span>\n\t\t\t\t</a>\n\t\t\t</div>";
       this.dom.archivesPanel.appendChild(ul);
       this.initArchivesPanelButtons();
       this.archivesLoaded = true;
