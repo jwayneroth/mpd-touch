@@ -1186,8 +1186,9 @@ var RadioPage = /*#__PURE__*/function () {
         var streamTitles = FMU_STREAMS.map(function (s) {
           return s.appTitle;
         });
-        console.log(streamTitles, title);
-        if (streamTitles.indexOf(title) == -1) {
+        var is_status_stream = streamTitles.indexOf(title);
+        console.log(streamTitles, title, is_status_stream);
+        if (is_status_stream == -1) {
           _this2.gotoNowPlaying();
         }
       });
