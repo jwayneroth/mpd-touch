@@ -387,8 +387,16 @@ body {
 			li {
 				align-items: stretch;
 				flex: 0 1 auto;
-				width: 100%;
-				
+				min-width: 33.33%;
+				width: auto;
+
+				&:nth-child(1),
+				&:nth-child(2),
+				&:nth-child(3),
+				&:nth-child(4) {
+					width: 100%;
+				}
+
 				a.stream {
 					flex: 1 1 35%;
 				}

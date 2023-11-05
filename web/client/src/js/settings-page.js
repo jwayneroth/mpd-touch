@@ -7,10 +7,10 @@ export default class SettingsPage {
 	constructor(el) {
 		console.log('SettingsPage::init');
 
-		this.initDom(el);
+		this.onEnter(el);
 	}
 
-	initDom(el) {
+	onEnter(el) {
 
 		this.el = el;
 

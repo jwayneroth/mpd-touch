@@ -174,7 +174,7 @@ class FmuLcd {
 			// page has been created before
 			if (this.pages.hasOwnProperty(pageName)) {
 
-				this.pages[pageName].initDom(pageEl);
+				this.pages[pageName].onEnter(pageEl);
 
 				// create page
 			} else {
@@ -208,12 +208,21 @@ class FmuLcd {
 	onHashChange() {
 		console.log('onHashChange', window.location.hash);
 
+		const lastPageName = this.currentPageName;
+
 		const pageName = this.pageFromHash();
 
 		this.currentPageName = pageName;
 
 		axios.get(API_URL + '/' + pageName)
 			.then(response => {
+
+				// tell old page its leaving
+				if (lastPageName && this.pages.hasOwnProperty(lastPageName)) {
+					if (typeof this.pages[lastPageName].onExit === 'function') {
+						this.pages[lastPageName].onExit();
+					}
+				}
 
 				// load new page dom
 				this.dom.main.innerHTML = response.data;

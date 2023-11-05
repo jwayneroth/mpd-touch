@@ -7,12 +7,12 @@ export default class NowPlayingPage {
 	constructor(el) {
 		console.log('NowPlayingPage::init');
 
-		this.initDom(el);
+		this.onEnter(el);
 
 		//window.addEventListener('mpdstatus', this.onMpdStatus.bind(this));
 	}
 
-	initDom(el) {
+	onEnter(el) {
 		this.dom = {
 			el,
 			artist: el.querySelector('#nowplaying__artist'),

@@ -7,10 +7,10 @@ export default class LibraryPage {
 	constructor(el) {
 		console.log('LibraryPage::init');
 
-		this.initDom(el);
+		this.onEnter(el);
 	}
 
-	initDom(el) {
+	onEnter(el) {
 		this.currentArtist = null;
 		this.currentAlbum = null;
 		this.dom = {

@@ -19,6 +19,7 @@ const FMU_STREAMS = [
 	}
 ];
 
+const STATUS_TIMEOUT = 40000;
 
 /**
  * Radio Page
@@ -27,13 +28,19 @@ export default class RadioPage {
 	constructor(el) {
 		console.log('RadioPage::init');
 
-		this.initDom(el);
+		this.statusTimeoutID = null;
+		this.archivesLoaded = false;
 
+		// this.streamStatuses = FMU_STREAMS.map(s => {
+		// 	const status = {};
+		// 	status[s.appTitle] = null;
+		// 	return status;
+		// });
+
+		this.onEnter(el);
 	}
 
-	initDom(el) {
-
-		this.archivesLoaded = false;
+	onEnter(el) {
 
 		this.dom = {
 			el,
@@ -45,12 +52,22 @@ export default class RadioPage {
 
 		this.dom.archivesTab.addEventListener('shown.bs.tab', this.onArchivesShown.bind(this));
 
-		this.initStreamsStatus();
+		this.initStatusStreamsDom();
 
-		this.initStreamsPanelButtons();
+		this.initStreamPanelButtons();
+
+		this.getAllStatuses();
 	}
 
-	initStreamsStatus() {
+	onExit() {
+		console.log('RadioPage::onExit');
+
+		if (this.statusTimeoutID) {
+			window.clearTimeout(this.statusTimeoutID);
+		}
+	}
+
+	initStatusStreamsDom() {
 
 		const streamTitles = FMU_STREAMS.map(s => s.appTitle);
 		const streams = this.dom.streamsPanel.querySelectorAll('li');
@@ -83,9 +100,27 @@ export default class RadioPage {
 				stream.appendChild(div);
 				stream.appendChild(ico);
 
-				this.getStreamStatus(title, url);
+				//this.getStreamStatus(title, url);
 			}
 		}
+	}
+
+	getAllStatuses() {
+		console.log('RadioPage::getAllStatuses');
+
+		let i, title, url;
+
+		for (i = 0; i < FMU_STREAMS.length; i++) {
+			title = FMU_STREAMS[i].appTitle;
+			url = FMU_STREAMS[i].statusURL;
+			this.getStreamStatus(title, url);
+		}
+
+		if (this.statusTimeoutID) {
+			window.clearTimeout(this.statusTimeoutID);
+		}
+
+		this.statusTimeoutID = window.setTimeout(() => this.getAllStatuses(), STATUS_TIMEOUT);
 	}
 
 	getStreamStatus(title, url) {
@@ -94,22 +129,25 @@ export default class RadioPage {
 	}
 
 	onStreamStatus(response) {
-		console.log(response.data);
 
-		const { title, status } = response.data;
+		const appTitle = response.data.title;
+		const { status } = response.data;
+		const { artist, title, song } = status;
+		const track = (typeof artist !== 'object') ? title + ' by ' + artist : song;
+		const div = this.dom.streamsPanel.querySelector('li[data-title="' + appTitle + '"] .listennow-current-track');
 
-		const div = this.dom.streamsPanel.querySelector('li[data-title="' + title + '"] .listennow-current-track');
+		console.log('RadioPage::onStreamStatus ' + appTitle);
 
-		const track = (typeof status.artist !== 'object') ? status.title + ' by ' + status.artist : status.song;
+		//this.streamStatuses[appTitle] = status;
 
 		div.querySelector('.current-title').innerHTML = `<strong>${track}</strong>`;
 		div.querySelector('.show-title').innerHTML = `on <a href="https://www.wfmu.org/playlists/shows/${status.playlist['@attributes'].id}" target="_blank">${status.show}</a>`;
 	}
 
-	//
-	// panel buttons
-	//
-	initStreamsPanelButtons() {
+	/**
+	 * stream panel buttons
+	 */
+	initStreamPanelButtons() {
 
 		let i;
 
@@ -120,16 +158,24 @@ export default class RadioPage {
 		let anchor, title, url;
 
 		for (i = 0; i < streams.length; i++) {
+
 			title = streams[i].dataset.title;
 			anchor = streams[i].querySelector('a.stream');
 			url = anchor.dataset.url;
-			anchor.addEventListener('click', evt => {
-				evt.preventDefault();
-				this.streamClick.bind(this, title, url);
-			});
+
+			((_title, _anchor, _url) => {
+				_anchor.addEventListener('click', evt => {
+					evt.preventDefault();
+					this.streamClick(_title, _url);
+					return false;
+				});
+			})(title, anchor, url);
 		}
 	}
 
+	/**
+	* archive panel buttons
+	*/
 	initArchivesPanelButtons() {
 
 		let i;
@@ -172,19 +218,26 @@ export default class RadioPage {
 		this.apiCall('archives', {}, this.populateArchivesPanel.bind(this));
 	}
 
+	/**
+	 * stream button click
+	 * tell app to play stream
+	 * switch to now playing page unless a stream with status info was chosen
+	 * 
+	 * @param {String} title 
+	 * @param {String} stream 
+	 */
 	streamClick(title, stream) {
-		console.log('radioPage::streamClick', title, stream);
-		//evt.preventDefault();
-		// const stream = evt.currentTarget.dataset.url;
+		console.log('radioPage::streamClick', title);
+
 		this.apiCall('stream', { stream }, () => {
+
 			const streamTitles = FMU_STREAMS.map(s => s.appTitle);
 			const is_status_stream = streamTitles.indexOf(title);
-			console.log(streamTitles, title, is_status_stream);
-			if (is_status_stream == -1){
-			 this.gotoNowPlaying();
+
+			if (is_status_stream == -1) {
+				this.gotoNowPlaying();
 			}
 		});
-		return false;
 	}
 
 	archiveClick(evt) {

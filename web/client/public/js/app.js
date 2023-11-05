@@ -191,7 +191,7 @@ var FmuLcd = /*#__PURE__*/function () {
       if (pageEl) {
         // page has been created before
         if (this.pages.hasOwnProperty(pageName)) {
-          this.pages[pageName].initDom(pageEl);
+          this.pages[pageName].onEnter(pageEl);
 
           // create page
         } else {
@@ -223,9 +223,17 @@ var FmuLcd = /*#__PURE__*/function () {
     value: function onHashChange() {
       var _this = this;
       console.log('onHashChange', window.location.hash);
+      var lastPageName = this.currentPageName;
       var pageName = this.pageFromHash();
       this.currentPageName = pageName;
       _api__WEBPACK_IMPORTED_MODULE_2__.axios.get(_api__WEBPACK_IMPORTED_MODULE_2__.API_URL + '/' + pageName).then(function (response) {
+        // tell old page its leaving
+        if (lastPageName && _this.pages.hasOwnProperty(lastPageName)) {
+          if (typeof _this.pages[lastPageName].onExit === 'function') {
+            _this.pages[lastPageName].onExit();
+          }
+        }
+
         // load new page dom
         _this.dom.main.innerHTML = response.data;
 
@@ -707,11 +715,11 @@ var LibraryPage = /*#__PURE__*/function () {
   function LibraryPage(el) {
     _classCallCheck(this, LibraryPage);
     console.log('LibraryPage::init');
-    this.initDom(el);
+    this.onEnter(el);
   }
   _createClass(LibraryPage, [{
-    key: "initDom",
-    value: function initDom(el) {
+    key: "onEnter",
+    value: function onEnter(el) {
       this.currentArtist = null;
       this.currentAlbum = null;
       this.dom = {
@@ -960,13 +968,13 @@ var NowPlayingPage = /*#__PURE__*/function () {
   function NowPlayingPage(el) {
     _classCallCheck(this, NowPlayingPage);
     console.log('NowPlayingPage::init');
-    this.initDom(el);
+    this.onEnter(el);
 
     //window.addEventListener('mpdstatus', this.onMpdStatus.bind(this));
   }
   _createClass(NowPlayingPage, [{
-    key: "initDom",
-    value: function initDom(el) {
+    key: "onEnter",
+    value: function onEnter(el) {
       this.dom = {
         el: el,
         artist: el.querySelector('#nowplaying__artist'),
@@ -1034,6 +1042,7 @@ var FMU_STREAMS = [{
   'appTitle': "Sheena",
   'statusURL': 'https://wfmu.org/wp-content/themes/wfmu-theme/status/sheena.json'
 }];
+var STATUS_TIMEOUT = 40000;
 
 /**
  * Radio Page
@@ -1042,12 +1051,20 @@ var RadioPage = /*#__PURE__*/function () {
   function RadioPage(el) {
     _classCallCheck(this, RadioPage);
     console.log('RadioPage::init');
-    this.initDom(el);
+    this.statusTimeoutID = null;
+    this.archivesLoaded = false;
+
+    // this.streamStatuses = FMU_STREAMS.map(s => {
+    // 	const status = {};
+    // 	status[s.appTitle] = null;
+    // 	return status;
+    // });
+
+    this.onEnter(el);
   }
   _createClass(RadioPage, [{
-    key: "initDom",
-    value: function initDom(el) {
-      this.archivesLoaded = false;
+    key: "onEnter",
+    value: function onEnter(el) {
       this.dom = {
         el: el,
         streamsTab: el.querySelector('#streams-tab'),
@@ -1056,12 +1073,21 @@ var RadioPage = /*#__PURE__*/function () {
         archivesPanel: el.querySelector('#radio__archives')
       };
       this.dom.archivesTab.addEventListener('shown.bs.tab', this.onArchivesShown.bind(this));
-      this.initStreamsStatus();
-      this.initStreamsPanelButtons();
+      this.initStatusStreamsDom();
+      this.initStreamPanelButtons();
+      this.getAllStatuses();
     }
   }, {
-    key: "initStreamsStatus",
-    value: function initStreamsStatus() {
+    key: "onExit",
+    value: function onExit() {
+      console.log('RadioPage::onExit');
+      if (this.statusTimeoutID) {
+        window.clearTimeout(this.statusTimeoutID);
+      }
+    }
+  }, {
+    key: "initStatusStreamsDom",
+    value: function initStatusStreamsDom() {
       var streamTitles = FMU_STREAMS.map(function (s) {
         return s.appTitle;
       });
@@ -1083,9 +1109,28 @@ var RadioPage = /*#__PURE__*/function () {
           ico.addEventListener('click', this.getStreamStatus.bind(this, title, url));
           stream.appendChild(div);
           stream.appendChild(ico);
-          this.getStreamStatus(title, url);
+
+          //this.getStreamStatus(title, url);
         }
       }
+    }
+  }, {
+    key: "getAllStatuses",
+    value: function getAllStatuses() {
+      var _this = this;
+      console.log('RadioPage::getAllStatuses');
+      var i, title, url;
+      for (i = 0; i < FMU_STREAMS.length; i++) {
+        title = FMU_STREAMS[i].appTitle;
+        url = FMU_STREAMS[i].statusURL;
+        this.getStreamStatus(title, url);
+      }
+      if (this.statusTimeoutID) {
+        window.clearTimeout(this.statusTimeoutID);
+      }
+      this.statusTimeoutID = window.setTimeout(function () {
+        return _this.getAllStatuses();
+      }, STATUS_TIMEOUT);
     }
   }, {
     key: "getStreamStatus",
@@ -1101,23 +1146,28 @@ var RadioPage = /*#__PURE__*/function () {
   }, {
     key: "onStreamStatus",
     value: function onStreamStatus(response) {
-      console.log(response.data);
-      var _response$data = response.data,
-        title = _response$data.title,
-        status = _response$data.status;
-      var div = this.dom.streamsPanel.querySelector('li[data-title="' + title + '"] .listennow-current-track');
-      var track = _typeof(status.artist) !== 'object' ? status.title + ' by ' + status.artist : status.song;
+      var appTitle = response.data.title;
+      var status = response.data.status;
+      var artist = status.artist,
+        title = status.title,
+        song = status.song;
+      var track = _typeof(artist) !== 'object' ? title + ' by ' + artist : song;
+      var div = this.dom.streamsPanel.querySelector('li[data-title="' + appTitle + '"] .listennow-current-track');
+      console.log('RadioPage::onStreamStatus ' + appTitle);
+
+      //this.streamStatuses[appTitle] = status;
+
       div.querySelector('.current-title').innerHTML = "<strong>".concat(track, "</strong>");
       div.querySelector('.show-title').innerHTML = "on <a href=\"https://www.wfmu.org/playlists/shows/".concat(status.playlist['@attributes'].id, "\" target=\"_blank\">").concat(status.show, "</a>");
     }
 
-    //
-    // panel buttons
-    //
+    /**
+     * stream panel buttons
+     */
   }, {
-    key: "initStreamsPanelButtons",
-    value: function initStreamsPanelButtons() {
-      var _this = this;
+    key: "initStreamPanelButtons",
+    value: function initStreamPanelButtons() {
+      var _this2 = this;
       var i;
       var el = this.dom.streamsPanel;
       var streams = el.querySelectorAll('li');
@@ -1126,16 +1176,23 @@ var RadioPage = /*#__PURE__*/function () {
         title = streams[i].dataset.title;
         anchor = streams[i].querySelector('a.stream');
         url = anchor.dataset.url;
-        anchor.addEventListener('click', function (evt) {
-          evt.preventDefault();
-          _this.streamClick.bind(_this, title, url);
-        });
+        (function (_title, _anchor, _url) {
+          _anchor.addEventListener('click', function (evt) {
+            evt.preventDefault();
+            _this2.streamClick(_title, _url);
+            return false;
+          });
+        })(title, anchor, url);
       }
     }
+
+    /**
+    * archive panel buttons
+    */
   }, {
     key: "initArchivesPanelButtons",
     value: function initArchivesPanelButtons() {
-      var _this2 = this;
+      var _this3 = this;
       var i;
       var el = this.dom.archivesPanel;
       var archive = el.querySelectorAll('a.archive');
@@ -1146,7 +1203,7 @@ var RadioPage = /*#__PURE__*/function () {
       for (i = 0; i < refreshButton.length; i++) {
         refreshButton[i].addEventListener('click', function (evt) {
           evt.preventDefault();
-          _this2.apiCall('archives', {}, _this2.populateArchivesPanel.bind(_this2));
+          _this3.apiCall('archives', {}, _this3.populateArchivesPanel.bind(_this3));
           return false;
         });
       }
@@ -1177,13 +1234,20 @@ var RadioPage = /*#__PURE__*/function () {
       if (this.archivesLoaded) return;
       this.apiCall('archives', {}, this.populateArchivesPanel.bind(this));
     }
+
+    /**
+     * stream button click
+     * tell app to play stream
+     * switch to now playing page unless a stream with status info was chosen
+     * 
+     * @param {String} title 
+     * @param {String} stream 
+     */
   }, {
     key: "streamClick",
     value: function streamClick(title, stream) {
-      var _this3 = this;
-      console.log('radioPage::streamClick', title, stream);
-      //evt.preventDefault();
-      // const stream = evt.currentTarget.dataset.url;
+      var _this4 = this;
+      console.log('radioPage::streamClick', title);
       this.apiCall('stream', {
         stream: stream
       }, function () {
@@ -1191,24 +1255,22 @@ var RadioPage = /*#__PURE__*/function () {
           return s.appTitle;
         });
         var is_status_stream = streamTitles.indexOf(title);
-        console.log(streamTitles, title, is_status_stream);
         if (is_status_stream == -1) {
-          _this3.gotoNowPlaying();
+          _this4.gotoNowPlaying();
         }
       });
-      return false;
     }
   }, {
     key: "archiveClick",
     value: function archiveClick(evt) {
-      var _this4 = this;
+      var _this5 = this;
       console.log('archive link click', evt.currentTarget.dataset.url);
       evt.preventDefault();
       var archive = evt.currentTarget.dataset.url;
       this.apiCall('archive', {
         archive: archive
       }, function () {
-        return _this4.gotoNowPlaying();
+        return _this5.gotoNowPlaying();
       });
       return false;
     }
@@ -1265,11 +1327,11 @@ var SettingsPage = /*#__PURE__*/function () {
   function SettingsPage(el) {
     _classCallCheck(this, SettingsPage);
     console.log('SettingsPage::init');
-    this.initDom(el);
+    this.onEnter(el);
   }
   _createClass(SettingsPage, [{
-    key: "initDom",
-    value: function initDom(el) {
+    key: "onEnter",
+    value: function onEnter(el) {
       this.el = el;
       var ssSettings = document.createElement('div');
       ssSettings.setAttribute('id', 'settings__web');

@@ -16431,6 +16431,14 @@ body {
 #radio #radio__streams ul li {
   align-items: stretch;
   flex: 0 1 auto;
+  min-width: 33.33%;
+  width: auto;
+}
+#library #radio__streams ul li:nth-child(1), #library #radio__streams ul li:nth-child(2), #library #radio__streams ul li:nth-child(3), #library #radio__streams ul li:nth-child(4),
+#radio #radio__streams ul li:nth-child(1),
+#radio #radio__streams ul li:nth-child(2),
+#radio #radio__streams ul li:nth-child(3),
+#radio #radio__streams ul li:nth-child(4) {
   width: 100%;
 }
 #library #radio__streams ul li a.stream,
