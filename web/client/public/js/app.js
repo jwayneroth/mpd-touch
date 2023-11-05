@@ -1158,7 +1158,11 @@ var RadioPage = /*#__PURE__*/function () {
       //this.streamStatuses[appTitle] = status;
 
       div.querySelector('.current-title').innerHTML = "<strong>".concat(track, "</strong>");
-      div.querySelector('.show-title').innerHTML = "on <a href=\"https://www.wfmu.org/playlists/shows/".concat(status.playlist['@attributes'].id, "\" target=\"_blank\">").concat(status.show, "</a>");
+      if (status.playlist['@attributes'].id && status.playlist['@attributes'].id !== '') {
+        div.querySelector('.show-title').innerHTML = "on <a href=\"https://www.wfmu.org/playlists/shows/".concat(status.playlist['@attributes'].id, "\" target=\"_blank\">").concat(status.show, "</a>");
+      } else {
+        div.querySelector('.show-title').innerHTML = "on <span>".concat(status.show, "</span>");
+      }
     }
 
     /**

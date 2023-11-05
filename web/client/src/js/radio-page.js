@@ -141,7 +141,11 @@ export default class RadioPage {
 		//this.streamStatuses[appTitle] = status;
 
 		div.querySelector('.current-title').innerHTML = `<strong>${track}</strong>`;
-		div.querySelector('.show-title').innerHTML = `on <a href="https://www.wfmu.org/playlists/shows/${status.playlist['@attributes'].id}" target="_blank">${status.show}</a>`;
+		if (status.playlist['@attributes'].id && status.playlist['@attributes'].id !== '') {
+			div.querySelector('.show-title').innerHTML = `on <a href="https://www.wfmu.org/playlists/shows/${status.playlist['@attributes'].id}" target="_blank">${status.show}</a>`;
+		} else {
+			div.querySelector('.show-title').innerHTML = `on <span>${status.show}</span>`;
+		}
 	}
 
 	/**
