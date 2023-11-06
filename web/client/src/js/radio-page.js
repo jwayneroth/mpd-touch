@@ -132,8 +132,20 @@ export default class RadioPage {
 
 		const appTitle = response.data.title;
 		const { status } = response.data;
-		const { artist, title, song } = status;
-		const track = (typeof artist !== 'object') ? title + ' by ' + artist : song;
+		const { artist, title, song, show, playlist } = status;
+		
+		//const track = (typeof artist !== 'object') ? title + ' by ' + artist : song;
+		let track = '';
+		
+		if (
+			typeof artist !== 'object' && artist !== '' &&
+			typeof title !== 'object' && title !== ''
+		) {
+			track = title + ' by ' + artist;
+		} else if (typeof song !== 'object') {
+			track = song;
+		}
+		
 		const div = this.dom.streamsPanel.querySelector('li[data-title="' + appTitle + '"] .listennow-current-track');
 
 		console.log('RadioPage::onStreamStatus ' + appTitle);
@@ -141,10 +153,10 @@ export default class RadioPage {
 		//this.streamStatuses[appTitle] = status;
 
 		div.querySelector('.current-title').innerHTML = `<strong>${track}</strong>`;
-		if (status.playlist['@attributes'].id && status.playlist['@attributes'].id !== '') {
-			div.querySelector('.show-title').innerHTML = `on <a href="https://www.wfmu.org/playlists/shows/${status.playlist['@attributes'].id}" target="_blank">${status.show}</a>`;
+		if (playlist['@attributes'].id && playlist['@attributes'].id !== '') {
+			div.querySelector('.show-title').innerHTML = `on <a href="https://www.wfmu.org/playlists/shows/${playlist['@attributes'].id}" target="_blank">${status.show}</a>`;
 		} else {
-			div.querySelector('.show-title').innerHTML = `on <span>${status.show}</span>`;
+			div.querySelector('.show-title').innerHTML = `on <span>${show}</span>`;
 		}
 	}
 

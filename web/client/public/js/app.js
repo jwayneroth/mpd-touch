@@ -1150,18 +1150,27 @@ var RadioPage = /*#__PURE__*/function () {
       var status = response.data.status;
       var artist = status.artist,
         title = status.title,
-        song = status.song;
-      var track = _typeof(artist) !== 'object' ? title + ' by ' + artist : song;
+        song = status.song,
+        show = status.show,
+        playlist = status.playlist;
+
+      //const track = (typeof artist !== 'object') ? title + ' by ' + artist : song;
+      var track = '';
+      if (_typeof(artist) !== 'object' && artist !== '' && _typeof(title) !== 'object' && title !== '') {
+        track = title + ' by ' + artist;
+      } else if (_typeof(song) !== 'object') {
+        track = song;
+      }
       var div = this.dom.streamsPanel.querySelector('li[data-title="' + appTitle + '"] .listennow-current-track');
       console.log('RadioPage::onStreamStatus ' + appTitle);
 
       //this.streamStatuses[appTitle] = status;
 
       div.querySelector('.current-title').innerHTML = "<strong>".concat(track, "</strong>");
-      if (status.playlist['@attributes'].id && status.playlist['@attributes'].id !== '') {
-        div.querySelector('.show-title').innerHTML = "on <a href=\"https://www.wfmu.org/playlists/shows/".concat(status.playlist['@attributes'].id, "\" target=\"_blank\">").concat(status.show, "</a>");
+      if (playlist['@attributes'].id && playlist['@attributes'].id !== '') {
+        div.querySelector('.show-title').innerHTML = "on <a href=\"https://www.wfmu.org/playlists/shows/".concat(playlist['@attributes'].id, "\" target=\"_blank\">").concat(status.show, "</a>");
       } else {
-        div.querySelector('.show-title').innerHTML = "on <span>".concat(status.show, "</span>");
+        div.querySelector('.show-title').innerHTML = "on <span>".concat(show, "</span>");
       }
     }
 
