@@ -15,7 +15,7 @@ import ControlsDialog from './controls-dialog';
 import AutomataScreensaver from './automata-screensaver';
 
 const SS_ON = true;
-const SS_DELAY = 4800; //00;
+const SS_DELAY = 720000;
 
 // class DynamicSS {
 // 	constructor(className, opts) {
