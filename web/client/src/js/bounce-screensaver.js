@@ -48,7 +48,7 @@ export default class BounceScreensaver {
 		}
 
 		this.ctx = this.dom.canvas.getContext('2d');
-		this.ctx.fillStyle = 'yellow'; //'rgb(10,5,0)';
+		this.ctx.fillStyle = `rgb(${Math.random() * 255}, ${Math.random() * 255}, ${Math.random() * 255})`;
 
 		this.onMpdStatus(this.app.lastMpdStatus);
 
@@ -110,6 +110,8 @@ export default class BounceScreensaver {
 
 	stopAnime() {
 		this.active = false;
+		this.ctx.clearRect(0, 0, this.dom.canvas.width, this.dom.canvas.height);
+		this.ctx.fillStyle = `rgb(${Math.random() * 255}, ${Math.random() * 255}, ${Math.random() * 255})`;
 	}
 
 	animate() {
@@ -145,8 +147,6 @@ export default class BounceScreensaver {
 				bouncer.y = bouncer.height / 2;
 				bouncer.vy *= -1;
 			}
-
-
 
 			// check intersection btw bouncer and cover
 			const cover = this.cover;
