@@ -15,7 +15,7 @@ import BounceScreensaver from './bounce-screensaver';
 //import AutomataScreensaver from './automata-screensaver';
 
 const SS_ON = true;
-const SS_DELAY = 2000; //720000;
+const SS_DELAY = 720000;
 
 // class DynamicSS {
 // 	constructor(className, opts) {
