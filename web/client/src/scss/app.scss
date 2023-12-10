@@ -473,6 +473,7 @@ body {
 //
 #screensaver {
 	width: 100%;
+	height: 100%;
 	flex: 1 0 auto;
 	position: relative;
 	display: flex;
@@ -488,16 +489,35 @@ body {
 		overflow: hidden;
 	}
 
-	&__canvas {
+	&__anime {
+		position: relative;
+		width: 100%;
+	}
+
+	&__canvas,
+	&__cover {
+		position: relative;
 		display: block;
 		width: 100%;
 		max-width: 800px;
 		height: auto;
-		background: map-get($theme_colors, 'near_black');
+		//background: map-get($theme_colors, 'near_black');
 
 		@include responsiveQuery(m) {
 		
 		}
+	}
+
+	&__canvas {
+		background: map-get($theme_colors, 'near_black');
+		z-index: 1;
+	}
+
+	&__cover {
+		position: absolute;
+		left: 0;
+		top: 0;
+		z-index: 2;
 	}
 
 	&__track {
@@ -576,5 +596,67 @@ body {
 			color: map-get($theme_colors, 'near_black');
 			text-shadow: 2px 1px 4px #fff;
 		}
+	}
+}
+
+//
+// Screensaver
+//
+#automata-screensaver {
+	&__inner {
+		width: 100%;
+		flex: 1 0 auto;
+		position: relative;
+		display: flex;
+		flex-flow: column nowrap;
+		justify-content: space-between;
+		align-items: center;
+
+		@include responsiveQuery(m) {
+			position: absolute;
+			left: 0;
+			top: 0;
+			width: 800px;
+			height: 480px;
+			overflow: hidden;
+		}
+	}
+
+	&__canvas {
+		display: block;
+		width: 100%;
+		max-width: 400px;
+		height: auto;
+		background: map-get($theme_colors, 'near_black');
+
+		@include responsiveQuery(m) {
+		
+		}
+	}
+
+	&__track {
+		//width: 800px;
+		//height: 55px;
+		//background: map-get($theme_colors, 'near_black');
+	
+		margin: 0;
+		padding: 0;
+		padding-left: 100%;
+		position: absolute;
+		bottom: 25px;
+		display: block;
+		white-space: nowrap;
+		animation: track_scroll_anime 20s infinite linear;
+
+		&.paused,
+		&:hover {
+			animation-play-state: paused;
+		}
+	}
+
+	&__bouncer {
+		position: absolute;
+		left: 0;
+		top: 0;
 	}
 }

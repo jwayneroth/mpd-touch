@@ -8,12 +8,14 @@ import NowPlayingPage from './nowplaying-page';
 import SettingsPage from './settings-page';
 import LibraryPage from './library-page';
 import RadioPage from './radio-page';
-import BounceScreensaver from './bounce-screensaver';
-import WeatherScreensaver from './weather-screensaver';
 import ControlsDialog from './controls-dialog';
 
+import BounceScreensaver from './bounce-screensaver';
+//import WeatherScreensaver from './weather-screensaver';
+//import AutomataScreensaver from './automata-screensaver';
+
 const SS_ON = true;
-const SS_DELAY = 480000;
+const SS_DELAY = 720000;
 
 // class DynamicSS {
 // 	constructor(className, opts) {
@@ -40,16 +42,20 @@ class FmuLcd {
 
 		this.pages = {};
 
-		this.screensaverKeys = ['bounce', 'weather'];
+		this.screensaverKeys = ['bounce']; //'automata', 'weather'];
 		this.screensavers = {
 			'bounce': {
 				'class': BounceScreensaver,
 				'instance': null,
 			},
-			'weather': {
-				'class': WeatherScreensaver,
-				'instance': null,
-			}
+			// 'weather': {
+			// 	'class': WeatherScreensaver,
+			// 	'instance': null,
+			// }
+			// 'automata': {
+			// 	'class': AutomataScreensaver,
+			// 	'instance': null,
+			// }
 		};
 
 		this.onHashChange();

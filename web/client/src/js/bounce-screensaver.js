@@ -1,6 +1,7 @@
 import { axios, API_URL } from './api';
 
 const FPS = 18;
+const BGRGB = [10, 5, 0];
 
 const BOUNCER_IMAGES = [
 	'raspberrypi.png',
@@ -18,7 +19,6 @@ export default class BounceScreensaver {
 		this.el = null;
 		this.bouncer = null;
 		this.cover = null;
-		this.bufferCover = null;
 		this.fps = FPS;
 		this.fpsInterval = 1000 / this.fps;
 		this.lastRender = null;
@@ -33,9 +33,12 @@ export default class BounceScreensaver {
 
 		el.innerHTML = `
 			<div id="screensaver__inner">
-				<canvas id="screensaver__canvas" width="800" height="425"></canvas>
+				<div id="screensaver__anime">
+					<canvas id="screensaver__cover" width="800" height="425"></canvas>
+					<canvas id="screensaver__canvas" width="800" height="425"></canvas>
+					<div id="screensaver__bouncer"></div>
+				</div>
 				<h2 id="screensaver__track"></h2>
-				<div id="screensaver__bouncer"></div>
 			</div>
 		`;
 
@@ -43,12 +46,18 @@ export default class BounceScreensaver {
 			el,
 			inner: el.querySelector('#screensaver__inner'),
 			canvas: el.querySelector('#screensaver__canvas'),
+			cover: el.querySelector('#screensaver__cover'),
 			track: el.querySelector('#screensaver__track'),
 			//bouncer: el.querySelector('#screensaver__bouncer'),
 		}
 
-		this.ctx = this.dom.canvas.getContext('2d');
-		this.ctx.fillStyle = 'yellow'; //'rgb(10,5,0)';
+		this.canvasCtx = this.dom.canvas.getContext('2d');
+		this.coverCtx = this.dom.cover.getContext('2d');
+
+		this.coverCtx.willReadFrequently = true;
+
+		//this.canvasCtx.fillStyle = `rgb(${Math.random() * 255}, ${Math.random() * 255}, ${Math.random() * 255})`;
+		this.coverCtx.fillStyle = `rgb(${BGRGB[0]},${BGRGB[1]},${BGRGB[2]})`;
 
 		this.onMpdStatus(this.app.lastMpdStatus);
 
@@ -75,7 +84,9 @@ export default class BounceScreensaver {
 
 			console.log('cover props', this.cover);
 
-			this.ctx.drawImage(cover, this.cover.left, this.cover.top);
+			this.coverCtx.drawImage(this.cover.img, this.cover.left, this.cover.top);
+
+			this.cover.buffer = this.coverCtx.getImageData(this.cover.left, this.cover.top, cover.width, cover.height).data;
 
 			bouncer.onload = () => {
 				console.log('bouncer load', bouncer.width, bouncer.height);
@@ -110,6 +121,12 @@ export default class BounceScreensaver {
 
 	stopAnime() {
 		this.active = false;
+		this.canvasCtx.clearRect(0, 0, this.dom.canvas.width, this.dom.canvas.height);
+		//this.coverCtx.clearRect(0, 0, this.dom.cover.width, this.dom.cover.height);
+		this.coverCtx.drawImage(this.cover.img, this.cover.left, this.cover.top);
+		//this.canvasCtx.fillStyle = `rgb(${Math.random() * 255}, ${Math.random() * 255}, ${Math.random() * 255})`;
+		//this.coverCtx.fillStyle = `rgb(${Math.random() * 255}, ${Math.random() * 255}, ${Math.random() * 255})`;
+		this.eraseMode = true;
 	}
 
 	animate() {
@@ -146,8 +163,6 @@ export default class BounceScreensaver {
 				bouncer.vy *= -1;
 			}
 
-
-
 			// check intersection btw bouncer and cover
 			const cover = this.cover;
 			const cl = cover.left;
@@ -180,10 +195,11 @@ export default class BounceScreensaver {
 					// its fully erased, start redrawing it
 					if (erased == 1) {
 						this.eraseMode = false;
-						this.ctx.drawImage(cover.img, drawLeft, drawTop, drawWidth, drawHeight);
+						this.coverCtx.drawImage(cover.img, drawLeft, drawTop, drawWidth, drawHeight, drawLeft, drawTop, drawWidth, drawHeight);
 						// continue erasing
 					} else {
-						this.ctx.fillRect(drawLeft, drawTop, drawWidth, drawHeight);
+						//console.log('erasing');
+						this.coverCtx.fillRect(drawLeft, drawTop, drawWidth, drawHeight);
 					}
 				}
 				// we are redrawing the cover image
@@ -191,16 +207,22 @@ export default class BounceScreensaver {
 					// its fully redrawn, start erasing it
 					if (erased == -1) {
 						this.eraseMode = true;
-						this.ctx.fillRect(drawLeft, drawTop, drawWidth, drawHeight);
+						this.coverCtx.fillRect(drawLeft, drawTop, drawWidth, drawHeight);
 						// continue redrawing
 					} else {
-						this.ctx.drawImage(cover.img, drawLeft, drawTop, drawWidth, drawHeight);
+						//console.log('redrawing');
+						this.coverCtx.drawImage(cover.img, drawLeft - this.cover.left, drawTop - this.cover.top, drawWidth, drawHeight, drawLeft, drawTop, drawWidth, drawHeight);
 					}
 				}
 			}
-			this.ctx.drawImage(bouncer.img, bouncer.x - bouncer.width / 2, bouncer.y - bouncer.height / 2);
+			this.canvasCtx.drawImage(bouncer.img, bouncer.x - bouncer.width / 2, bouncer.y - bouncer.height / 2);
 		}
 	}
+
+	pixelAtCoords(data, x, y, width) {
+		const red = y * (width * 4) + x * 4;
+		return [data[red], data[red + 1], data[red + 2], data[red + 3]];
+	};
 
 	/**
 	 * isCoverErased
@@ -212,9 +234,12 @@ export default class BounceScreensaver {
 	 * @returns Boolean
 	 */
 	isCoverErased() {
-		const cover = this.cover;
-		const cw = cover.width;
-		const ch = cover.height;
+
+		const cw = this.cover.right - this.cover.left;
+		const ch = this.cover.bottom - this.cover.top;
+
+		const buffer = this.cover.buffer;
+		const pixels = this.coverCtx.getImageData(this.cover.left, this.cover.top, cw, ch).data;
 
 		let hasDiff = false;
 		let hasOrig = false;
@@ -223,24 +248,46 @@ export default class BounceScreensaver {
 		let x = 0;
 		let y = 0;
 		let diffs = 0;
-
+		let comps;
+		let ct;
 		for (i = 0; i < Math.round(cw / step); i++) {
 			for (j = 0; j < Math.round(ch / step); j++) {
 
 				x = i * step;
 				y = j * step;
 
-				pixel = cover.getImageData(x, y, 1, 1).data;
-				origPixel = this.bufferCover.getImageData(x, y, 1, 1).data;
+				pixel = this.pixelAtCoords(pixels, x, y, cw);
+				origPixel = this.pixelAtCoords(buffer, x, y, cw);
 
-				if (pixel[0] != origPixel[0] || pixel[1] != origPixel[1] || pixel[2] != origPixel[2]) {
+				// if (i == 0 && j == 0) {
+				// 	console.log(pixel, origPixel);
+				// }
+
+				// if any diff in pixels
+				comps = [
+					pixel[0] - origPixel[0],
+					pixel[1] - origPixel[1],
+					pixel[2] - origPixel[2],
+				];
+
+				ct = comps.reduce((t, comp) => t + Math.abs(comp), 0);
+
+				//console.log('comps', ct);
+
+				//if (pixel[0] != origPixel[0] || pixel[1] != origPixel[1] || pixel[2] != origPixel[2]) {
+				if (ct > 3) {
 					diffs += 1;
 					hasDiff = true;
+					// if we have already seen an original pixel, abort and return partly
 					if (hasOrig == true) {
+						//console.log('diff', pixel, origPixel);
 						return 0;
 					}
+					// no diff
 				} else {
+
 					hasOrig = true;
+					// if we have seen a diff, abort and return partly
 					if (hasDiff == true) {
 						return 0;
 					}
@@ -248,6 +295,7 @@ export default class BounceScreensaver {
 			}
 		}
 
+		// if we only saw differences
 		if (hasDiff == true) {
 			if (hasOrig == false) {
 				return 1;
@@ -272,8 +320,15 @@ class Bouncer {
 		this.img = img;
 		this.width = img.width;
 		this.height = img.height;
-		this.vx = Math.random() * 30 - 15;
-		this.vy = Math.random() * 30 - 15;
+
+		let pm = Math.random() < 0.5 ? -1 : 1;
+
+		this.vx = (Math.random() * 15 + 3) * pm;
+
+		pm = Math.random() < 0.5 ? -1 : 1;
+
+		this.vy = (Math.random() * 15 + 3) * pm;
+
 		this._x = null;
 		this._y = null;
 		this.left = null;
