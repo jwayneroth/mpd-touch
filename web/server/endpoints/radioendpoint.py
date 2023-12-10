@@ -18,60 +18,60 @@ class RadioEndpoint(RequestHandler):
 		
 		logger.debug("RadioEndpoint::get %s", resource)
 		
-		#try:
+		try:
 
-		if resource == "":
-			stations = scene.stations
-			return self.render("radio.html", stations=stations)
+			if resource == "":
+				stations = scene.stations
+				return self.render("radio.html", stations=stations)
 
-		elif resource == "stream":
-			stream = url_unescape(self.get_argument('stream'))
-			logger.debug('stream url: %s', stream)
-			mpd.radio_station_start(stream)
-			self.finish()
-
-		elif resource == "archive":
-			archive = url_unescape(self.get_argument('archive'))
-			try:
-				res = self.url_opener.urlopen( archive )
-				logger.debug("opened archive url: %s", res)
-				html = res.read()
-			except:
-				logger.debug("error opening archive")
+			elif resource == "stream":
+				stream = url_unescape(self.get_argument('stream'))
+				logger.debug('stream url: %s', stream)
+				mpd.radio_station_start(stream)
 				self.finish()
-				return
-			archive_url = str(html, 'utf-8').strip()
-			mpd.radio_station_start(archive_url)
-			self.finish()
 
-		elif resource == "archives":
-			archives = []
-			try:
-				full = feedparser.parse('https://www.wfmu.org/archivefeed/mp3.xml')
-				for entry in full.entries:
-					archive = dict()
-					archive['title'] = scene.filter_stream_name(entry.title)
-					archive['url'] = entry.link
-					archives.append(archive)
-			except:
-				pass
-			self.write({'archives': archives})
+			elif resource == "archive":
+				archive = url_unescape(self.get_argument('archive'))
+				try:
+					res = self.url_opener.urlopen( archive )
+					logger.debug("opened archive url: %s", res)
+					html = res.read()
+				except:
+					logger.debug("error opening archive")
+					self.finish()
+					return
+				archive_url = str(html, 'utf-8').strip()
+				mpd.radio_station_start(archive_url)
+				self.finish()
 
-		elif resource == "status":
-			title = url_unescape(self.get_argument('title'))
-			url = url_unescape(self.get_argument('url'))
-			url_opener = urllib.request
-			try:
-				res = self.url_opener.urlopen( url )
-				html = res.read()
-			except:
-				logger.debug("error opening stream status json")
-				return
+			elif resource == "archives":
+				archives = []
+				try:
+					full = feedparser.parse('https://www.wfmu.org/archivefeed/mp3.xml')
+					for entry in full.entries:
+						archive = dict()
+						archive['title'] = scene.filter_stream_name(entry.title)
+						archive['url'] = entry.link
+						archives.append(archive)
+				except:
+					pass
+				self.write({'archives': archives})
 
-			stripped = str(html, 'utf-8').strip()
+			elif resource == "status":
+				title = url_unescape(self.get_argument('title'))
+				url = url_unescape(self.get_argument('url'))
+				url_opener = urllib.request
+				try:
+					res = self.url_opener.urlopen( url )
+					html = res.read()
+				except:
+					logger.debug("error opening stream status json")
+					return
 
-			self.write({'title': title, 'status': json.loads(stripped)})
+				stripped = str(html, 'utf-8').strip()
 
-		# except:
-		# 	self.set_status(500)
-		# 	return self.finish()
+				self.write({'title': title, 'status': json.loads(stripped)})
+
+		except:
+			self.set_status(500)
+			return self.finish()

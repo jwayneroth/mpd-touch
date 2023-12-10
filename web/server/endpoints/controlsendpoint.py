@@ -26,6 +26,9 @@ class ControlsEndpoint(RequestHandler):
 	def post(self, resource):
 		if resource == 'volume':
 			volume = self.get_argument('volume')
-			mpd.set_volume(int(volume))
+			try:
+				mpd.set_volume(int(volume))
+			except:
+				pass
 			scene = self.app.dialogs['Controls']
 			scene.volume_slider.value = mpd.volume

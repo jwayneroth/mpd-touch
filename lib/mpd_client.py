@@ -131,6 +131,9 @@ class MPDController(object):
 
 		self.playback_options_get(status)
 
+		if 'volume' not in status:
+			status['volume'] = 0
+
 		if self.volume != int(status['volume']):
 			self.volume = int(status['volume'])
 			self.events.append('volume')
