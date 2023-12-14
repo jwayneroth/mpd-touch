@@ -246,17 +246,21 @@ class PiScene(ui.Scene):
 		#ui.Scene.update(self, dt)
 		dialog_mpd_listener = self.dialog != None and self.dialog.is_mpd_listener == True
 		#logger.debug("%s::update dialog_mpd_listener: %s", self.name, dialog_mpd_listener)
-		if self.is_mpd_listener == True:
-			if mpd.status_get():
-				self.on_mpd_update()
-				if dialog_mpd_listener :
+		try:
+			if self.is_mpd_listener == True:
+				if mpd.status_get():
+					self.on_mpd_update()
+					if dialog_mpd_listener :
+						self.dialog.on_mpd_update()
+					return True
+			elif dialog_mpd_listener :
+				if mpd.status_get():
 					self.dialog.on_mpd_update()
-				return True
-		elif dialog_mpd_listener :
-			if mpd.status_get():
-				self.dialog.on_mpd_update()
-				return True
-		return False
+					return True
+			return False
+		except:
+			logger.debug('error in mpd.status_get in piscene::update');
+			return False
 
 	"""
 	on_mpd_update

@@ -101,9 +101,12 @@ class SpectrumScreensaver(PiScene):
 	def update(self):
 		updated = False
 
-		if mpd.status_get():
-			self.on_mpd_update()
-			updated = True
+		try:
+			if mpd.status_get():
+				self.on_mpd_update()
+				updated = True
+		except:
+			pass
 
 		track = self.track
 

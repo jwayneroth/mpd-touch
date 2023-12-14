@@ -101,9 +101,12 @@ class LinesScreensaver(PiScene):
 	def update(self):
 		updated  = False
 
-		if mpd.status_get():
-			self.on_mpd_update()
-			updated  = False
+		try:
+			if mpd.status_get():
+				self.on_mpd_update()
+				updated  = False
+		except:
+			pass
 
 		track = self.track
 
