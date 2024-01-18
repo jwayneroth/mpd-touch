@@ -133,10 +133,10 @@ export default class RadioPage {
 		const appTitle = response.data.title;
 		const { status } = response.data;
 		const { artist, title, song, show, playlist } = status;
-		
+
 		//const track = (typeof artist !== 'object') ? title + ' by ' + artist : song;
 		let track = '';
-		
+
 		if (
 			typeof artist !== 'object' && artist !== '' &&
 			typeof title !== 'object' && title !== ''
@@ -145,7 +145,7 @@ export default class RadioPage {
 		} else if (typeof song !== 'object') {
 			track = song;
 		}
-		
+
 		const div = this.dom.streamsPanel.querySelector('li[data-title="' + appTitle + '"] .listennow-current-track');
 
 		console.log('RadioPage::onStreamStatus ' + appTitle);
@@ -230,7 +230,7 @@ export default class RadioPage {
 	// button handlers
 	//
 	onArchivesShown() {
-		if (this.archivesLoaded) return;
+		//if (this.archivesLoaded) return;
 		this.apiCall('archives', {}, this.populateArchivesPanel.bind(this));
 	}
 
