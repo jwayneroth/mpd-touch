@@ -16,6 +16,7 @@ export default class ControlsDialog {
 			navButton: document.querySelector('#main-nav a[data-bs-target="#controls"]'),
 			playPause: el.querySelector("button[data-tag-name='play_pause']"),
 			playMode: el.querySelector("button[data-tag-name='play_mode']"),
+			volumeDisplay: el.querySelector('#controls__volume-display'),
 			volumeSlider: el.querySelector('#controls__volume'),
 		};
 
@@ -41,13 +42,13 @@ export default class ControlsDialog {
 		console.log('control link click', tag_name);
 
 		if (tag_name == 'volume-off') {
-			this.dom.volumeSlider.value = 0;
+			this.setVolume(0);
 			this.onVolumeChange();
 		} else if (tag_name == 'volume-down') {
-			this.dom.volumeSlider.value = parseInt(this.dom.volumeSlider.value, 10) - 10;
+			this.setVolume(parseInt(this.dom.volumeSlider.value, 10) - 10);
 			this.onVolumeChange();
 		} else if (tag_name == 'volume-up') {
-			this.dom.volumeSlider.value = parseInt(this.dom.volumeSlider.value, 10) + 10;
+			this.setVolume(parseInt(this.dom.volumeSlider.value, 10) + 10);
 			this.onVolumeChange();
 		} else {
 			axios.get(API_URL + '/controls/' + tag_name)
@@ -75,12 +76,19 @@ export default class ControlsDialog {
 				'Content-Type': 'multipart/form-data'
 			}
 		})
-			.then(function (response) {
+			.then(response => {
 				console.log(response);
+				this.setVolume(parseInt(response.data.volume, 10));
 			})
-			.catch(function (error) {
-				console.log(error);
-			});
+			// .catch(function (error) {
+			// 	console.log(error);
+			// })
+			;
+	}
+
+	setVolume(vol) {
+		this.dom.volumeSlider.value = vol;
+		this.dom.volumeDisplay.innerHTML = ' : ' + vol;
 	}
 
 	onModalShown() {
@@ -89,7 +97,7 @@ export default class ControlsDialog {
 		axios.get(API_URL + '/controls/volume')
 			.then(response => {
 				console.log('volume ' + response.data.volume);
-				this.dom.volumeSlider.value = parseInt(response.data.volume, 10);
+				this.setVolume(parseInt(response.data.volume, 10));
 				this.dom.volumeSlider.removeAttribute('disabled');
 			})
 	}

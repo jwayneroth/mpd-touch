@@ -29,6 +29,8 @@ class ControlsEndpoint(RequestHandler):
 			try:
 				mpd.set_volume(int(volume))
 			except:
+				self.set_status(500)
 				pass
 			scene = self.app.dialogs['Controls']
 			scene.volume_slider.value = mpd.volume
+			return self.finish({'volume': mpd.volume})

@@ -11,6 +11,7 @@ import RadioPage from './radio-page';
 import ControlsDialog from './controls-dialog';
 
 import BounceScreensaver from './bounce-screensaver';
+import WaveScreensaver from './wave-screensaver';
 //import WeatherScreensaver from './weather-screensaver';
 //import AutomataScreensaver from './automata-screensaver';
 
@@ -42,10 +43,14 @@ class FmuLcd {
 
 		this.pages = {};
 
-		this.screensaverKeys = ['bounce']; //'automata', 'weather'];
+		this.screensaverKeys = ['bounce', 'wave']; //'automata', 'weather'];
 		this.screensavers = {
 			'bounce': {
 				'class': BounceScreensaver,
+				'instance': null,
+			},
+			'wave': {
+				'class': WaveScreensaver,
 				'instance': null,
 			},
 			// 'weather': {
