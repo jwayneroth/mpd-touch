@@ -28,11 +28,22 @@ export default class ControlsDialog {
 
 		el.addEventListener('shown.bs.modal', this.onModalShown.bind(this));
 
-		//window.addEventListener('mpdstatus', this.onMpdStatus.bind(this));
+		window.addEventListener('mpdstatus', this.onMpdStatus.bind(this));
 	}
 
-	onMpdStatus(status) {
+	onMpdStatus(evt) {
+
+		const status = evt.detail;
+
 		console.log('ControlsDialog::onMpdStatus', status);
+
+		//const play_mode = response.data.play_mode;
+		const play_state = status.play_state;
+
+		//console.log('updateControlButtons', play_mode, play_state);
+
+		//this.dom.playMode.querySelector('span').setAttribute('class', 'icon ' + play_mode[1]);
+		this.dom.playPause.querySelector('span').setAttribute('class', 'icon ' + play_state);
 	}
 
 	controlClick(evt) {

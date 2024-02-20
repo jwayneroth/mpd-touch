@@ -673,13 +673,21 @@ var ControlsDialog = /*#__PURE__*/function () {
     }
     this.dom.volumeSlider.addEventListener('change', this.onVolumeChange.bind(this));
     el.addEventListener('shown.bs.modal', this.onModalShown.bind(this));
-
-    //window.addEventListener('mpdstatus', this.onMpdStatus.bind(this));
+    window.addEventListener('mpdstatus', this.onMpdStatus.bind(this));
   }
   _createClass(ControlsDialog, [{
     key: "onMpdStatus",
-    value: function onMpdStatus(status) {
+    value: function onMpdStatus(evt) {
+      var status = evt.detail;
       console.log('ControlsDialog::onMpdStatus', status);
+
+      //const play_mode = response.data.play_mode;
+      var play_state = status.play_state;
+
+      //console.log('updateControlButtons', play_mode, play_state);
+
+      //this.dom.playMode.querySelector('span').setAttribute('class', 'icon ' + play_mode[1]);
+      this.dom.playPause.querySelector('span').setAttribute('class', 'icon ' + play_state);
     }
   }, {
     key: "controlClick",
@@ -2262,9 +2270,14 @@ var RadioPage = /*#__PURE__*/function () {
     value: function populateArchivesPanel(response) {
       var archives = response.data.archives;
       var ul = document.createElement('ul');
-      var i;
+      var i, playlist;
       for (i = 0; i < archives.length; i++) {
-        ul.innerHTML += "\n\t\t\t\t<li>\n\t\t\t\t\t<a class=\"archive\" href data-url=\"".concat(encodeURI(archives[i].url), "\">\n\t\t\t\t\t\t<span>").concat(archives[i].title, "</span>\n\t\t\t\t\t</a>\n\t\t\t\t</li>");
+        if (archives[i].show) {
+          playlist = "\n\t\t\t\t\t<a class=\"plist small\" target=\"_blank\" href=\"https://www.wfmu.org/playlists/shows/".concat(archives[i].show, "\">\n\t\t\t\t\t\t<span class=\"icon list-alt\"></span>\n\t\t\t\t\t</a>");
+        } else {
+          playlist = '';
+        }
+        ul.innerHTML += "\n\t\t\t\t<li>\n\t\t\t\t\t<a class=\"archive\" href data-url=\"".concat(encodeURI(archives[i].url), "\">\n\t\t\t\t\t\t<span>").concat(archives[i].title, "</span>\n\t\t\t\t\t</a>\n\t\t\t\t\t").concat(playlist, "\n\t\t\t\t</li>");
       }
       this.dom.archivesPanel.innerHTML = '';
       this.dom.archivesPanel.innerHTML = "\n\t\t\t<div class= \"button-row\">\n\t\t\t\t<a href class=\"refresh-archives icon-button\">\n\t\t\t\t\t<span class=\"icon refresh\"></span>\n\t\t\t\t\t<span class=\"txt\">refresh</span>\n\t\t\t\t</a>\n\t\t\t</div>";

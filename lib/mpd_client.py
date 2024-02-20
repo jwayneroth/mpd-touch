@@ -228,6 +228,12 @@ class MPDController(object):
 		self.status_get()
 		return self.__player_control
 
+	def seek(self, time):
+		try:
+			self.mpd_client.seekcur(time);
+		except:
+			pass
+
 	def play_playlist_item(self, index):
 		self.mpd_client.play(index - 1)
 

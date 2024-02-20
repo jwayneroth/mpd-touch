@@ -440,6 +440,25 @@ body {
 				font-size: 1em;
 			}
 		}
+
+		ul > li {
+			//align-items: flex-end;
+			display: block;
+
+			> a {
+				display: inline;
+
+				&.plist {
+					color: map-get($theme_colors, 'orange');
+
+					.icon,
+					.icon::before {
+						display: inline;
+						font-size: 1.3em;
+					}
+				}
+			}
+		}
 	}
 }
 

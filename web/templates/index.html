@@ -98,10 +98,16 @@
 							<span class="icon {%if 'play_state' in locals() %}{{ play_state }}{% else %}play{% end %}"></span>
 						</button>
 						<button type="button" class="btn btn-dark" data-tag-name="prev">
+							<span class="icon step-backward"></span>
+						</button>
+						<button type="button" class="btn btn-dark" data-tag-name="seek-prev">
 							<span class="icon backward"></span>
 						</button>
-						<button type="button" class="btn btn-dark" data-tag-name="next">
+						<button type="button" class="btn btn-dark" data-tag-name="seek-next">
 							<span class="icon forward"></span>
+						</button>
+						<button type="button" class="btn btn-dark" data-tag-name="next">
+							<span class="icon step-forward"></span>
 						</button>
 						<button type="button" class="btn btn-dark" data-tag-name="play_mode">
 							<span class="icon {%if 'play_mode' in locals() %}{{ current_play_mode }}{% else %}unchecked{% end %}"></span>

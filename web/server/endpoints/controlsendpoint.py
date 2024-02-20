@@ -15,10 +15,8 @@ class ControlsEndpoint(RequestHandler):
 		else:
 			scene = self.app.dialogs['Controls']
 
-			class Object(object):
-				pass
-
 			btn = scene.buttons[resource]
+
 			scene.on_button_click(btn, None)
 
 			self.finish({'play_state': mpd.get_playback(), 'play_mode': scene.play_modes[scene.current_play_mode]})

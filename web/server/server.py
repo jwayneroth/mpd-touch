@@ -44,7 +44,7 @@ class Server(object):
 				(r"/api/controls/?(.*)", ControlsEndpoint, {"app": self.app}),
 			],
 			debug=False,
-			autoreload=False,
+			autoreload=True,
 			template_path="web/templates"
 		)
 		http_server = HTTPServer(app)
@@ -58,9 +58,11 @@ class Server(object):
 		#logger.debug("server::update %d clients" % len(self.web_clients))
 		if len(self.web_clients) > 0:
 			try:
+				play_state = mpd.get_playback()
 				for c in self.web_clients:
 					c.write_message(json.dumps({"status" : {
 						"volume": mpd.volume,
+						"play_state": play_state,
 						"now_playing": {
 							"type": mpd.now_playing.playing_type,
 							"title": mpd.now_playing.title,

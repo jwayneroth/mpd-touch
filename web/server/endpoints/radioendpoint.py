@@ -52,6 +52,11 @@ class RadioEndpoint(RequestHandler):
 						archive = dict()
 						archive['title'] = scene.filter_stream_name(entry.title)
 						archive['url'] = entry.link
+
+						query = urllib.parse.parse_qs( urllib.parse.urlparse( entry.guid ).query )
+						show = query.get("show", [None])[0]
+						archive['show'] = show
+
 						archives.append(archive)
 				except:
 					pass

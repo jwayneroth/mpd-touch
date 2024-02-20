@@ -16476,6 +16476,25 @@ body {
 #radio #radio__archives .refresh-archives span:last-child {
   font-size: 1em;
 }
+#library #radio__archives ul > li,
+#radio #radio__archives ul > li {
+  display: block;
+}
+#library #radio__archives ul > li > a,
+#radio #radio__archives ul > li > a {
+  display: inline;
+}
+#library #radio__archives ul > li > a.plist,
+#radio #radio__archives ul > li > a.plist {
+  color: rgb(240, 140, 2);
+}
+#library #radio__archives ul > li > a.plist .icon,
+#library #radio__archives ul > li > a.plist .icon::before,
+#radio #radio__archives ul > li > a.plist .icon,
+#radio #radio__archives ul > li > a.plist .icon::before {
+  display: inline;
+  font-size: 1.3em;
+}
 
 #controls__content {
   position: relative;

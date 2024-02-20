@@ -27,6 +27,7 @@ class ControlsDialog(PiDialogScene):
 		self.volume_slider = self.make_volume_slider()
 		self.volume_panel = self.make_volume_panel()
 		self.controls_panel = self.make_controls_panel()
+		self.make_seek_buttons()
 
 		self.btns = [
 			[ self.volume_slider ],
@@ -239,6 +240,23 @@ class ControlsDialog(PiDialogScene):
 		return panel
 
 	"""
+	make_seek_buttons
+	"""
+	def make_seek_buttons(self):
+
+		btn = ui.DialogButton( ui.Rect( 0, 0, self.btn_size, self.btn_size ), 'seek-prev' )
+		btn.on_clicked.connect(self.on_button_click)
+		btn.tag_name = 'seek-prev'
+
+		self.buttons['seek-prev'] = btn
+
+		btn = ui.DialogButton( ui.Rect( 0, 0, self.btn_size, self.btn_size ), 'seek-next' )
+		btn.on_clicked.connect(self.on_button_click)
+		btn.tag_name = 'seek-next'
+
+		self.buttons['seek-next'] = btn
+
+	"""
 	make_volume_panel
 	"""
 	def make_volume_panel(self):
@@ -318,6 +336,10 @@ class ControlsDialog(PiDialogScene):
 			mpd.set_playback('previous')
 		elif tag_name == 'next':
 			mpd.set_playback('next')
+		elif tag_name == 'seek-prev':
+			mpd.seek('+5.00')
+		elif tag_name == 'seek-next':
+			mpd.seek('-5.00')
 		elif tag_name == 'play_mode':
 			self.current_play_mode = self.current_play_mode + 1
 			if self.current_play_mode > len(self.play_modes) - 1:

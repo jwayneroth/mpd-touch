@@ -272,14 +272,25 @@ export default class RadioPage {
 		const archives = response.data.archives;
 		const ul = document.createElement('ul');
 
-		let i;
+		let i, playlist;
 
 		for (i = 0; i < archives.length; i++) {
+
+			if (archives[i].show) {
+				playlist = `
+					<a class="plist small" target="_blank" href="https://www.wfmu.org/playlists/shows/${archives[i].show}">
+						<span class="icon list-alt"></span>
+					</a>`;
+			} else {
+				playlist = '';
+			}
+
 			ul.innerHTML += `
 				<li>
 					<a class="archive" href data-url="${encodeURI(archives[i].url)}">
 						<span>${archives[i].title}</span>
 					</a>
+					${playlist}
 				</li>`;
 		}
 
