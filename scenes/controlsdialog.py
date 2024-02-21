@@ -337,9 +337,9 @@ class ControlsDialog(PiDialogScene):
 		elif tag_name == 'next':
 			mpd.set_playback('next')
 		elif tag_name == 'seek-prev':
-			mpd.seek('+5.00')
+			mpd.seek('-300.00')
 		elif tag_name == 'seek-next':
-			mpd.seek('-5.00')
+			mpd.seek('+300.00')
 		elif tag_name == 'play_mode':
 			self.current_play_mode = self.current_play_mode + 1
 			if self.current_play_mode > len(self.play_modes) - 1:
