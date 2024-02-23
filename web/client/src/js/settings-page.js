@@ -14,50 +14,45 @@ export default class SettingsPage {
 
 	onEnter(el) {
 
-		this.el = el;
+		this.dom = {
+			el,
+			links: el.querySelectorAll('a'),
+			webTypeRadio: el.querySelectorAll('input[name="ss_web_type"]'),
+			webTimeoutInput: el.querySelector('#ss_web_timeout'),
+			hostTypeRadio: el.querySelectorAll('input[name="ss_host_type"]'),
+		};
 
-		const ssSettings = document.createElement('div');
+		this.dom.el.querySelector('#ss_web_' + this.app.storedSettings.screensaverType).setAttribute('checked', true);
 
-		ssSettings.setAttribute('id', 'settings__web');
-		ssSettings.innerHTML = `
-			<div>
-				<h3>Screensaver</h3>
-				<div>
-					<input type="radio" id="ss_random" name="ss_type" value="random">
-					<label for="ss_random">Random</label><br>
-				</div>
-				<div>
-					<input type="radio" id="ss_bounce" name="ss_type" value="bounce">
-					<label for="ss_bounce">Bounce</label>
-				</div>
-				<div>
-					<input type="radio" id="ss_wave" name="ss_type" value="wave">
-					<label for="ss_wave">Wave</label>
-				</div>
-				<div>
-					<label for=""ss_timeout>Timeout (seconds)</label>
-					<input type="number" id="ss_timeout" name="ss_timeout" value="${this.app.storedSettings.screensaverTimeout / 1000}" min="">
-				</div>
-			</div>
-		`;
+		this.dom.webTypeRadio.forEach(radio => radio.addEventListener('change', this.webTypeRadioChange.bind(this)));
+		this.dom.hostTypeRadio.forEach(radio => radio.addEventListener('change', this.hostTypeRadioChange.bind(this)));
 
-		this.el.appendChild(ssSettings);
-
-		this.el.querySelector('#ss_' + this.app.storedSettings.screensaverType).setAttribute('checked', true);
-		this.el.querySelectorAll('input[name="ss_type"]').forEach(radio => radio.addEventListener('change', this.typeRadioChange.bind(this)));
-		this.el.querySelector('#ss_timeout').addEventListener('change', this.timeoutInputChange.bind(this));
-
-		const links = this.el.querySelectorAll('a');
+		this.dom.webTimeoutInput.value = this.app.storedSettings.screensaverTimeout / 1000;
+		this.dom.webTimeoutInput.addEventListener('change', this.timeoutInputChange.bind(this));
 
 		let i;
-		for (i = 0; i < links.length; i++) {
-			links[i].addEventListener('click', this.anchorClick.bind(this));
+		for (i = 0; i < this.dom.links.length; i++) {
+			this.dom.links[i].addEventListener('click', this.anchorClick.bind(this));
 		}
 	}
 
-	typeRadioChange(evt) {
-		console.log('onRadioChange', evt.target.value);
+	webTypeRadioChange(evt) {
+		console.log('webTypeRadioChange', evt.target.value);
 		this.app.updateSetting('screensaverType', evt.target.value);
+	}
+
+	hostTypeRadioChange(evt) {
+		console.log('hostTypeRadioChange', evt.target.value);
+		axios.post(API_URL + '/settings/screensaver', { type: evt.target.value }, {
+			headers: {
+				'Content-Type': 'multipart/form-data'
+			}
+		})
+			.then(this.hostTypeUpdate.bind(this));
+	}
+
+	hostTypeUpdate(response) {
+		console.log('hostTypeUpdate', response.data);
 	}
 
 	timeoutInputChange(evt) {

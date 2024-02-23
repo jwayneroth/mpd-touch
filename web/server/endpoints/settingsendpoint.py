@@ -12,7 +12,9 @@ class SettingsEndpoint(RequestHandler):
 		
 		if resource == "":
 			btn_data = scene.btn_data
-			return self.render("settings.html", btn_data=btn_data)
+			ss_types = self.app.screensavers
+			current_type = self.app.ss_type
+			return self.render("settings.html", btn_data=btn_data, ss_types=ss_types, current_type=current_type)
 
 		else:
 			for btn in scene.btns:
@@ -23,17 +25,8 @@ class SettingsEndpoint(RequestHandler):
 		self.set_status(500)
 		return self.finish()
 
-		# class Object(object):
-		# 	pass
-
-		# btn = Object()
-		# btn.name = resource
-
-		# try:
-
-		# 	if resource == "update":
-		# 		self.finish('updated')
-		# 		scene.on_btn_clicked(btn, None)
-		# except:
-		# 	self.set_status(500)
-		# 	return self.finish()
+	def post(self, resource):
+		if resource == 'screensaver':
+			type = self.get_argument('type')
+			self.app.set_screensaver_type(type)
+			return self.finish({'ss_type': self.app.ss_type})

@@ -264,6 +264,15 @@ body {
 		top: 0;
 		width: 50%;
 		height: 100%;
+
+		> div {
+			margin: 1em 0;
+		}
+
+		#ss_web_timeout {
+			background: transparent;
+			width: 5em;
+		}
 	}
 }
 

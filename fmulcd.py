@@ -43,6 +43,7 @@ class Fmulcd(object):
 
 		self.screen_dimensions = (screen_width, screen_height)
 		self.screen = False
+		self.ss_type = 'random'
 		self.ss_timer = 0
 		self.ss_timer_on = True
 		self.ss_delay = fmuglobals.SS_DELAY
@@ -215,6 +216,15 @@ class Fmulcd(object):
 			self.scenes['Albums'].populate_artists_view()
 		self.make_current_scene(self.scenes[scene_name])
 
+	"""
+	set_screensaver_type
+	"""
+	def set_screensaver_type(self, type) :
+		self.ss_type = type
+		if fmu.current.name in fmu.screensavers and fmu.current.name != type:
+			#fmu.change_scene('NowPlaying', False, True)
+			self.load_screensaver()
+
 	def screensaver_tick(self, ms, activity):
 		if activity:
 			self.ss_timer = 0
@@ -224,11 +234,14 @@ class Fmulcd(object):
 				logger.debug('going to screensaver')
 				self.ss_timer_on = False
 				self.ss_timer = 0
-				#self.change_scene('Screensaver')
 				self.load_screensaver()
 
 	def load_screensaver(self) :
-		ss = self.screensavers[random.randrange(len(self.screensavers))]
+		if (self.ss_type == 'random') :
+			ss = self.screensavers[random.randrange(len(self.screensavers))]
+		else:
+			ss = self.ss_type
+	
 		self.change_scene(ss)
 
 	def kill_app(self) :

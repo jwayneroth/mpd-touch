@@ -2438,27 +2438,49 @@ var SettingsPage = /*#__PURE__*/function () {
     key: "onEnter",
     value: function onEnter(el) {
       var _this = this;
-      this.el = el;
-      var ssSettings = document.createElement('div');
-      ssSettings.setAttribute('id', 'settings__web');
-      ssSettings.innerHTML = "\n\t\t\t<div>\n\t\t\t\t<h3>Screensaver</h3>\n\t\t\t\t<div>\n\t\t\t\t\t<input type=\"radio\" id=\"ss_random\" name=\"ss_type\" value=\"random\">\n\t\t\t\t\t<label for=\"ss_random\">Random</label><br>\n\t\t\t\t</div>\n\t\t\t\t<div>\n\t\t\t\t\t<input type=\"radio\" id=\"ss_bounce\" name=\"ss_type\" value=\"bounce\">\n\t\t\t\t\t<label for=\"ss_bounce\">Bounce</label>\n\t\t\t\t</div>\n\t\t\t\t<div>\n\t\t\t\t\t<input type=\"radio\" id=\"ss_wave\" name=\"ss_type\" value=\"wave\">\n\t\t\t\t\t<label for=\"ss_wave\">Wave</label>\n\t\t\t\t</div>\n\t\t\t\t<div>\n\t\t\t\t\t<label for=\"\"ss_timeout>Timeout (seconds)</label>\n\t\t\t\t\t<input type=\"number\" id=\"ss_timeout\" name=\"ss_timeout\" value=\"".concat(this.app.storedSettings.screensaverTimeout / 1000, "\" min=\"\">\n\t\t\t\t</div>\n\t\t\t</div>\n\t\t");
-      this.el.appendChild(ssSettings);
-      this.el.querySelector('#ss_' + this.app.storedSettings.screensaverType).setAttribute('checked', true);
-      this.el.querySelectorAll('input[name="ss_type"]').forEach(function (radio) {
-        return radio.addEventListener('change', _this.typeRadioChange.bind(_this));
+      this.dom = {
+        el: el,
+        links: el.querySelectorAll('a'),
+        webTypeRadio: el.querySelectorAll('input[name="ss_web_type"]'),
+        webTimeoutInput: el.querySelector('#ss_web_timeout'),
+        hostTypeRadio: el.querySelectorAll('input[name="ss_host_type"]')
+      };
+      this.dom.el.querySelector('#ss_web_' + this.app.storedSettings.screensaverType).setAttribute('checked', true);
+      this.dom.webTypeRadio.forEach(function (radio) {
+        return radio.addEventListener('change', _this.webTypeRadioChange.bind(_this));
       });
-      this.el.querySelector('#ss_timeout').addEventListener('change', this.timeoutInputChange.bind(this));
-      var links = this.el.querySelectorAll('a');
+      this.dom.hostTypeRadio.forEach(function (radio) {
+        return radio.addEventListener('change', _this.hostTypeRadioChange.bind(_this));
+      });
+      this.dom.webTimeoutInput.value = this.app.storedSettings.screensaverTimeout / 1000;
+      this.dom.webTimeoutInput.addEventListener('change', this.timeoutInputChange.bind(this));
       var i;
-      for (i = 0; i < links.length; i++) {
-        links[i].addEventListener('click', this.anchorClick.bind(this));
+      for (i = 0; i < this.dom.links.length; i++) {
+        this.dom.links[i].addEventListener('click', this.anchorClick.bind(this));
       }
     }
   }, {
-    key: "typeRadioChange",
-    value: function typeRadioChange(evt) {
-      console.log('onRadioChange', evt.target.value);
+    key: "webTypeRadioChange",
+    value: function webTypeRadioChange(evt) {
+      console.log('webTypeRadioChange', evt.target.value);
       this.app.updateSetting('screensaverType', evt.target.value);
+    }
+  }, {
+    key: "hostTypeRadioChange",
+    value: function hostTypeRadioChange(evt) {
+      console.log('hostTypeRadioChange', evt.target.value);
+      _api__WEBPACK_IMPORTED_MODULE_0__.axios.post(_api__WEBPACK_IMPORTED_MODULE_0__.API_URL + '/settings/screensaver', {
+        type: evt.target.value
+      }, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      }).then(this.hostTypeUpdate.bind(this));
+    }
+  }, {
+    key: "hostTypeUpdate",
+    value: function hostTypeUpdate(response) {
+      console.log('hostTypeUpdate', response.data);
     }
   }, {
     key: "timeoutInputChange",

@@ -16326,6 +16326,13 @@ body {
   width: 50%;
   height: 100%;
 }
+#settings__web > div {
+  margin: 1em 0;
+}
+#settings__web #ss_web_timeout {
+  background: transparent;
+  width: 5em;
+}
 
 #library__nav a.new-playlist,
 #radio__nav a.new-playlist {

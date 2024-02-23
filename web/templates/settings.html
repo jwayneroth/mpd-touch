@@ -11,4 +11,40 @@
 		{% end %}
 		</ul>
 	</nav>
+	<div id="settings__web">
+		<h2>Screensaver</h2>
+		<div>
+			<h3>Web</h3>
+			<div>
+				<input type="radio" id="ss_web_random" name="ss_web_type" value="random">
+				<label for="ss_web_random">Random</label><br>
+			</div>
+			<div>
+				<input type="radio" id="ss_web_bounce" name="ss_web_type" value="bounce">
+				<label for="ss_web_bounce">Bounce</label>
+			</div>
+			<div>
+				<input type="radio" id="ss_web_wave" name="ss_web_type" value="wave">
+				<label for="ss_web_wave">Wave</label>
+			</div>
+			<div>
+				<label for="ss_web_timeout">Timeout (seconds)<br>
+					<input type="number" id="ss_web_timeout" name="ss_web_timeout" value="" min="1">
+				</label>
+			</div>
+		</div>
+		<div>
+			<h3>Host</h3>
+			<div>
+				<input type="radio" id="ss_host_random" name="ss_host_type" value="random" {%if current_type == 'random' %}checked{% end %}>
+				<label for="ss_host_random">Random</label><br>
+			</div>
+			{% for ss_type in ss_types %}
+			<div>
+				<input type="radio" id="ss_host_{{ss_type}}" name="ss_host_type" value="{{ss_type}}" {%if current_type == ss_type %}checked{% end %}>
+				<label for="ss_host_{{ss_type}}">{{ss_type}}</label>
+			</div>
+			{% end %}
+		</div>
+	</div>
 </div>
