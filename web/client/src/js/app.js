@@ -41,6 +41,18 @@ class FmuLcd {
 			nav_links: el.querySelectorAll('#main-nav a:not([data-bs-toggle="modal"])')
 		};
 
+		this.storedSettings = {
+			screensaverOn: true,
+			screensaverType: 'random',
+			screensaverTimeout: SS_DELAY,
+		};
+
+		if (!localStorage.getItem('screensaverOn')) {
+			this.storeSettings();
+		} else {
+			this.loadSettings();
+		}
+
 		this.pages = {};
 
 		this.screensaverKeys = ['bounce', 'wave']; //'automata', 'weather'];
@@ -76,14 +88,39 @@ class FmuLcd {
 		this.ssTimeoutID = null;
 		this.ss = null;
 
-		if (SS_ON) {
+		if (this.storedSettings.screensaverOn) {
 			this.turnOnScreensaverTimer();
+		}
+	}
+
+	loadSettings() {
+		this.storedSettings = {
+			screensaverOn: localStorage.getItem('screensaverOn'),
+			screensaverType: localStorage.getItem('screensaverType'),
+			screensaverTimeout: localStorage.getItem('screensaverTimeout'),
+		};
+	}
+
+	storeSettings() {
+		localStorage.setItem('screensaverOn', this.storedSettings.screensaverOn);
+		localStorage.setItem('screensaverType', this.storedSettings.screensaverType);
+		localStorage.setItem('screensaverTimeout', this.storedSettings.screensaverTimeout);
+	}
+
+	updateSetting(key, val) {
+		this.storedSettings[key] = val;
+		localStorage.setItem(key, val);
+
+		if (key == 'screensaverTimeout') {
+			if (this.ssTimerOn) {
+				this.activityCheck();
+			}
 		}
 	}
 
 	turnOnScreensaverTimer() {
 		this.ssTimerOn = true;
-		this.ssTimeoutID = window.setTimeout(this.screensaverFire.bind(this), SS_DELAY);
+		this.ssTimeoutID = window.setTimeout(this.screensaverFire.bind(this), this.storedSettings.screensaverTimeout);
 		window.addEventListener('click', this.ssActivityListener);
 	}
 
@@ -102,7 +139,7 @@ class FmuLcd {
 	activityCheck() {
 		if (this.ssTimeoutID) {
 			window.clearTimeout(this.ssTimeoutID);
-			this.ssTimeoutID = window.setTimeout(this.screensaverFire.bind(this), SS_DELAY);
+			this.ssTimeoutID = window.setTimeout(this.screensaverFire.bind(this), this.storedSettings.screensaverTimeout);
 		}
 	}
 
@@ -112,9 +149,13 @@ class FmuLcd {
 		if (!this.ss) {
 			console.log('app dom', this.dom);
 
-			let ss;
+			let ss, ssKey;
 
-			const ssKey = this.screensaverKeys[Math.floor(Math.random() * this.screensaverKeys.length)];
+			if (this.storedSettings.screensaverType == 'random') {
+				ssKey = this.screensaverKeys[Math.floor(Math.random() * this.screensaverKeys.length)];
+			} else {
+				ssKey = this.storedSettings.screensaverType;
+			}
 
 			if (!this.screensavers[ssKey].instance) {
 				ss = new this.screensavers[ssKey].class(this);
@@ -200,7 +241,7 @@ class FmuLcd {
 						page = new LibraryPage(pageEl);
 						break;
 					case 'settings':
-						page = new SettingsPage(pageEl);
+						page = new SettingsPage(pageEl, this);
 						break;
 					case 'radio':
 						page = new RadioPage(pageEl);

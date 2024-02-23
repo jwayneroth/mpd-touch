@@ -80,6 +80,16 @@ var FmuLcd = /*#__PURE__*/function () {
       main_nav: el.querySelector('#main-nav'),
       nav_links: el.querySelectorAll('#main-nav a:not([data-bs-toggle="modal"])')
     };
+    this.storedSettings = {
+      screensaverOn: true,
+      screensaverType: 'random',
+      screensaverTimeout: SS_DELAY
+    };
+    if (!localStorage.getItem('screensaverOn')) {
+      this.storeSettings();
+    } else {
+      this.loadSettings();
+    }
     this.pages = {};
     this.screensaverKeys = ['bounce', 'wave']; //'automata', 'weather'];
     this.screensavers = {
@@ -110,15 +120,42 @@ var FmuLcd = /*#__PURE__*/function () {
     this.ssTimerOn = false;
     this.ssTimeoutID = null;
     this.ss = null;
-    if (SS_ON) {
+    if (this.storedSettings.screensaverOn) {
       this.turnOnScreensaverTimer();
     }
   }
   _createClass(FmuLcd, [{
+    key: "loadSettings",
+    value: function loadSettings() {
+      this.storedSettings = {
+        screensaverOn: localStorage.getItem('screensaverOn'),
+        screensaverType: localStorage.getItem('screensaverType'),
+        screensaverTimeout: localStorage.getItem('screensaverTimeout')
+      };
+    }
+  }, {
+    key: "storeSettings",
+    value: function storeSettings() {
+      localStorage.setItem('screensaverOn', this.storedSettings.screensaverOn);
+      localStorage.setItem('screensaverType', this.storedSettings.screensaverType);
+      localStorage.setItem('screensaverTimeout', this.storedSettings.screensaverTimeout);
+    }
+  }, {
+    key: "updateSetting",
+    value: function updateSetting(key, val) {
+      this.storedSettings[key] = val;
+      localStorage.setItem(key, val);
+      if (key == 'screensaverTimeout') {
+        if (this.ssTimerOn) {
+          this.activityCheck();
+        }
+      }
+    }
+  }, {
     key: "turnOnScreensaverTimer",
     value: function turnOnScreensaverTimer() {
       this.ssTimerOn = true;
-      this.ssTimeoutID = window.setTimeout(this.screensaverFire.bind(this), SS_DELAY);
+      this.ssTimeoutID = window.setTimeout(this.screensaverFire.bind(this), this.storedSettings.screensaverTimeout);
       window.addEventListener('click', this.ssActivityListener);
     }
   }, {
@@ -141,7 +178,7 @@ var FmuLcd = /*#__PURE__*/function () {
     value: function activityCheck() {
       if (this.ssTimeoutID) {
         window.clearTimeout(this.ssTimeoutID);
-        this.ssTimeoutID = window.setTimeout(this.screensaverFire.bind(this), SS_DELAY);
+        this.ssTimeoutID = window.setTimeout(this.screensaverFire.bind(this), this.storedSettings.screensaverTimeout);
       }
     }
   }, {
@@ -150,8 +187,12 @@ var FmuLcd = /*#__PURE__*/function () {
       console.log('addScreensaver');
       if (!this.ss) {
         console.log('app dom', this.dom);
-        var ss;
-        var ssKey = this.screensaverKeys[Math.floor(Math.random() * this.screensaverKeys.length)];
+        var ss, ssKey;
+        if (this.storedSettings.screensaverType == 'random') {
+          ssKey = this.screensaverKeys[Math.floor(Math.random() * this.screensaverKeys.length)];
+        } else {
+          ssKey = this.storedSettings.screensaverType;
+        }
         if (!this.screensavers[ssKey].instance) {
           ss = new this.screensavers[ssKey]["class"](this);
           this.screensavers[ssKey].instance = ss;
@@ -216,7 +257,7 @@ var FmuLcd = /*#__PURE__*/function () {
               page = new _library_page__WEBPACK_IMPORTED_MODULE_6__["default"](pageEl);
               break;
             case 'settings':
-              page = new _settings_page__WEBPACK_IMPORTED_MODULE_5__["default"](pageEl);
+              page = new _settings_page__WEBPACK_IMPORTED_MODULE_5__["default"](pageEl, this);
               break;
             case 'radio':
               page = new _radio_page__WEBPACK_IMPORTED_MODULE_7__["default"](pageEl);
@@ -774,12 +815,14 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (/* binding */ Light)
 /* harmony export */ });
+/* harmony import */ var _point3d__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./point3d */ "./src/js/lib/point3d.js");
 function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, _toPropertyKey(descriptor.key), descriptor); } }
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
 function _toPropertyKey(arg) { var key = _toPrimitive(arg, "string"); return _typeof(key) === "symbol" ? key : String(key); }
 function _toPrimitive(input, hint) { if (_typeof(input) !== "object" || input === null) return input; var prim = input[Symbol.toPrimitive]; if (prim !== undefined) { var res = prim.call(input, hint || "default"); if (_typeof(res) !== "object") return res; throw new TypeError("@@toPrimitive must return a primitive value."); } return (hint === "string" ? String : Number)(input); }
+
 var Light = /*#__PURE__*/function () {
   function Light(x, y, z, brightness) {
     _classCallCheck(this, Light);
@@ -787,11 +830,37 @@ var Light = /*#__PURE__*/function () {
     this.y = y === undefined ? -100 : y;
     this.z = z === undefined ? -100 : z;
     this.brightness = brightness === undefined ? 1 : brightness;
+    this.color = "#ff0000";
+    this.lineWidth = 1;
+    this.alpha = 1;
+    var point = new _point3d__WEBPACK_IMPORTED_MODULE_0__["default"](x, y, z);
+    point.setVanishingPoint(400, 50);
+    point.setCenter(0, 0, 75);
+    point.rotateX(0);
+    point.rotateY(0);
+    point.rotateZ(0);
+    this.point = point;
   }
   _createClass(Light, [{
     key: "setBrightness",
     value: function setBrightness(b) {
       this.brightness = Math.min(Math.max(b, 0), 1);
+    }
+  }, {
+    key: "draw",
+    value: function draw(context) {
+      context.save();
+      // context.lineWidth = this.lineWidth;
+      context.fillStyle = this.color;
+      context.beginPath();
+      context.arc(this.point.getScreenX(), this.point.getScreenY(), 20, 0, 2 * Math.PI);
+      // context.moveTo(this.pointA.getScreenX(), this.pointA.getScreenY());
+      context.closePath();
+      context.fill();
+      // if (this.lineWidth > 0) {
+      // 	context.stroke();
+      // }
+      context.restore();
     }
   }]);
   return Light;
@@ -1203,13 +1272,6 @@ function _defineProperties(target, props) { for (var i = 0; i < props.length; i+
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
 function _toPropertyKey(arg) { var key = _toPrimitive(arg, "string"); return _typeof(key) === "symbol" ? key : String(key); }
 function _toPrimitive(input, hint) { if (_typeof(input) !== "object" || input === null) return input; var prim = input[Symbol.toPrimitive]; if (prim !== undefined) { var res = prim.call(input, hint || "default"); if (_typeof(res) !== "object") return res; throw new TypeError("@@toPrimitive must return a primitive value."); } return (hint === "string" ? String : Number)(input); }
-// import math
-// 	from random import randint
-// //import pyglet
-// from.point3d import Point3D
-// 	from .triangle import Triangle
-// 	from .light import Light
-
 
 
 
@@ -1219,11 +1281,8 @@ var randint = function randint(min, max) {
   max = Math.floor(max);
   return Math.floor(Math.random() * (max - min + 1)) + min;
 };
-var WAVE_COLOR = (0,_utils__WEBPACK_IMPORTED_MODULE_0__.RGBToHex)(randint(0, 255), randint(0, 255), randint(0, 255)); //RGBToHex(150, 200, 252);
-var BASE_COLOR = (0,_utils__WEBPACK_IMPORTED_MODULE_0__.RGBToHex)(randint(0, 255), randint(0, 255), randint(0, 255)); //RGBToHex(88, 99, 252);
-//BASE_HIGHLIGHT_COLOR = (50, 196, 232)
-//BG_COLOR = (50, 10, 41)
-
+var WAVE_COLOR = (0,_utils__WEBPACK_IMPORTED_MODULE_0__.RGBToHex)(randint(0, 255), randint(0, 255), randint(0, 255));
+var BASE_COLOR = (0,_utils__WEBPACK_IMPORTED_MODULE_0__.RGBToHex)(randint(0, 255), randint(0, 255), randint(0, 255));
 var WAVE_RES = 33; // odd number please
 
 var BASE_HEIGHT = 80;
@@ -1231,21 +1290,46 @@ var BASE_WIDTH = 550;
 var BASE_DEPTH = 150;
 var WAVE_HEIGHT_MIN = 2;
 var WAVE_HEIGHT_MAX = 85;
-var SIN_FREQ = 1;
-var SIN256_NUM_CELLS = 256;
-var SIN256_DATA = [-1, 3, 6, 9, 12, 15, 18, 21, 24, 28, 31, 34, 37, 40, 43, 46, 48, 51, 54, 57, 60, 63, 65, 68, 71, 73, 76, 78, 81, 83, 85, 88, 90, 92, 94, 96, 98, 100, 102, 104, 106, 108, 109, 111, 112, 114, 115, 117, 118, 119, 120, 121, 122, 123, 124, 124, 125, 126, 126, 127, 127, 127, 127, 127, 127, 127, 127, 127, 127, 127, 126, 126, 125, 124, 124, 123, 122, 121, 120, 119, 118, 117, 115, 114, 112, 111, 109, 108, 106, 104, 102, 100, 98, 96, 94, 92, 90, 88, 85, 83, 81, 78, 76, 73, 71, 68, 65, 63, 60, 57, 54, 51, 48, 46, 43, 40, 37, 34, 31, 28, 24, 21, 18, 15, 12, 9, 6, 3, 0, -4, -7, -10, -13, -16, -19, -22, -25, -29, -32, -35, -38, -41, -44, -47, -49, -52, -55, -58, -61, -64, -66, -69, -72, -74, -77, -79, -82, -84, -86, -89, -91, -93, -95, -97, -99, -101, -103, -105, -107, -109, -110, -112, -113, -115, -116, -118, -119, -120, -121, -122, -123, -124, -125, -125, -126, -127, -127, -128, -128, -128, -128, -128, -128, -128, -128, -128, -128, -128, -127, -127, -126, -125, -125, -124, -123, -122, -121, -120, -119, -118, -116, -115, -113, -112, -110, -109, -107, -105, -103, -101, -99, -97, -95, -93, -91, -89, -86, -84, -82, -79, -77, -74, -72, -69, -66, -64, -61, -58, -55, -52, -49, -47, -44, -41, -38, -35, -32, -29, -25, -22, -19, -16, -13, -10, -7, -4];
-//const SAW256_DATA = [-128, -127, -126, -125, -124, -123, -122, -121, -120, -119, -118, -117, -116, -115, -114, -113, -112, -111, -110, -109, -108, -107, -106, -105, -104, -103, -102, -101, -100, -99, -98, -97, -96, -95, -94, -93, -92, -91, -90, -89, -88, -87, -86, -85, -84, -83, -82, -81, -80, -79, -78, -77, -76, -75, -74, -73, -72, -71, -70, -69, -68, -67, -66, -65, -64, -63, -62, -61, -60, -59, -58, -57, -56, -55, -54, -53, -52, -51, -50, -49, -48, -47, -46, -45, -44, -43, -42, -41, -40, -39, -38, -37, -36, -35, -34, -33, -32, -31, -30, -29, -28, -27, -26, -25, -24, -23, -22, -21, -20, -19, -18, -17, -16, -15, -14, -13, -12, -11, -10, -9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 53, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127];
-var WAVE_WIDTH_MIN = 55;
+
+// wave tables here: https://github.com/sensorium/Mozzi/tree/master/tables
+// const SIN256_DATA = [-1, 3, 6, 9, 12, 15, 18, 21, 24, 28, 31, 34, 37, 40, 43, 46, 48, 51, 54, 57, 60, 63, 65, 68, 71, 73, 76, 78, 81, 83, 85, 88, 90, 92, 94, 96, 98, 100, 102, 104, 106, 108, 109, 111, 112, 114, 115, 117, 118, 119, 120, 121, 122, 123, 124, 124, 125, 126, 126, 127, 127, 127, 127, 127, 127, 127, 127, 127, 127, 127, 126, 126, 125, 124, 124, 123, 122, 121, 120, 119, 118, 117, 115, 114, 112, 111, 109, 108, 106, 104, 102, 100, 98, 96, 94, 92, 90, 88, 85, 83, 81, 78, 76, 73, 71, 68, 65, 63, 60, 57, 54, 51, 48, 46, 43, 40, 37, 34, 31, 28, 24, 21, 18, 15, 12, 9, 6, 3, 0, -4, -7, -10, -13, -16, -19, -22, -25, -29, -32, -35, -38, -41, -44, -47, -49, -52, -55, -58, -61, -64, -66, -69, -72, -74, -77, -79, -82, -84, -86, -89, -91, -93, -95, -97, -99, -101, -103, -105, -107, -109, -110, -112, -113, -115, -116, -118, -119, -120, -121, -122, -123, -124, -125, -125, -126, -127, -127, -128, -128, -128, -128, -128, -128, -128, -128, -128, -128, -128, -127, -127, -126, -125, -125, -124, -123, -122, -121, -120, -119, -118, -116, -115, -113, -112, -110, -109, -107, -105, -103, -101, -99, -97, -95, -93, -91, -89, -86, -84, -82, -79, -77, -74, -72, -69, -66, -64, -61, -58, -55, -52, -49, -47, -44, -41, -38, -35, -32, -29, -25, -22, -19, -16, -13, -10, -7, -4];
+// const SAW256_DATA = [-128, -127, -126, -125, -124, -123, -122, -121, -120, -119, -118, -117, -116, -115, -114, -113, -112, -111, -110, -109, -108, -107, -106, -105, -104, -103, -102, -101, -100, -99, -98, -97, -96, -95, -94, -93, -92, -91, -90, -89, -88, -87, -86, -85, -84, -83, -82, -81, -80, -79, -78, -77, -76, -75, -74, -73, -72, -71, -70, -69, -68, -67, -66, -65, -64, -63, -62, -61, -60, -59, -58, -57, -56, -55, -54, -53, -52, -51, -50, -49, -48, -47, -46, -45, -44, -43, -42, -41, -40, -39, -38, -37, -36, -35, -34, -33, -32, -31, -30, -29, -28, -27, -26, -25, -24, -23, -22, -21, -20, -19, -18, -17, -16, -15, -14, -13, -12, -11, -10, -9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 53, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127];
+
+// const WAVE_WIDTH_MIN = 55;
 var WAVE_WIDTH_MAX = 105;
-var WIRE_FRAME = true;
-var sinCount = Math.ceil(SIN256_NUM_CELLS - SIN256_NUM_CELLS / 4, 10);
+
+// const WIRE_FRAME = true;
+
+var sinAscDesc = 1;
+var sinVal;
+var sinValLast;
+var sinCount;
 var BASE_TOP = 135;
 var BASE_BOTTOM = BASE_TOP + BASE_HEIGHT;
 var BASE_LEFT = 0 - BASE_WIDTH / 2;
 var BASE_RIGHT = BASE_WIDTH / 2;
 var BASE_FRONT = -50 - BASE_DEPTH / 2;
 var BASE_BACK = BASE_DEPTH / 2;
-var COLOR_CHANGE_INTERVAL_FRAMES = 1000; //3600;
+var BASE_MIDDLE = BASE_WIDTH / 2 - WAVE_WIDTH_MAX / 2;
+var sineFrequency = function sineFrequency() {
+  return .03 + Math.random() * .1;
+};
+var triFrequency = function triFrequency() {
+  return .01 + Math.random() * .04;
+};
+var WAVE_PATTERNS = [{
+  type: 'sine',
+  initialPlot: 2,
+  frequencyFunction: sineFrequency,
+  frequency: sineFrequency(),
+  interval: 21
+}, {
+  type: 'triangle',
+  initialPlot: 3,
+  frequencyFunction: triFrequency,
+  frequency: triFrequency(),
+  interval: 9
+}];
 var Wave = /*#__PURE__*/function () {
   function Wave(window, batch) {
     _classCallCheck(this, Wave);
@@ -1259,7 +1343,8 @@ var Wave = /*#__PURE__*/function () {
     self.face_triangles = [];
     self.fl = 500;
     self.vpX = 400;
-    self.vpY = 100;
+    self.vpY = 50; //100;
+
     self.view_angle_x = 0;
     self.view_angle_y = 0; // - Math.pi / 8
     self.view_angle_z = 0;
@@ -1270,33 +1355,12 @@ var Wave = /*#__PURE__*/function () {
     self.wave_vx = null;
     self.cos_y = Math.cos(self.view_angle_y);
     self.sin_y = Math.sin(self.view_angle_y);
-    self.base_left_slope = null;
-    self.base_left_intercept = null;
-    self.base_back_slope = null;
-    self.base_back_intercept = null;
-    self.light = new _light__WEBPACK_IMPORTED_MODULE_1__["default"](-20, -130, -60, 1);
-    self.frame_count = 0;
+    self.light = new _light__WEBPACK_IMPORTED_MODULE_1__["default"](BASE_RIGHT + 100, BASE_TOP - 25, 0, 1);
+    self.intervals = 0;
+    self.wave_pattern_idx = randint(0, WAVE_PATTERNS.length - 1);
+    sinCount = WAVE_PATTERNS[this.wave_pattern_idx].initialPlot;
     self.initBase();
-    var baseOrigin = {
-      x: self.base_points[0].getScreenX(),
-      y: self.base_points[0].getScreenY()
-    };
-    self.bgRect = {
-      x: baseOrigin.x,
-      y: baseOrigin.y,
-      width: self.base_points[1].getScreenX() - baseOrigin.x,
-      height: baseOrigin.y
-    };
-    self.setWaveHeightAndX(SIN256_DATA[sinCount]);
     self.initWave();
-    self.renderBase();
-    self.computeWave();
-
-    // console.log(self.base_points);
-    // console.log(self.base_triangles);
-    // console.log(self.wave_points);
-
-    self.renderWave();
   }
 
   /**
@@ -1306,25 +1370,12 @@ var Wave = /*#__PURE__*/function () {
     key: "loopDisplay",
     value: function loopDisplay() {
       var self = this;
+      self.incrementCounter();
+      self.computeWave();
+      self.renderBase();
+      self.renderWave();
 
-      // self.vpX++;
-      // self.vpY++;
-
-      if (self.computeWave()) {
-        // console.log('loopDisplay::computed');
-
-        self.frame_count = self.frame_count + 1;
-        if (self.frame_count >= COLOR_CHANGE_INTERVAL_FRAMES) {
-          self.frame_count = 0;
-          self.doColorChange();
-        }
-        //tft.fillScreen(BG_COLOR)
-        //checkTestUI()
-
-        self.eraseWave();
-        self.renderBase();
-        self.renderWave();
-      }
+      //self.light.draw(self.window);
     }
 
     /**
@@ -1356,11 +1407,6 @@ var Wave = /*#__PURE__*/function () {
         self.base_triangles[3] = new _triangle_light__WEBPACK_IMPORTED_MODULE_2__["default"](self.base_points[5], self.base_points[1], self.base_points[0], WAVE_COLOR, self.light);
         self.base_triangles[4] = new _triangle_light__WEBPACK_IMPORTED_MODULE_2__["default"](self.base_points[1], self.base_points[5], self.base_points[2], BASE_COLOR, self.light);
         self.base_triangles[5] = new _triangle_light__WEBPACK_IMPORTED_MODULE_2__["default"](self.base_points[5], self.base_points[6], self.base_points[2], BASE_COLOR, self.light);
-
-        //self.base_left_slope = (self.base_points[0].screenY - self.base_points[4].screenY) / (self.base_points[0].screenX - self.base_points[4].screenX) //(base_lines[13] - base_lines[1]) / (base_lines[12] - base_lines[0])
-        //self.base_left_intercept = self.base_left_slope * self.base_points[0].screenX - self.base_points[0].screenY //(base_left_slope * base_lines[0]) + base_lines[1]
-        //self.base_back_slope = (self.base_points[5].screenY - self.base_points[4].screenY) / (self.base_points[5].screenX - self.base_points[4].screenX)
-        //self.base_back_intercept = self.base_back_slope * self.base_points[5].screenX - self.base_points[5].screenY
       }
     }
 
@@ -1400,10 +1446,6 @@ var Wave = /*#__PURE__*/function () {
       self.wave_points[1].y = BASE_BOTTOM;
       self.wave_points[1].z = BASE_BACK;
       self.setWaveEdge(self.wave_vx);
-
-      // base top left of wave
-      //self.wave_points.push();
-
       for (i = 0; i < self.wave_points.length; i++) {
         point = self.wave_points[i];
         point.setVanishingPoint(self.vpX, self.vpY);
@@ -1444,15 +1486,14 @@ var Wave = /*#__PURE__*/function () {
     key: "computeWave",
     value: function computeWave() {
       var self = this;
-      var sinVal = self.incrementCounter();
-      self.setWaveHeightAndX(sinVal);
+      self.setWaveHeightAndX();
       self.wave_points[0].x = self.wave_vx;
       self.wave_points[0].y = BASE_BOTTOM - 3;
       self.wave_points[0].z = BASE_FRONT;
       self.wave_points[1].x = self.wave_vx;
       self.wave_points[1].y = BASE_BOTTOM - 3;
       self.wave_points[1].z = BASE_BACK;
-      self.setWaveEdge(self.wave_vx);
+      self.setWaveEdge();
       var i, point;
       for (i = 0; i < self.wave_points.length; i++) {
         point = self.wave_points[i];
@@ -1471,71 +1512,139 @@ var Wave = /*#__PURE__*/function () {
       // 	point.rotateY(self.view_angle_y)
       // 	point.rotateZ(self.view_angle_z)
       // }
-
-      return 1;
     }
   }, {
     key: "incrementCounter",
     value: function incrementCounter() {
-      sinCount = sinCount + SIN_FREQ;
-      if (sinCount >= SIN256_NUM_CELLS) {
-        sinCount = 0;
+      var pattern = WAVE_PATTERNS[this.wave_pattern_idx];
+      var sv;
+      sinCount = sinCount + pattern.frequency;
+      if (sinCount >= pattern.interval) {
+        sinCount = pattern.initialPlot;
+        this.doColorChange();
+        this.checkChangeWaveType();
       }
-      return SIN256_DATA[sinCount];
+      if (pattern.type == 'triangle') {
+        // using wave table
+        // sv = Math.pow((Math.abs(SAW256_DATA[sinCount]) / 128), 3) * 128;
+
+        // calculating triangle wave 
+        // https://stackoverflow.com/questions/12245340/shaping-triangle-and-sawtooth-wave
+        sv = Math.abs(Math.pow(1 - Math.abs(sinCount % 4 - 2), 4)) * 128;
+      } else {
+        // using wave table
+        //sv = SIN256_DATA[sinCount];
+
+        // calculating sine wave 
+        sv = Math.sin(sinCount) * 128;
+      }
+      sinValLast = sinVal;
+      sinVal = sv;
+    }
+  }, {
+    key: "checkChangeWaveType",
+    value: function checkChangeWaveType() {
+      var pattern;
+      this.intervals++;
+      if (this.intervals < 3) return;
+      var rand = Math.random() < .5;
+      if (rand) {
+        this.intervals = 0;
+        this.wave_pattern_idx++;
+        if (this.wave_pattern_idx >= WAVE_PATTERNS.length) {
+          this.wave_pattern_idx = 0;
+        }
+        pattern = WAVE_PATTERNS[this.wave_pattern_idx];
+        pattern.frequency = pattern.frequencyFunction();
+        sinCount = pattern.initialPlot;
+      }
     }
   }, {
     key: "setWaveHeightAndX",
-    value: function setWaveHeightAndX(sinVal) {
+    value: function setWaveHeightAndX() {
       var self = this;
-
-      // console.log(`setWaveHeightAndX sin count: ${sinCount} val: ${sinVal}`);
-
-      self.wave_height = rangeMap(sinVal, -127, 127, WAVE_HEIGHT_MAX, WAVE_HEIGHT_MIN);
-      self.wave_x = rangeMap(sinVal, 127, -127, BASE_RIGHT - self.wave_width, BASE_LEFT + 2);
+      if (WAVE_PATTERNS[this.wave_pattern_idx].type == 'triangle') {
+        self.wave_height = rangeMap(Math.abs(sinVal), 0, 128, WAVE_HEIGHT_MIN, WAVE_HEIGHT_MAX * .5);
+        if (sinVal > sinValLast) {
+          sinAscDesc = 1;
+        } else if (sinVal < sinValLast) {
+          sinAscDesc = -1;
+        }
+        var map = BASE_MIDDLE + Math.abs(sinVal) / 128 * (0 - BASE_MIDDLE);
+        self.wave_x = BASE_LEFT + BASE_MIDDLE - sinAscDesc * map;
+        self.wave_vx = self.wave_x + Math.ceil(self.wave_width / WAVE_RES * (WAVE_RES / 2));
+        return;
+      }
+      self.wave_height = rangeMap(sinVal, -128, 128, WAVE_HEIGHT_MAX, WAVE_HEIGHT_MIN);
+      self.wave_x = rangeMap(sinVal, 128, -128, BASE_RIGHT - self.wave_width, BASE_LEFT + 2);
       self.wave_vx = self.wave_x + Math.ceil(self.wave_width / WAVE_RES * (WAVE_RES / 2));
 
-      // console.log(`wave height: ${self.wave_height} x: ${self.wave_x} vx: ${self.wave_vx}`);
+      //console.log(`@${sinVal}`); // map: ${map} x: ${self.wave_x}`);
     }
   }, {
     key: "setWaveEdge",
-    value: function setWaveEdge(wave_vx) {
+    value: function setWaveEdge() {
       var self = this;
-      var i, inc, px, py, curve_pct;
-      for (i = 0; i < WAVE_RES; i++) {
-        if (i <= WAVE_RES / 2) {
-          inc = (wave_vx - self.wave_x) / ((WAVE_RES - 1) / 2);
-          px = Math.ceil(self.wave_x + inc * i);
-        } else {
-          inc = (self.wave_width - (wave_vx - self.wave_x)) / ((WAVE_RES - 1) / 2);
-          px = Math.ceil(wave_vx + inc * (i - (WAVE_RES - 1) / 2));
-        }
-        if (i >= 1 && i <= WAVE_RES - 2) {
-          curve_pct = (self.wave_x - px) / (self.wave_x - (self.wave_x + self.wave_width));
-          py = Math.ceil(BASE_TOP - Math.pow(4, self.curve_alpha) * Math.pow(curve_pct * (1.00 - curve_pct), self.curve_alpha) * self.wave_height);
-        } else {
-          py = BASE_TOP; //int(BASE_TOP - (Math.sin((i / (WAVE_RES - 1)) * Math.pi) * self.wave_height))
-        }
+      var wave_vx = self.wave_vx;
+      var i, inc, px, py, curve_pct, curve_alpha;
+      if (WAVE_PATTERNS[this.wave_pattern_idx].type == 'triangle') {
+        for (i = 0; i < WAVE_RES; i++) {
+          if (i <= WAVE_RES / 2) {
+            inc = (wave_vx - self.wave_x) / ((WAVE_RES - 1) / 2);
+            px = Math.ceil(self.wave_x + inc * i);
+          } else {
+            inc = (self.wave_width - (wave_vx - self.wave_x)) / ((WAVE_RES - 1) / 2) * rangeMap(wave_vx, BASE_LEFT, BASE_LEFT + BASE_WIDTH, 1, .3);
+            px = Math.ceil(wave_vx + inc * (i - (WAVE_RES - 1) / 2));
+          }
+          if (i >= 1 && i <= WAVE_RES - 2) {
+            if (i <= WAVE_RES / 2) {
+              curve_alpha = self.curve_alpha;
+              curve_pct = (self.wave_x - px) / (self.wave_x - (self.wave_x + self.wave_width));
+              py = Math.ceil(BASE_TOP - Math.pow(4, curve_alpha) * Math.pow(curve_pct * (1.00 - curve_pct), curve_alpha) * self.wave_height);
+            } else {
+              curve_alpha = rangeMap(wave_vx, BASE_LEFT, BASE_LEFT + BASE_WIDTH, 0, 10);
+              curve_pct = i / (WAVE_RES - 2);
+              py = Math.ceil(BASE_TOP - Math.pow(4, curve_alpha) * Math.pow(curve_pct * (1.00 - curve_pct), curve_alpha) * self.wave_height);
+            }
+          } else {
+            py = BASE_TOP;
+          }
 
-        // front edge points
-        self.wave_points[2 + i].x = px;
-        self.wave_points[2 + i].y = py;
-        self.wave_points[2 + i].z = BASE_FRONT;
-        //back edge points
-        self.wave_points[2 + WAVE_RES + i].x = px;
-        self.wave_points[2 + WAVE_RES + i].y = py;
-        self.wave_points[2 + WAVE_RES + i].z = BASE_BACK;
+          // front edge points
+          self.wave_points[2 + i].x = px;
+          self.wave_points[2 + i].y = py;
+          self.wave_points[2 + i].z = BASE_FRONT;
+          //back edge points
+          self.wave_points[2 + WAVE_RES + i].x = px;
+          self.wave_points[2 + WAVE_RES + i].y = py;
+          self.wave_points[2 + WAVE_RES + i].z = BASE_BACK;
+        }
+      } else {
+        for (i = 0; i < WAVE_RES; i++) {
+          if (i <= WAVE_RES / 2) {
+            inc = (wave_vx - self.wave_x) / ((WAVE_RES - 1) / 2);
+            px = Math.ceil(self.wave_x + inc * i);
+          } else {
+            inc = (self.wave_width - (wave_vx - self.wave_x)) / ((WAVE_RES - 1) / 2);
+            px = Math.ceil(wave_vx + inc * (i - (WAVE_RES - 1) / 2));
+          }
+          if (i >= 1 && i <= WAVE_RES - 2) {
+            curve_pct = (self.wave_x - px) / (self.wave_x - (self.wave_x + self.wave_width));
+            py = Math.ceil(BASE_TOP - Math.pow(4, self.curve_alpha) * Math.pow(curve_pct * (1.00 - curve_pct), self.curve_alpha) * self.wave_height);
+          } else {
+            py = BASE_TOP; //int(BASE_TOP - (Math.sin((i / (WAVE_RES - 1)) * Math.pi) * self.wave_height))
+          }
+
+          // front edge points
+          self.wave_points[2 + i].x = px;
+          self.wave_points[2 + i].y = py;
+          self.wave_points[2 + i].z = BASE_FRONT;
+          //back edge points
+          self.wave_points[2 + WAVE_RES + i].x = px;
+          self.wave_points[2 + WAVE_RES + i].y = py;
+          self.wave_points[2 + WAVE_RES + i].z = BASE_BACK;
+        }
       }
-    }
-  }, {
-    key: "eraseWave",
-    value: function eraseWave() {
-      var self = this;
-
-      // for (let tri in self.wave_triangles) {
-      // 	self.window.fill(0, tri.render)
-      // }
-
-      //self.window.clearRect(self.bgRect.x, 0, self.bgRect.width, self.bgRect.height);
     }
 
     /**
@@ -1652,6 +1761,9 @@ var populateWaveColors = function populateWaveColors(wave_color) {
 
     wave_colors[i] = wc;
   }
+};
+var clamp = function clamp(num, min, max) {
+  return Math.min(Math.max(num, min), max);
 };
 var rangeMap = function rangeMap(val, min1, max1, min2, max2) {
   var range1 = max1 - min1;
@@ -2316,26 +2428,43 @@ function _toPrimitive(input, hint) { if (_typeof(input) !== "object" || input ==
  * Settings Page
  */
 var SettingsPage = /*#__PURE__*/function () {
-  function SettingsPage(el) {
+  function SettingsPage(el, app) {
     _classCallCheck(this, SettingsPage);
     console.log('SettingsPage::init');
+    this.app = app;
     this.onEnter(el);
   }
   _createClass(SettingsPage, [{
     key: "onEnter",
     value: function onEnter(el) {
+      var _this = this;
       this.el = el;
       var ssSettings = document.createElement('div');
       ssSettings.setAttribute('id', 'settings__web');
-      ssSettings.innerHTML = "\n\t\t\t<h3>Screensaver</h3>\n\t\t\t<div>\n\t\t\t\t<input type=\"radio\" id=\"ss_on\" name=\"ss_on_off\" value=\"on\">\n\t\t\t\t<label for=\"ss_on\">On</label><br>\n\t\t\t\t<input type=\"radio\" id=\"ss_off\" name=\"ss_on_off\" value=\"off\">\n\t\t\t\t<label for=\"ss_off\">Off</label>\n\t\t\t</div>\n\t\t\t<label for=\"ss_type\">Type: </label>\n\t\t\t<select name=\"ss_type\" id=\"ss_type\">\n\t\t\t\t<option value=\"random\">Random</option>\n\t\t\t\t<option value=\"bouncer\">Bouncer</option>\n\t\t\t\t<option value=\"weather\">Weather</option>\n\t\t\t</select>\n\t\t";
-
-      //this.el.appendChild(ssSettings);
-
+      ssSettings.innerHTML = "\n\t\t\t<div>\n\t\t\t\t<h3>Screensaver</h3>\n\t\t\t\t<div>\n\t\t\t\t\t<input type=\"radio\" id=\"ss_random\" name=\"ss_type\" value=\"random\">\n\t\t\t\t\t<label for=\"ss_random\">Random</label><br>\n\t\t\t\t</div>\n\t\t\t\t<div>\n\t\t\t\t\t<input type=\"radio\" id=\"ss_bounce\" name=\"ss_type\" value=\"bounce\">\n\t\t\t\t\t<label for=\"ss_bounce\">Bounce</label>\n\t\t\t\t</div>\n\t\t\t\t<div>\n\t\t\t\t\t<input type=\"radio\" id=\"ss_wave\" name=\"ss_type\" value=\"wave\">\n\t\t\t\t\t<label for=\"ss_wave\">Wave</label>\n\t\t\t\t</div>\n\t\t\t\t<div>\n\t\t\t\t\t<label for=\"\"ss_timeout>Timeout (seconds)</label>\n\t\t\t\t\t<input type=\"number\" id=\"ss_timeout\" name=\"ss_timeout\" value=\"".concat(this.app.storedSettings.screensaverTimeout / 1000, "\" min=\"\">\n\t\t\t\t</div>\n\t\t\t</div>\n\t\t");
+      this.el.appendChild(ssSettings);
+      this.el.querySelector('#ss_' + this.app.storedSettings.screensaverType).setAttribute('checked', true);
+      this.el.querySelectorAll('input[name="ss_type"]').forEach(function (radio) {
+        return radio.addEventListener('change', _this.typeRadioChange.bind(_this));
+      });
+      this.el.querySelector('#ss_timeout').addEventListener('change', this.timeoutInputChange.bind(this));
       var links = this.el.querySelectorAll('a');
       var i;
       for (i = 0; i < links.length; i++) {
         links[i].addEventListener('click', this.anchorClick.bind(this));
       }
+    }
+  }, {
+    key: "typeRadioChange",
+    value: function typeRadioChange(evt) {
+      console.log('onRadioChange', evt.target.value);
+      this.app.updateSetting('screensaverType', evt.target.value);
+    }
+  }, {
+    key: "timeoutInputChange",
+    value: function timeoutInputChange(evt) {
+      console.log('timeoutInputChange', evt.target.value);
+      this.app.updateSetting('screensaverTimeout', evt.target.value * 1000);
     }
   }, {
     key: "anchorClick",

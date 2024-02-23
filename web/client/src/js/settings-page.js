@@ -4,8 +4,10 @@ import { axios, API_URL } from './api';
  * Settings Page
  */
 export default class SettingsPage {
-	constructor(el) {
+	constructor(el, app) {
 		console.log('SettingsPage::init');
+
+		this.app = app;
 
 		this.onEnter(el);
 	}
@@ -18,28 +20,49 @@ export default class SettingsPage {
 
 		ssSettings.setAttribute('id', 'settings__web');
 		ssSettings.innerHTML = `
-			<h3>Screensaver</h3>
 			<div>
-				<input type="radio" id="ss_on" name="ss_on_off" value="on">
-				<label for="ss_on">On</label><br>
-				<input type="radio" id="ss_off" name="ss_on_off" value="off">
-				<label for="ss_off">Off</label>
+				<h3>Screensaver</h3>
+				<div>
+					<input type="radio" id="ss_random" name="ss_type" value="random">
+					<label for="ss_random">Random</label><br>
+				</div>
+				<div>
+					<input type="radio" id="ss_bounce" name="ss_type" value="bounce">
+					<label for="ss_bounce">Bounce</label>
+				</div>
+				<div>
+					<input type="radio" id="ss_wave" name="ss_type" value="wave">
+					<label for="ss_wave">Wave</label>
+				</div>
+				<div>
+					<label for=""ss_timeout>Timeout (seconds)</label>
+					<input type="number" id="ss_timeout" name="ss_timeout" value="${this.app.storedSettings.screensaverTimeout / 1000}" min="">
+				</div>
 			</div>
-			<label for="ss_type">Type: </label>
-			<select name="ss_type" id="ss_type">
-				<option value="random">Random</option>
-				<option value="bouncer">Bouncer</option>
-				<option value="weather">Weather</option>
-			</select>
 		`;
 
-		//this.el.appendChild(ssSettings);
+		this.el.appendChild(ssSettings);
+
+		this.el.querySelector('#ss_' + this.app.storedSettings.screensaverType).setAttribute('checked', true);
+		this.el.querySelectorAll('input[name="ss_type"]').forEach(radio => radio.addEventListener('change', this.typeRadioChange.bind(this)));
+		this.el.querySelector('#ss_timeout').addEventListener('change', this.timeoutInputChange.bind(this));
 
 		const links = this.el.querySelectorAll('a');
+
 		let i;
 		for (i = 0; i < links.length; i++) {
 			links[i].addEventListener('click', this.anchorClick.bind(this));
 		}
+	}
+
+	typeRadioChange(evt) {
+		console.log('onRadioChange', evt.target.value);
+		this.app.updateSetting('screensaverType', evt.target.value);
+	}
+
+	timeoutInputChange(evt) {
+		console.log('timeoutInputChange', evt.target.value);
+		this.app.updateSetting('screensaverTimeout', evt.target.value * 1000);
 	}
 
 	anchorClick(evt) {
