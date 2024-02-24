@@ -227,12 +227,61 @@ body {
 // Settings
 //
 #settings {
+	display: flex;
+	flex-flow: row wrap;
+	justify-content: space-between;
+
+	@include responsiveQuery(m) {
+		padding-top: 40px;
+	}
+
+	> nav,
+	> div {
+		flex: 1 1 auto;
+	}
+
+	h2 {
+		display: flex;
+		flex-flow: row nowrap;
+		justify-content: center;
+		align-items: center;
+		font-size: pxToRem(22);
+		margin-bottom: .4em;
+		color: map-get($theme_colors, 'orange');
+
+		@include responsiveQuery(xs) {
+			font-size: pxToRem(18);
+		}
+
+		@include responsiveQuery(m) {
+			font-size: pxToRem(18);
+		}
+
+		span.icon {
+			@include glyphicon;
+			margin-right: .5em;
+			
+			&:before {
+				font-size: .9em;
+
+				
+			}
+		}
+
+		span:last-child {
+			align-self:center;
+		}
+	}
 
 	&__nav {
-		width: 100%;
+		//width: 100%;
 
 		li {
 			display: block;
+
+			&:first-child {
+				display: none;
+			}
 		}
 
 		a {
@@ -240,12 +289,24 @@ body {
 			flex-flow: row nowrap;
 			justify-content: flex-start;
 			align-items: center;
-			font-size: pxToRem(28);
+			font-size: pxToRem(22);
 			margin-bottom: .4em;
+
+			@include responsiveQuery(xs) {
+				font-size: pxToRem(18);
+			}
+
+			@include responsiveQuery(m) {
+				font-size: pxToRem(18);
+			}
 
 			span.icon {
 				@include glyphicon;
 				margin-right: .5em;
+				
+				&:before {
+					font-size: .9em;
+				}
 			}
 
 			&:hover span.icon::before {
@@ -259,19 +320,56 @@ body {
 	}
 
 	&__web {
-		position: absolute;
-		left: 50%;
-		top: 0;
-		width: 50%;
-		height: 100%;
 
 		> div {
-			margin: 1em 0;
+			margin-bottom: pxToRem(8);
+		}
+
+		h3 {
+			font-size: pxToRem(18);
+			color: map-get($theme_colors, 'slime');
+
+			@include responsiveQuery(m) {
+				font-size: pxToRem(18);
+			}
 		}
 
 		#ss_web_timeout {
+			border: 1px solid map-get($theme_colors, 'light_purple');
+			border-radius: pxToRem(3);
+			outline: 0;
+			//appearance: none;
 			background: transparent;
-			width: 5em;
+			width: pxToRem(100);
+			color: map-get($theme_colors, 'slime');
+			text-align: center;
+			margin-bottom: pxToRem(12);
+		}
+
+		.radio-control {
+			display: flex;
+			flex-flow: row nowrap;
+			justify-content: flex-start;
+			align-items: center;
+			
+			input[type="radio"] {
+				display: block;
+				margin-right: pxToRem(5);
+				appearance: none;
+				width: pxToRem(20);
+				height: pxToRem(20);
+				border: 1px solid map-get($theme_colors, 'slime');
+				border-radius: 50%;
+	
+				@include responsiveQuery(m) {
+					width: 16px;
+					height: 16px;
+				}
+
+				&:checked {
+					background: map-get($theme_colors, 'slime');
+				}
+			}
 		}
 	}
 }

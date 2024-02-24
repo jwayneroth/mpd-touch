@@ -11,6 +11,10 @@ from web.server.constants import *
 from .handlers import * 
 from .endpoints import * 
 
+class AssetsHandler(StaticFileHandler):
+	def set_default_headers(self, *args, **kwargs):
+		self.set_header("Cache-Control", "no-store")
+
 class Server(object):
 	""" Starts Tornado web server in a separate thread """
 	def __init__(self, app):
@@ -33,7 +37,7 @@ class Server(object):
 
 		app = Application(
 			[
-				(r"/assets/(.*)", StaticFileHandler, {"path": root + "/web/client/public"}),
+				(r"/assets/(.*)", AssetsHandler, {"path": root + "/web/client/public"}),
 				(r"/", IndexHandler, {"app": self.app}),
 				(r"/ws", WebSocketHandler, {"web_clients": self.web_clients}),
 				(r"/api/cover/?(.*)", CoverEndpoint, {"app": self.app}),

@@ -15487,19 +15487,880 @@ body {
   animation-play-state: paused;
 }
 
-#settings__nav {
-  width: 100%;
+#settings {
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: space-between;
+}
+@media only screen and (min-width: 800px) {
+  #settings {
+    padding-top: 40px;
+  }
+}
+#settings > nav,
+#settings > div {
+  flex: 1 1 auto;
+}
+#settings h2, #settings .h2 {
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: center;
+  align-items: center;
+  font-size: 1.375rem;
+  margin-bottom: 0.4em;
+  color: rgb(240, 140, 2);
+}
+@media only screen and (min-width: 480px) {
+  #settings h2, #settings .h2 {
+    font-size: 1.125rem;
+  }
+}
+@media only screen and (min-width: 800px) {
+  #settings h2, #settings .h2 {
+    font-size: 1.125rem;
+  }
+}
+#settings h2 span.icon, #settings .h2 span.icon {
+  display: flex;
+  flex-flow: column nowrap;
+  justify-content: center;
+  align-items: center;
+  text-decoration: none;
+  max-width: 50px;
+  height: 100%;
+  margin-right: 0.5em;
+}
+#settings h2 span.icon.asterisk::before, #settings .h2 span.icon.asterisk::before {
+  content: "*";
+}
+#settings h2 span.icon.plus::before, #settings .h2 span.icon.plus::before {
+  content: "+";
+}
+#settings h2 span.icon.euro::before, #settings .h2 span.icon.euro::before {
+  content: "€";
+}
+#settings h2 span.icon.eur::before, #settings .h2 span.icon.eur::before {
+  content: "€";
+}
+#settings h2 span.icon.minus::before, #settings .h2 span.icon.minus::before {
+  content: "−";
+}
+#settings h2 span.icon.cloud::before, #settings .h2 span.icon.cloud::before {
+  content: "☁";
+}
+#settings h2 span.icon.envelope::before, #settings .h2 span.icon.envelope::before {
+  content: "✉";
+}
+#settings h2 span.icon.pencil::before, #settings .h2 span.icon.pencil::before {
+  content: "✏";
+}
+#settings h2 span.icon.glass::before, #settings .h2 span.icon.glass::before {
+  content: "\e001";
+}
+#settings h2 span.icon.music::before, #settings .h2 span.icon.music::before {
+  content: "\e002";
+}
+#settings h2 span.icon.search::before, #settings .h2 span.icon.search::before {
+  content: "\e003";
+}
+#settings h2 span.icon.heart::before, #settings .h2 span.icon.heart::before {
+  content: "\e005";
+}
+#settings h2 span.icon.star::before, #settings .h2 span.icon.star::before {
+  content: "\e006";
+}
+#settings h2 span.icon.star-empty::before, #settings .h2 span.icon.star-empty::before {
+  content: "\e007";
+}
+#settings h2 span.icon.user::before, #settings .h2 span.icon.user::before {
+  content: "\e008";
+}
+#settings h2 span.icon.film::before, #settings .h2 span.icon.film::before {
+  content: "\e009";
+}
+#settings h2 span.icon.th-large::before, #settings .h2 span.icon.th-large::before {
+  content: "\e010";
+}
+#settings h2 span.icon.th::before, #settings .h2 span.icon.th::before {
+  content: "\e011";
+}
+#settings h2 span.icon.th-list::before, #settings .h2 span.icon.th-list::before {
+  content: "\e012";
+}
+#settings h2 span.icon.ok::before, #settings .h2 span.icon.ok::before {
+  content: "\e013";
+}
+#settings h2 span.icon.remove::before, #settings .h2 span.icon.remove::before {
+  content: "\e014";
+}
+#settings h2 span.icon.zoom-in::before, #settings .h2 span.icon.zoom-in::before {
+  content: "\e015";
+}
+#settings h2 span.icon.zoom-out::before, #settings .h2 span.icon.zoom-out::before {
+  content: "\e016";
+}
+#settings h2 span.icon.off::before, #settings .h2 span.icon.off::before {
+  content: "\e017";
+}
+#settings h2 span.icon.signal::before, #settings .h2 span.icon.signal::before {
+  content: "\e018";
+}
+#settings h2 span.icon.cog::before, #settings .h2 span.icon.cog::before {
+  content: "\e019";
+}
+#settings h2 span.icon.trash::before, #settings .h2 span.icon.trash::before {
+  content: "\e020";
+}
+#settings h2 span.icon.home::before, #settings .h2 span.icon.home::before {
+  content: "\e021";
+}
+#settings h2 span.icon.file::before, #settings .h2 span.icon.file::before {
+  content: "\e022";
+}
+#settings h2 span.icon.time::before, #settings .h2 span.icon.time::before {
+  content: "\e023";
+}
+#settings h2 span.icon.road::before, #settings .h2 span.icon.road::before {
+  content: "\e024";
+}
+#settings h2 span.icon.download-alt::before, #settings .h2 span.icon.download-alt::before {
+  content: "\e025";
+}
+#settings h2 span.icon.download::before, #settings .h2 span.icon.download::before {
+  content: "\e026";
+}
+#settings h2 span.icon.upload::before, #settings .h2 span.icon.upload::before {
+  content: "\e027";
+}
+#settings h2 span.icon.inbox::before, #settings .h2 span.icon.inbox::before {
+  content: "\e028";
+}
+#settings h2 span.icon.play-circle::before, #settings .h2 span.icon.play-circle::before {
+  content: "\e029";
+}
+#settings h2 span.icon.repeat::before, #settings .h2 span.icon.repeat::before {
+  content: "\e030";
+}
+#settings h2 span.icon.refresh::before, #settings .h2 span.icon.refresh::before {
+  content: "\e031";
+}
+#settings h2 span.icon.list-alt::before, #settings .h2 span.icon.list-alt::before {
+  content: "\e032";
+}
+#settings h2 span.icon.lock::before, #settings .h2 span.icon.lock::before {
+  content: "\e033";
+}
+#settings h2 span.icon.flag::before, #settings .h2 span.icon.flag::before {
+  content: "\e034";
+}
+#settings h2 span.icon.headphones::before, #settings .h2 span.icon.headphones::before {
+  content: "\e035";
+}
+#settings h2 span.icon.volume-off::before, #settings .h2 span.icon.volume-off::before {
+  content: "\e036";
+}
+#settings h2 span.icon.volume-down::before, #settings .h2 span.icon.volume-down::before {
+  content: "\e037";
+}
+#settings h2 span.icon.volume-up::before, #settings .h2 span.icon.volume-up::before {
+  content: "\e038";
+}
+#settings h2 span.icon.qrcode::before, #settings .h2 span.icon.qrcode::before {
+  content: "\e039";
+}
+#settings h2 span.icon.barcode::before, #settings .h2 span.icon.barcode::before {
+  content: "\e040";
+}
+#settings h2 span.icon.tag::before, #settings .h2 span.icon.tag::before {
+  content: "\e041";
+}
+#settings h2 span.icon.tags::before, #settings .h2 span.icon.tags::before {
+  content: "\e042";
+}
+#settings h2 span.icon.book::before, #settings .h2 span.icon.book::before {
+  content: "\e043";
+}
+#settings h2 span.icon.bookmark::before, #settings .h2 span.icon.bookmark::before {
+  content: "\e044";
+}
+#settings h2 span.icon.print::before, #settings .h2 span.icon.print::before {
+  content: "\e045";
+}
+#settings h2 span.icon.camera::before, #settings .h2 span.icon.camera::before {
+  content: "\e046";
+}
+#settings h2 span.icon.font::before, #settings .h2 span.icon.font::before {
+  content: "\e047";
+}
+#settings h2 span.icon.bold::before, #settings .h2 span.icon.bold::before {
+  content: "\e048";
+}
+#settings h2 span.icon.italic::before, #settings .h2 span.icon.italic::before {
+  content: "\e049";
+}
+#settings h2 span.icon.text-height::before, #settings .h2 span.icon.text-height::before {
+  content: "\e050";
+}
+#settings h2 span.icon.text-width::before, #settings .h2 span.icon.text-width::before {
+  content: "\e051";
+}
+#settings h2 span.icon.align-left::before, #settings .h2 span.icon.align-left::before {
+  content: "\e052";
+}
+#settings h2 span.icon.align-center::before, #settings .h2 span.icon.align-center::before {
+  content: "\e053";
+}
+#settings h2 span.icon.align-right::before, #settings .h2 span.icon.align-right::before {
+  content: "\e054";
+}
+#settings h2 span.icon.align-justify::before, #settings .h2 span.icon.align-justify::before {
+  content: "\e055";
+}
+#settings h2 span.icon.list::before, #settings .h2 span.icon.list::before {
+  content: "\e056";
+}
+#settings h2 span.icon.indent-left::before, #settings .h2 span.icon.indent-left::before {
+  content: "\e057";
+}
+#settings h2 span.icon.indent-right::before, #settings .h2 span.icon.indent-right::before {
+  content: "\e058";
+}
+#settings h2 span.icon.facetime-video::before, #settings .h2 span.icon.facetime-video::before {
+  content: "\e059";
+}
+#settings h2 span.icon.picture::before, #settings .h2 span.icon.picture::before {
+  content: "\e060";
+}
+#settings h2 span.icon.map-marker::before, #settings .h2 span.icon.map-marker::before {
+  content: "\e062";
+}
+#settings h2 span.icon.adjust::before, #settings .h2 span.icon.adjust::before {
+  content: "\e063";
+}
+#settings h2 span.icon.tint::before, #settings .h2 span.icon.tint::before {
+  content: "\e064";
+}
+#settings h2 span.icon.edit::before, #settings .h2 span.icon.edit::before {
+  content: "\e065";
+}
+#settings h2 span.icon.share::before, #settings .h2 span.icon.share::before {
+  content: "\e066";
+}
+#settings h2 span.icon.check::before, #settings .h2 span.icon.check::before {
+  content: "\e067";
+}
+#settings h2 span.icon.move::before, #settings .h2 span.icon.move::before {
+  content: "\e068";
+}
+#settings h2 span.icon.step-backward::before, #settings .h2 span.icon.step-backward::before {
+  content: "\e069";
+}
+#settings h2 span.icon.fast-backward::before, #settings .h2 span.icon.fast-backward::before {
+  content: "\e070";
+}
+#settings h2 span.icon.backward::before, #settings .h2 span.icon.backward::before {
+  content: "\e071";
+}
+#settings h2 span.icon.play::before, #settings .h2 span.icon.play::before {
+  content: "\e072";
+}
+#settings h2 span.icon.pause::before, #settings .h2 span.icon.pause::before {
+  content: "\e073";
+}
+#settings h2 span.icon.stop::before, #settings .h2 span.icon.stop::before {
+  content: "\e074";
+}
+#settings h2 span.icon.forward::before, #settings .h2 span.icon.forward::before {
+  content: "\e075";
+}
+#settings h2 span.icon.fast-forward::before, #settings .h2 span.icon.fast-forward::before {
+  content: "\e076";
+}
+#settings h2 span.icon.step-forward::before, #settings .h2 span.icon.step-forward::before {
+  content: "\e077";
+}
+#settings h2 span.icon.eject::before, #settings .h2 span.icon.eject::before {
+  content: "\e078";
+}
+#settings h2 span.icon.chevron-left::before, #settings .h2 span.icon.chevron-left::before {
+  content: "\e079";
+}
+#settings h2 span.icon.chevron-right::before, #settings .h2 span.icon.chevron-right::before {
+  content: "\e080";
+}
+#settings h2 span.icon.plus-sign::before, #settings .h2 span.icon.plus-sign::before {
+  content: "\e081";
+}
+#settings h2 span.icon.minus-sign::before, #settings .h2 span.icon.minus-sign::before {
+  content: "\e082";
+}
+#settings h2 span.icon.remove-sign::before, #settings .h2 span.icon.remove-sign::before {
+  content: "\e083";
+}
+#settings h2 span.icon.ok-sign::before, #settings .h2 span.icon.ok-sign::before {
+  content: "\e084";
+}
+#settings h2 span.icon.question-sign::before, #settings .h2 span.icon.question-sign::before {
+  content: "\e085";
+}
+#settings h2 span.icon.info-sign::before, #settings .h2 span.icon.info-sign::before {
+  content: "\e086";
+}
+#settings h2 span.icon.screenshot::before, #settings .h2 span.icon.screenshot::before {
+  content: "\e087";
+}
+#settings h2 span.icon.remove-circle::before, #settings .h2 span.icon.remove-circle::before {
+  content: "\e088";
+}
+#settings h2 span.icon.ok-circle::before, #settings .h2 span.icon.ok-circle::before {
+  content: "\e089";
+}
+#settings h2 span.icon.ban-circle::before, #settings .h2 span.icon.ban-circle::before {
+  content: "\e090";
+}
+#settings h2 span.icon.arrow-left::before, #settings .h2 span.icon.arrow-left::before {
+  content: "\e091";
+}
+#settings h2 span.icon.arrow-right::before, #settings .h2 span.icon.arrow-right::before {
+  content: "\e092";
+}
+#settings h2 span.icon.arrow-up::before, #settings .h2 span.icon.arrow-up::before {
+  content: "\e093";
+}
+#settings h2 span.icon.arrow-down::before, #settings .h2 span.icon.arrow-down::before {
+  content: "\e094";
+}
+#settings h2 span.icon.share-alt::before, #settings .h2 span.icon.share-alt::before {
+  content: "\e095";
+}
+#settings h2 span.icon.resize-full::before, #settings .h2 span.icon.resize-full::before {
+  content: "\e096";
+}
+#settings h2 span.icon.resize-small::before, #settings .h2 span.icon.resize-small::before {
+  content: "\e097";
+}
+#settings h2 span.icon.exclamation-sign::before, #settings .h2 span.icon.exclamation-sign::before {
+  content: "\e101";
+}
+#settings h2 span.icon.gift::before, #settings .h2 span.icon.gift::before {
+  content: "\e102";
+}
+#settings h2 span.icon.leaf::before, #settings .h2 span.icon.leaf::before {
+  content: "\e103";
+}
+#settings h2 span.icon.fire::before, #settings .h2 span.icon.fire::before {
+  content: "\e104";
+}
+#settings h2 span.icon.eye-open::before, #settings .h2 span.icon.eye-open::before {
+  content: "\e105";
+}
+#settings h2 span.icon.eye-close::before, #settings .h2 span.icon.eye-close::before {
+  content: "\e106";
+}
+#settings h2 span.icon.warning-sign::before, #settings .h2 span.icon.warning-sign::before {
+  content: "\e107";
+}
+#settings h2 span.icon.plane::before, #settings .h2 span.icon.plane::before {
+  content: "\e108";
+}
+#settings h2 span.icon.calendar::before, #settings .h2 span.icon.calendar::before {
+  content: "\e109";
+}
+#settings h2 span.icon.random::before, #settings .h2 span.icon.random::before {
+  content: "\e110";
+}
+#settings h2 span.icon.comment::before, #settings .h2 span.icon.comment::before {
+  content: "\e111";
+}
+#settings h2 span.icon.magnet::before, #settings .h2 span.icon.magnet::before {
+  content: "\e112";
+}
+#settings h2 span.icon.chevron-up::before, #settings .h2 span.icon.chevron-up::before {
+  content: "\e113";
+}
+#settings h2 span.icon.chevron-down::before, #settings .h2 span.icon.chevron-down::before {
+  content: "\e114";
+}
+#settings h2 span.icon.retweet::before, #settings .h2 span.icon.retweet::before {
+  content: "\e115";
+}
+#settings h2 span.icon.shopping-cart::before, #settings .h2 span.icon.shopping-cart::before {
+  content: "\e116";
+}
+#settings h2 span.icon.folder-close::before, #settings .h2 span.icon.folder-close::before {
+  content: "\e117";
+}
+#settings h2 span.icon.folder-open::before, #settings .h2 span.icon.folder-open::before {
+  content: "\e118";
+}
+#settings h2 span.icon.resize-vertical::before, #settings .h2 span.icon.resize-vertical::before {
+  content: "\e119";
+}
+#settings h2 span.icon.resize-horizontal::before, #settings .h2 span.icon.resize-horizontal::before {
+  content: "\e120";
+}
+#settings h2 span.icon.hdd::before, #settings .h2 span.icon.hdd::before {
+  content: "\e121";
+}
+#settings h2 span.icon.bullhorn::before, #settings .h2 span.icon.bullhorn::before {
+  content: "\e122";
+}
+#settings h2 span.icon.bell::before, #settings .h2 span.icon.bell::before {
+  content: "\e123";
+}
+#settings h2 span.icon.certificate::before, #settings .h2 span.icon.certificate::before {
+  content: "\e124";
+}
+#settings h2 span.icon.thumbs-up::before, #settings .h2 span.icon.thumbs-up::before {
+  content: "\e125";
+}
+#settings h2 span.icon.thumbs-down::before, #settings .h2 span.icon.thumbs-down::before {
+  content: "\e126";
+}
+#settings h2 span.icon.hand-right::before, #settings .h2 span.icon.hand-right::before {
+  content: "\e127";
+}
+#settings h2 span.icon.hand-left::before, #settings .h2 span.icon.hand-left::before {
+  content: "\e128";
+}
+#settings h2 span.icon.hand-up::before, #settings .h2 span.icon.hand-up::before {
+  content: "\e129";
+}
+#settings h2 span.icon.hand-down::before, #settings .h2 span.icon.hand-down::before {
+  content: "\e130";
+}
+#settings h2 span.icon.circle-arrow-right::before, #settings .h2 span.icon.circle-arrow-right::before {
+  content: "\e131";
+}
+#settings h2 span.icon.circle-arrow-left::before, #settings .h2 span.icon.circle-arrow-left::before {
+  content: "\e132";
+}
+#settings h2 span.icon.circle-arrow-up::before, #settings .h2 span.icon.circle-arrow-up::before {
+  content: "\e133";
+}
+#settings h2 span.icon.circle-arrow-down::before, #settings .h2 span.icon.circle-arrow-down::before {
+  content: "\e134";
+}
+#settings h2 span.icon.globe::before, #settings .h2 span.icon.globe::before {
+  content: "\e135";
+}
+#settings h2 span.icon.wrench::before, #settings .h2 span.icon.wrench::before {
+  content: "\e136";
+}
+#settings h2 span.icon.tasks::before, #settings .h2 span.icon.tasks::before {
+  content: "\e137";
+}
+#settings h2 span.icon.filter::before, #settings .h2 span.icon.filter::before {
+  content: "\e138";
+}
+#settings h2 span.icon.briefcase::before, #settings .h2 span.icon.briefcase::before {
+  content: "\e139";
+}
+#settings h2 span.icon.fullscreen::before, #settings .h2 span.icon.fullscreen::before {
+  content: "\e140";
+}
+#settings h2 span.icon.dashboard::before, #settings .h2 span.icon.dashboard::before {
+  content: "\e141";
+}
+#settings h2 span.icon.paperclip::before, #settings .h2 span.icon.paperclip::before {
+  content: "\e142";
+}
+#settings h2 span.icon.heart-empty::before, #settings .h2 span.icon.heart-empty::before {
+  content: "\e143";
+}
+#settings h2 span.icon.link::before, #settings .h2 span.icon.link::before {
+  content: "\e144";
+}
+#settings h2 span.icon.phone::before, #settings .h2 span.icon.phone::before {
+  content: "\e145";
+}
+#settings h2 span.icon.pushpin::before, #settings .h2 span.icon.pushpin::before {
+  content: "\e146";
+}
+#settings h2 span.icon.usd::before, #settings .h2 span.icon.usd::before {
+  content: "\e148";
+}
+#settings h2 span.icon.gbp::before, #settings .h2 span.icon.gbp::before {
+  content: "\e149";
+}
+#settings h2 span.icon.sort::before, #settings .h2 span.icon.sort::before {
+  content: "\e150";
+}
+#settings h2 span.icon.sort-by-alphabet::before, #settings .h2 span.icon.sort-by-alphabet::before {
+  content: "\e151";
+}
+#settings h2 span.icon.sort-by-alphabet-alt::before, #settings .h2 span.icon.sort-by-alphabet-alt::before {
+  content: "\e152";
+}
+#settings h2 span.icon.sort-by-order::before, #settings .h2 span.icon.sort-by-order::before {
+  content: "\e153";
+}
+#settings h2 span.icon.sort-by-order-alt::before, #settings .h2 span.icon.sort-by-order-alt::before {
+  content: "\e154";
+}
+#settings h2 span.icon.sort-by-attributes::before, #settings .h2 span.icon.sort-by-attributes::before {
+  content: "\e155";
+}
+#settings h2 span.icon.sort-by-attributes-alt::before, #settings .h2 span.icon.sort-by-attributes-alt::before {
+  content: "\e156";
+}
+#settings h2 span.icon.unchecked::before, #settings .h2 span.icon.unchecked::before {
+  content: "\e157";
+}
+#settings h2 span.icon.expand::before, #settings .h2 span.icon.expand::before {
+  content: "\e158";
+}
+#settings h2 span.icon.collapse-down::before, #settings .h2 span.icon.collapse-down::before {
+  content: "\e159";
+}
+#settings h2 span.icon.collapse-up::before, #settings .h2 span.icon.collapse-up::before {
+  content: "\e160";
+}
+#settings h2 span.icon.log-in::before, #settings .h2 span.icon.log-in::before {
+  content: "\e161";
+}
+#settings h2 span.icon.flash::before, #settings .h2 span.icon.flash::before {
+  content: "\e162";
+}
+#settings h2 span.icon.log-out::before, #settings .h2 span.icon.log-out::before {
+  content: "\e163";
+}
+#settings h2 span.icon.new-window::before, #settings .h2 span.icon.new-window::before {
+  content: "\e164";
+}
+#settings h2 span.icon.record::before, #settings .h2 span.icon.record::before {
+  content: "\e165";
+}
+#settings h2 span.icon.save::before, #settings .h2 span.icon.save::before {
+  content: "\e166";
+}
+#settings h2 span.icon.open::before, #settings .h2 span.icon.open::before {
+  content: "\e167";
+}
+#settings h2 span.icon.saved::before, #settings .h2 span.icon.saved::before {
+  content: "\e168";
+}
+#settings h2 span.icon.import::before, #settings .h2 span.icon.import::before {
+  content: "\e169";
+}
+#settings h2 span.icon.export::before, #settings .h2 span.icon.export::before {
+  content: "\e170";
+}
+#settings h2 span.icon.send::before, #settings .h2 span.icon.send::before {
+  content: "\e171";
+}
+#settings h2 span.icon.floppy-disk::before, #settings .h2 span.icon.floppy-disk::before {
+  content: "\e172";
+}
+#settings h2 span.icon.floppy-saved::before, #settings .h2 span.icon.floppy-saved::before {
+  content: "\e173";
+}
+#settings h2 span.icon.floppy-remove::before, #settings .h2 span.icon.floppy-remove::before {
+  content: "\e174";
+}
+#settings h2 span.icon.floppy-save::before, #settings .h2 span.icon.floppy-save::before {
+  content: "\e175";
+}
+#settings h2 span.icon.floppy-open::before, #settings .h2 span.icon.floppy-open::before {
+  content: "\e176";
+}
+#settings h2 span.icon.credit-card::before, #settings .h2 span.icon.credit-card::before {
+  content: "\e177";
+}
+#settings h2 span.icon.transfer::before, #settings .h2 span.icon.transfer::before {
+  content: "\e178";
+}
+#settings h2 span.icon.cutlery::before, #settings .h2 span.icon.cutlery::before {
+  content: "\e179";
+}
+#settings h2 span.icon.header::before, #settings .h2 span.icon.header::before {
+  content: "\e180";
+}
+#settings h2 span.icon.compressed::before, #settings .h2 span.icon.compressed::before {
+  content: "\e181";
+}
+#settings h2 span.icon.earphone::before, #settings .h2 span.icon.earphone::before {
+  content: "\e182";
+}
+#settings h2 span.icon.phone-alt::before, #settings .h2 span.icon.phone-alt::before {
+  content: "\e183";
+}
+#settings h2 span.icon.tower::before, #settings .h2 span.icon.tower::before {
+  content: "\e184";
+}
+#settings h2 span.icon.stats::before, #settings .h2 span.icon.stats::before {
+  content: "\e185";
+}
+#settings h2 span.icon.sd-video::before, #settings .h2 span.icon.sd-video::before {
+  content: "\e186";
+}
+#settings h2 span.icon.hd-video::before, #settings .h2 span.icon.hd-video::before {
+  content: "\e187";
+}
+#settings h2 span.icon.subtitles::before, #settings .h2 span.icon.subtitles::before {
+  content: "\e188";
+}
+#settings h2 span.icon.sound-stereo::before, #settings .h2 span.icon.sound-stereo::before {
+  content: "\e189";
+}
+#settings h2 span.icon.sound-dolby::before, #settings .h2 span.icon.sound-dolby::before {
+  content: "\e190";
+}
+#settings h2 span.icon.sound-5-1::before, #settings .h2 span.icon.sound-5-1::before {
+  content: "\e191";
+}
+#settings h2 span.icon.sound-6-1::before, #settings .h2 span.icon.sound-6-1::before {
+  content: "\e192";
+}
+#settings h2 span.icon.sound-7-1::before, #settings .h2 span.icon.sound-7-1::before {
+  content: "\e193";
+}
+#settings h2 span.icon.copyright-mark::before, #settings .h2 span.icon.copyright-mark::before {
+  content: "\e194";
+}
+#settings h2 span.icon.registration-mark::before, #settings .h2 span.icon.registration-mark::before {
+  content: "\e195";
+}
+#settings h2 span.icon.cloud-download::before, #settings .h2 span.icon.cloud-download::before {
+  content: "\e197";
+}
+#settings h2 span.icon.cloud-upload::before, #settings .h2 span.icon.cloud-upload::before {
+  content: "\e198";
+}
+#settings h2 span.icon.tree-conifer::before, #settings .h2 span.icon.tree-conifer::before {
+  content: "\e199";
+}
+#settings h2 span.icon.tree-deciduous::before, #settings .h2 span.icon.tree-deciduous::before {
+  content: "\e200";
+}
+#settings h2 span.icon.cd::before, #settings .h2 span.icon.cd::before {
+  content: "\e201";
+}
+#settings h2 span.icon.save-file::before, #settings .h2 span.icon.save-file::before {
+  content: "\e202";
+}
+#settings h2 span.icon.open-file::before, #settings .h2 span.icon.open-file::before {
+  content: "\e203";
+}
+#settings h2 span.icon.level-up::before, #settings .h2 span.icon.level-up::before {
+  content: "\e204";
+}
+#settings h2 span.icon.copy::before, #settings .h2 span.icon.copy::before {
+  content: "\e205";
+}
+#settings h2 span.icon.paste::before, #settings .h2 span.icon.paste::before {
+  content: "\e206";
+}
+#settings h2 span.icon.alert::before, #settings .h2 span.icon.alert::before {
+  content: "\e209";
+}
+#settings h2 span.icon.equalizer::before, #settings .h2 span.icon.equalizer::before {
+  content: "\e210";
+}
+#settings h2 span.icon.king::before, #settings .h2 span.icon.king::before {
+  content: "\e211";
+}
+#settings h2 span.icon.queen::before, #settings .h2 span.icon.queen::before {
+  content: "\e212";
+}
+#settings h2 span.icon.pawn::before, #settings .h2 span.icon.pawn::before {
+  content: "\e213";
+}
+#settings h2 span.icon.bishop::before, #settings .h2 span.icon.bishop::before {
+  content: "\e214";
+}
+#settings h2 span.icon.knight::before, #settings .h2 span.icon.knight::before {
+  content: "\e215";
+}
+#settings h2 span.icon.baby-formula::before, #settings .h2 span.icon.baby-formula::before {
+  content: "\e216";
+}
+#settings h2 span.icon.tent::before, #settings .h2 span.icon.tent::before {
+  content: "⛺";
+}
+#settings h2 span.icon.blackboard::before, #settings .h2 span.icon.blackboard::before {
+  content: "\e218";
+}
+#settings h2 span.icon.bed::before, #settings .h2 span.icon.bed::before {
+  content: "\e219";
+}
+#settings h2 span.icon.apple::before, #settings .h2 span.icon.apple::before {
+  content: "\f8ff";
+}
+#settings h2 span.icon.erase::before, #settings .h2 span.icon.erase::before {
+  content: "\e221";
+}
+#settings h2 span.icon.hourglass::before, #settings .h2 span.icon.hourglass::before {
+  content: "⌛";
+}
+#settings h2 span.icon.lamp::before, #settings .h2 span.icon.lamp::before {
+  content: "\e223";
+}
+#settings h2 span.icon.duplicate::before, #settings .h2 span.icon.duplicate::before {
+  content: "\e224";
+}
+#settings h2 span.icon.piggy-bank::before, #settings .h2 span.icon.piggy-bank::before {
+  content: "\e225";
+}
+#settings h2 span.icon.scissors::before, #settings .h2 span.icon.scissors::before {
+  content: "\e226";
+}
+#settings h2 span.icon.bitcoin::before, #settings .h2 span.icon.bitcoin::before {
+  content: "\e227";
+}
+#settings h2 span.icon.btc::before, #settings .h2 span.icon.btc::before {
+  content: "\e227";
+}
+#settings h2 span.icon.xbt::before, #settings .h2 span.icon.xbt::before {
+  content: "\e227";
+}
+#settings h2 span.icon.yen::before, #settings .h2 span.icon.yen::before {
+  content: "¥";
+}
+#settings h2 span.icon.jpy::before, #settings .h2 span.icon.jpy::before {
+  content: "¥";
+}
+#settings h2 span.icon.ruble::before, #settings .h2 span.icon.ruble::before {
+  content: "₽";
+}
+#settings h2 span.icon.rub::before, #settings .h2 span.icon.rub::before {
+  content: "₽";
+}
+#settings h2 span.icon.scale::before, #settings .h2 span.icon.scale::before {
+  content: "\e230";
+}
+#settings h2 span.icon.ice-lolly::before, #settings .h2 span.icon.ice-lolly::before {
+  content: "\e231";
+}
+#settings h2 span.icon.ice-lolly-tasted::before, #settings .h2 span.icon.ice-lolly-tasted::before {
+  content: "\e232";
+}
+#settings h2 span.icon.education::before, #settings .h2 span.icon.education::before {
+  content: "\e233";
+}
+#settings h2 span.icon.option-horizontal::before, #settings .h2 span.icon.option-horizontal::before {
+  content: "\e234";
+}
+#settings h2 span.icon.option-vertical::before, #settings .h2 span.icon.option-vertical::before {
+  content: "\e235";
+}
+#settings h2 span.icon.menu-hamburger::before, #settings .h2 span.icon.menu-hamburger::before {
+  content: "\e236";
+}
+#settings h2 span.icon.modal-window::before, #settings .h2 span.icon.modal-window::before {
+  content: "\e237";
+}
+#settings h2 span.icon.oil::before, #settings .h2 span.icon.oil::before {
+  content: "\e238";
+}
+#settings h2 span.icon.grain::before, #settings .h2 span.icon.grain::before {
+  content: "\e239";
+}
+#settings h2 span.icon.sunglasses::before, #settings .h2 span.icon.sunglasses::before {
+  content: "\e240";
+}
+#settings h2 span.icon.text-size::before, #settings .h2 span.icon.text-size::before {
+  content: "\e241";
+}
+#settings h2 span.icon.text-color::before, #settings .h2 span.icon.text-color::before {
+  content: "\e242";
+}
+#settings h2 span.icon.text-background::before, #settings .h2 span.icon.text-background::before {
+  content: "\e243";
+}
+#settings h2 span.icon.object-align-top::before, #settings .h2 span.icon.object-align-top::before {
+  content: "\e244";
+}
+#settings h2 span.icon.object-align-bottom::before, #settings .h2 span.icon.object-align-bottom::before {
+  content: "\e245";
+}
+#settings h2 span.icon.object-align-horizontal::before, #settings .h2 span.icon.object-align-horizontal::before {
+  content: "\e246";
+}
+#settings h2 span.icon.object-align-left::before, #settings .h2 span.icon.object-align-left::before {
+  content: "\e247";
+}
+#settings h2 span.icon.object-align-vertical::before, #settings .h2 span.icon.object-align-vertical::before {
+  content: "\e248";
+}
+#settings h2 span.icon.object-align-right::before, #settings .h2 span.icon.object-align-right::before {
+  content: "\e249";
+}
+#settings h2 span.icon.triangle-right::before, #settings .h2 span.icon.triangle-right::before {
+  content: "\e250";
+}
+#settings h2 span.icon.triangle-left::before, #settings .h2 span.icon.triangle-left::before {
+  content: "\e251";
+}
+#settings h2 span.icon.triangle-bottom::before, #settings .h2 span.icon.triangle-bottom::before {
+  content: "\e252";
+}
+#settings h2 span.icon.triangle-top::before, #settings .h2 span.icon.triangle-top::before {
+  content: "\e253";
+}
+#settings h2 span.icon.console::before, #settings .h2 span.icon.console::before {
+  content: "\e254";
+}
+#settings h2 span.icon.superscript::before, #settings .h2 span.icon.superscript::before {
+  content: "\e255";
+}
+#settings h2 span.icon.subscript::before, #settings .h2 span.icon.subscript::before {
+  content: "\e256";
+}
+#settings h2 span.icon.menu-left::before, #settings .h2 span.icon.menu-left::before {
+  content: "\e257";
+}
+#settings h2 span.icon.menu-right::before, #settings .h2 span.icon.menu-right::before {
+  content: "\e258";
+}
+#settings h2 span.icon.menu-down::before, #settings .h2 span.icon.menu-down::before {
+  content: "\e259";
+}
+#settings h2 span.icon.menu-up::before, #settings .h2 span.icon.menu-up::before {
+  content: "\e260";
+}
+#settings h2 span.icon::before, #settings .h2 span.icon::before {
+  display: block;
+  font-family: glyphicons;
+  font-size: clamp(16px, 8vw, 34px);
+  color: rgb(124, 100, 118);
+  content: "\e019";
+}
+#settings h2 span.icon:hover::before, #settings .h2 span.icon:hover::before {
+  color: rgb(240, 140, 2);
+}
+#settings h2 span.icon.active::before, #settings .h2 span.icon.active::before {
+  color: rgb(246, 248, 63);
+}
+#settings h2 span.icon:before, #settings .h2 span.icon:before {
+  font-size: 0.9em;
+}
+#settings h2 span:last-child, #settings .h2 span:last-child {
+  align-self: center;
 }
 #settings__nav li {
   display: block;
+}
+#settings__nav li:first-child {
+  display: none;
 }
 #settings__nav a {
   display: flex;
   flex-flow: row nowrap;
   justify-content: flex-start;
   align-items: center;
-  font-size: 1.75rem;
+  font-size: 1.375rem;
   margin-bottom: 0.4em;
+}
+@media only screen and (min-width: 480px) {
+  #settings__nav a {
+    font-size: 1.125rem;
+  }
+}
+@media only screen and (min-width: 800px) {
+  #settings__nav a {
+    font-size: 1.125rem;
+  }
 }
 #settings__nav a span.icon {
   display: flex;
@@ -16313,25 +17174,62 @@ body {
 #settings__nav a span.icon.active::before {
   color: rgb(246, 248, 63);
 }
+#settings__nav a span.icon:before {
+  font-size: 0.9em;
+}
 #settings__nav a:hover span.icon::before {
   color: rgb(240, 140, 2);
 }
 #settings__nav a.active cpan.icon::before {
   color: rgb(246, 248, 63);
 }
-#settings__web {
-  position: absolute;
-  left: 50%;
-  top: 0;
-  width: 50%;
-  height: 100%;
-}
 #settings__web > div {
-  margin: 1em 0;
+  margin-bottom: 0.5rem;
+}
+#settings__web h3, #settings__web .h3 {
+  font-size: 1.125rem;
+  color: rgb(139, 250, 73);
+}
+@media only screen and (min-width: 800px) {
+  #settings__web h3, #settings__web .h3 {
+    font-size: 1.125rem;
+  }
 }
 #settings__web #ss_web_timeout {
+  border: 1px solid rgb(124, 100, 118);
+  border-radius: 0.1875rem;
+  outline: 0;
   background: transparent;
-  width: 5em;
+  width: 6.25rem;
+  color: rgb(139, 250, 73);
+  text-align: center;
+  margin-bottom: 0.75rem;
+}
+#settings__web .radio-control {
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: flex-start;
+  align-items: center;
+}
+#settings__web .radio-control input[type=radio] {
+  display: block;
+  margin-right: 0.3125rem;
+  -webkit-appearance: none;
+     -moz-appearance: none;
+          appearance: none;
+  width: 1.25rem;
+  height: 1.25rem;
+  border: 1px solid rgb(139, 250, 73);
+  border-radius: 50%;
+}
+@media only screen and (min-width: 800px) {
+  #settings__web .radio-control input[type=radio] {
+    width: 16px;
+    height: 16px;
+  }
+}
+#settings__web .radio-control input[type=radio]:checked {
+  background: rgb(139, 250, 73);
 }
 
 #library__nav a.new-playlist,

@@ -7,6 +7,9 @@ class SettingsEndpoint(RequestHandler):
 	def initialize(self, app):
 		self.app = app
 
+	def set_default_headers(self, *args, **kwargs):
+		self.set_header("Cache-Control", "no-store")
+
 	def get(self, resource):
 		scene = self.app.scenes['Settings']
 		
