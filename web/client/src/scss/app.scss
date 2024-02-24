@@ -245,17 +245,9 @@ body {
 		flex-flow: row nowrap;
 		justify-content: center;
 		align-items: center;
-		font-size: pxToRem(22);
+		font-size: pxToRem(20);
 		margin-bottom: .4em;
 		color: map-get($theme_colors, 'orange');
-
-		@include responsiveQuery(xs) {
-			font-size: pxToRem(18);
-		}
-
-		@include responsiveQuery(m) {
-			font-size: pxToRem(18);
-		}
 
 		span.icon {
 			@include glyphicon;
@@ -289,16 +281,8 @@ body {
 			flex-flow: row nowrap;
 			justify-content: flex-start;
 			align-items: center;
-			font-size: pxToRem(22);
+			font-size: pxToRem(18);
 			margin-bottom: .4em;
-
-			@include responsiveQuery(xs) {
-				font-size: pxToRem(18);
-			}
-
-			@include responsiveQuery(m) {
-				font-size: pxToRem(18);
-			}
 
 			span.icon {
 				@include glyphicon;
@@ -319,28 +303,37 @@ body {
 		}
 	}
 
-	&__web {
-
-		> div {
-			margin-bottom: pxToRem(8);
-		}
+	&__screensaver {
 
 		h3 {
 			font-size: pxToRem(18);
 			color: map-get($theme_colors, 'slime');
+		}
 
-			@include responsiveQuery(m) {
-				font-size: pxToRem(18);
+		#settings__screensaver-web {
+			display: flex;
+			flex-flow: row wrap;
+			justify-content: flex-start;
+			align-items: flex-start;
+			margin-bottom: pxToRem(8);
+
+			> div {
+				flex: 1 1 50%;
 			}
 		}
 
+		label[for="ss_web_timeout"] {
+			display: block;
+		}
+
 		#ss_web_timeout {
+			display: block;
 			border: 1px solid map-get($theme_colors, 'light_purple');
 			border-radius: pxToRem(3);
 			outline: 0;
 			//appearance: none;
 			background: transparent;
-			width: pxToRem(100);
+			width: pxToRem(80);
 			color: map-get($theme_colors, 'slime');
 			text-align: center;
 			margin-bottom: pxToRem(12);
@@ -351,7 +344,8 @@ body {
 			flex-flow: row nowrap;
 			justify-content: flex-start;
 			align-items: center;
-			
+			margin-bottom: pxToRem(8);
+
 			input[type="radio"] {
 				display: block;
 				margin-right: pxToRem(5);

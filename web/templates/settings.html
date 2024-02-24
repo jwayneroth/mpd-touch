@@ -12,25 +12,28 @@
 		{% end %}
 		</ul>
 	</nav>
-	<div id="settings__web">
+	<div id="settings__screensaver">
 		<h2><span class="icon blackboard"></span><span>Screensaver</span></h2>
 		<h3>Web</h3>
-		<div class="radio-control">
-			<input type="radio" id="ss_web_random" name="ss_web_type" value="random">
-			<label for="ss_web_random">Random</label><br>
-		</div>
-		<div class="radio-control">
-			<input type="radio" id="ss_web_bounce" name="ss_web_type" value="bounce">
-			<label for="ss_web_bounce">Bounce</label>
-		</div>
-		<div class="radio-control">
-			<input type="radio" id="ss_web_wave" name="ss_web_type" value="wave">
-			<label for="ss_web_wave">Wave</label>
-		</div>
-		<div>
-			<label for="ss_web_timeout">Timeout (seconds)<br>
+		<div id="settings__screensaver-web">
+			<div>
+				<div class="radio-control">
+				<input type="radio" id="ss_web_random" name="ss_web_type" value="random">
+				<label for="ss_web_random">Random</label><br>
+				</div>
+				<div class="radio-control">
+					<input type="radio" id="ss_web_bounce" name="ss_web_type" value="bounce">
+					<label for="ss_web_bounce">Bounce</label>
+				</div>
+				<div class="radio-control">
+					<input type="radio" id="ss_web_wave" name="ss_web_type" value="wave">
+					<label for="ss_web_wave">Wave</label>
+				</div>
+			</div>
+			<div>
+				<label for="ss_web_timeout"><span>Timeout</span><br><span class="small">(seconds)</span></label>
 				<input type="number" id="ss_web_timeout" name="ss_web_timeout" value="" min="1">
-			</label>
+			</div>
 		</div>
 		<h3>Host</h3>
 		<div class="radio-control">

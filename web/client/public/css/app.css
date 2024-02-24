@@ -15506,19 +15506,9 @@ body {
   flex-flow: row nowrap;
   justify-content: center;
   align-items: center;
-  font-size: 1.375rem;
+  font-size: 1.25rem;
   margin-bottom: 0.4em;
   color: rgb(240, 140, 2);
-}
-@media only screen and (min-width: 480px) {
-  #settings h2, #settings .h2 {
-    font-size: 1.125rem;
-  }
-}
-@media only screen and (min-width: 800px) {
-  #settings h2, #settings .h2 {
-    font-size: 1.125rem;
-  }
 }
 #settings h2 span.icon, #settings .h2 span.icon {
   display: flex;
@@ -16349,18 +16339,8 @@ body {
   flex-flow: row nowrap;
   justify-content: flex-start;
   align-items: center;
-  font-size: 1.375rem;
+  font-size: 1.125rem;
   margin-bottom: 0.4em;
-}
-@media only screen and (min-width: 480px) {
-  #settings__nav a {
-    font-size: 1.125rem;
-  }
-}
-@media only screen and (min-width: 800px) {
-  #settings__nav a {
-    font-size: 1.125rem;
-  }
 }
 #settings__nav a span.icon {
   display: flex;
@@ -17183,35 +17163,42 @@ body {
 #settings__nav a.active cpan.icon::before {
   color: rgb(246, 248, 63);
 }
-#settings__web > div {
-  margin-bottom: 0.5rem;
-}
-#settings__web h3, #settings__web .h3 {
+#settings__screensaver h3, #settings__screensaver .h3 {
   font-size: 1.125rem;
   color: rgb(139, 250, 73);
 }
-@media only screen and (min-width: 800px) {
-  #settings__web h3, #settings__web .h3 {
-    font-size: 1.125rem;
-  }
+#settings__screensaver #settings__screensaver-web {
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: flex-start;
+  align-items: flex-start;
+  margin-bottom: 0.5rem;
 }
-#settings__web #ss_web_timeout {
+#settings__screensaver #settings__screensaver-web > div {
+  flex: 1 1 50%;
+}
+#settings__screensaver label[for=ss_web_timeout] {
+  display: block;
+}
+#settings__screensaver #ss_web_timeout {
+  display: block;
   border: 1px solid rgb(124, 100, 118);
   border-radius: 0.1875rem;
   outline: 0;
   background: transparent;
-  width: 6.25rem;
+  width: 5rem;
   color: rgb(139, 250, 73);
   text-align: center;
   margin-bottom: 0.75rem;
 }
-#settings__web .radio-control {
+#settings__screensaver .radio-control {
   display: flex;
   flex-flow: row nowrap;
   justify-content: flex-start;
   align-items: center;
+  margin-bottom: 0.5rem;
 }
-#settings__web .radio-control input[type=radio] {
+#settings__screensaver .radio-control input[type=radio] {
   display: block;
   margin-right: 0.3125rem;
   -webkit-appearance: none;
@@ -17223,12 +17210,12 @@ body {
   border-radius: 50%;
 }
 @media only screen and (min-width: 800px) {
-  #settings__web .radio-control input[type=radio] {
+  #settings__screensaver .radio-control input[type=radio] {
     width: 16px;
     height: 16px;
   }
 }
-#settings__web .radio-control input[type=radio]:checked {
+#settings__screensaver .radio-control input[type=radio]:checked {
   background: rgb(139, 250, 73);
 }
 
