@@ -147,7 +147,7 @@ class Lines():
 
 		pts_count = len( self.pleat_points )
 
-		for i in range( int( pts_count / 2 ) - 1) :
+		for i in range( int( pts_count / 2 ) - 2) :
 			ax = self.pleat_points[i*2].screenX
 			ay = self.pleat_points[i*2].screenY
 			bx = self.pleat_points[i*2+1].screenX
