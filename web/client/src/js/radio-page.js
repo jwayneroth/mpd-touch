@@ -247,12 +247,12 @@ export default class RadioPage {
 
 		this.apiCall('stream', { stream }, () => {
 
-			const streamTitles = FMU_STREAMS.map(s => s.appTitle);
-			const is_status_stream = streamTitles.indexOf(title);
+			//const streamTitles = FMU_STREAMS.map(s => s.appTitle);
+			//const is_status_stream = streamTitles.indexOf(title);
 
-			if (is_status_stream == -1) {
-				this.gotoNowPlaying();
-			}
+			//if (is_status_stream == -1) {
+			//	this.gotoNowPlaying();
+			//}
 		});
 	}
 
