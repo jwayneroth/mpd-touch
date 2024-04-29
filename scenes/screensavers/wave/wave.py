@@ -4,7 +4,7 @@ from .point3d import Point3D
 from .triangle import Triangle
 from .light import Light
 
-WAVE_COLOR = (randint(0,255),randint(0,255),randint(0,255)) #(50,200,252)
+WAVE_COLOR = (randint(200,255),randint(200,255),randint(200,255)) #(50,200,252)
 BASE_COLOR = (randint(0,255),randint(0,255),randint(0,255)) #(88,99,252)
 
 WAVE_RES = 33 #odd number please
@@ -90,7 +90,10 @@ class Wave():
 		self.cos_y = math.cos(self.view_angle_y)
 		self.sin_y = math.sin(self.view_angle_y)
 
-		self.light = Light(BASE_RIGHT + 100, BASE_TOP - 25, 0, 1)
+		self.lightAngle = 0
+		self.lightRadius = BASE_WIDTH/2 + 10
+		self.lightVx = 0.0125
+		self.light = self.initLight()
 
 		self.intervals = 0
 
@@ -110,11 +113,24 @@ class Wave():
 
 		self.computeWave()
 
+		self.computeLight()
+
 		self.eraseWave()
 
 		self.renderBase()
 
 		self.renderWave()
+
+		#self.light.draw()
+
+	"""
+	initLight
+	"""
+	def initLight(self) :
+		light = Light(BASE_RIGHT + 50, BASE_TOP - WAVE_HEIGHT_MAX, -50, 1, window=self.window)
+		light.point.setVanishingPoint(self.vpX, self.vpY)
+		light.point.setCenter(0, 0, BASE_DEPTH / 2)
+		return light
 
 	"""
 	initBase
@@ -133,9 +149,9 @@ class Wave():
 		for point in self.base_points:
 			point.setVanishingPoint(self.vpX, self.vpY)
 			point.setCenter(0, 0, BASE_DEPTH / 2)
-			point.rotateX(self.view_angle_x)
-			point.rotateY(self.view_angle_y)
-			point.rotateZ(self.view_angle_z)
+			# point.rotateX(self.view_angle_x)
+			# point.rotateY(self.view_angle_y)
+			# point.rotateZ(self.view_angle_z)
 		
 		self.base_triangles[0] = Triangle(self.base_points[0],   self.base_points[1],  self.base_points[3], color=BASE_COLOR, batch=self.batch, window=self.window, light=self.light)
 		self.base_triangles[1] = Triangle(self.base_points[1],   self.base_points[2],  self.base_points[3], color=BASE_COLOR, batch=self.batch, window=self.window, light=self.light)
@@ -160,12 +176,12 @@ class Wave():
 
 		# front center bottom point
 		self.wave_points[0].x = self.wave_vx
-		self.wave_points[0].y = BASE_BOTTOM
+		self.wave_points[0].y = BASE_BOTTOM - 3
 		self.wave_points[0].z = BASE_FRONT
 		
 		# back center bottom point
 		self.wave_points[1].x = self.wave_vx
-		self.wave_points[1].y = BASE_BOTTOM
+		self.wave_points[1].y = BASE_BOTTOM - 3
 		self.wave_points[1].z = BASE_BACK
 		
 		self.setWaveEdge()
@@ -173,9 +189,9 @@ class Wave():
 		for point in self.wave_points:
 			point.setVanishingPoint(self.vpX, self.vpY)
 			point.setCenter(0, 0, BASE_DEPTH / 2)
-			point.rotateX(self.view_angle_x)
-			point.rotateY(self.view_angle_y)
-			point.rotateZ(self.view_angle_z)
+			# point.rotateX(self.view_angle_x)
+			# point.rotateY(self.view_angle_y)
+			# point.rotateZ(self.view_angle_z)
 		
 		# front triangles
 		for i in range( WAVE_RES - 1) :
@@ -246,14 +262,23 @@ class Wave():
 
 		self.setWaveEdge()
 
-		for point in self.wave_points:
-			point.setVanishingPoint(self.vpX, self.vpY)
-			point.setCenter(0, 0, BASE_DEPTH / 2)
-			point.rotateX(self.view_angle_x)
-			point.rotateY(self.view_angle_y)
-			point.rotateZ(self.view_angle_z)
+		# for point in self.wave_points:
+		# 	point.setVanishingPoint(self.vpX, self.vpY)
+		# 	point.setCenter(0, 0, BASE_DEPTH / 2)
+		# 	point.rotateX(self.view_angle_x)
+		# 	point.rotateY(self.view_angle_y)
+		# 	point.rotateZ(self.view_angle_z)
 
 		return 1
+
+	"""
+	computeLight
+	"""
+	def computeLight(self) :
+		newX = 0 + math.sin(self.lightAngle) * self.lightRadius
+		newY = BASE_TOP + BASE_HEIGHT/2 + math.cos(self.lightAngle) * self.lightRadius
+		self.lightAngle = self.lightAngle + self.lightVx
+		self.light.setPoint(newX, newY, self.light.z)
 
 	def incrementCounter(self) :
 		global sinCount
@@ -412,7 +437,7 @@ class Wave():
 	doColorChange
 	"""
 	def doColorChange(self) :
-		base_color = (randint(0,255),randint(0,255),randint(0,255))
+		base_color = (randint(200,255),randint(200,255),randint(200,255))
 		wave_color = (randint(0,255),randint(0,255),randint(0,255))
 		for tri in self.base_triangles :
 			tri.color = base_color
