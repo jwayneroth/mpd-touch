@@ -6,19 +6,22 @@ export default class Light {
 		this.y = (y === undefined) ? -100 : y;
 		this.z = (z === undefined) ? -100 : z;
 		this.brightness = (brightness === undefined) ? 1 : brightness;
-		this.color = "#ff0000";
+		this.color = "#ffffff";
 		this.lineWidth = 1;
 		this.alpha = 1;
 
-		const point = new Point3d(x, y, z);
+		this.point = new Point3d(x, y, z);
+	}
 
-		point.setVanishingPoint(400, 50);
-		point.setCenter(0, 0, 75);
-		point.rotateX(0);
-		point.rotateY(0);
-		point.rotateZ(0);
+	setPoint(x,y,z) {
 
-		this.point = point;
+		this.x = x;
+		this.y = y;
+		this.z = z;
+
+		this.point.x = x;
+		this.point.y = y;
+		this.point.z = z;
 	}
 
 	setBrightness(b) {
@@ -30,7 +33,7 @@ export default class Light {
 		// context.lineWidth = this.lineWidth;
 		context.fillStyle = this.color;
 		context.beginPath();
-		context.arc(this.point.getScreenX(), this.point.getScreenY(), 20, 0, 2 * Math.PI);
+		context.arc(this.point.getScreenX(), this.point.getScreenY(), 10, 0, 2 * Math.PI);
 		// context.moveTo(this.pointA.getScreenX(), this.pointA.getScreenY());
 		context.closePath();
 		context.fill();

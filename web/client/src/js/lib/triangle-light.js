@@ -11,13 +11,13 @@ export default class Triangle {
 		this.light = light;
 	}
 
-	draw(context) {
+	draw(context, light) {
 		if (this.isBackface()) {
 			return;
 		}
 		context.save();
 		context.lineWidth = this.lineWidth;
-		context.fillStyle = context.strokeStyle = this.getAdjustedColor();
+		context.fillStyle = context.strokeStyle = this.getAdjustedColor(light);
 		context.beginPath();
 		context.moveTo(this.pointA.getScreenX(), this.pointA.getScreenY());
 		context.lineTo(this.pointB.getScreenX(), this.pointB.getScreenY());
@@ -42,19 +42,19 @@ export default class Triangle {
 		return cax * bcy > cay * bcx;
 	}
 
-	getAdjustedColor() {
+	getAdjustedColor(light) {
 		var color = parseColor(this.color, true),
 			red = color >> 16,
 			green = color >> 8 & 0xff,
 			blue = color & 0xff,
-			lightFactor = this.getLightFactor();
+			lightFactor = this.getLightFactor(light);
 		red *= lightFactor;
 		green *= lightFactor;
 		blue *= lightFactor;
 		return parseColor(red << 16 | green << 8 | blue);
 	}
 
-	getLightFactor() {
+	getLightFactor(light) {
 		var ab = {
 			x: this.pointA.x - this.pointB.x,
 			y: this.pointA.y - this.pointB.y,
@@ -70,16 +70,16 @@ export default class Triangle {
 			y: -((ab.x * bc.z) - (ab.z * bc.x)),
 			z: (ab.x * bc.y) - (ab.y * bc.x)
 		};
-		var dotProd = norm.x * this.light.x +
-			norm.y * this.light.y +
-			norm.z * this.light.z,
+		var dotProd = norm.x * light.x +
+			norm.y * light.y +
+			norm.z * light.z,
 			normMag = Math.sqrt(norm.x * norm.x +
 				norm.y * norm.y +
 				norm.z * norm.z),
-			lightMag = Math.sqrt(this.light.x * this.light.x +
-				this.light.y * this.light.y +
-				this.light.z * this.light.z);
+			lightMag = Math.sqrt(light.x * light.x +
+				light.y * light.y +
+				light.z * light.z);
 
-		return (Math.acos(dotProd / (normMag * lightMag)) / Math.PI) * this.light.brightness;
+		return (Math.acos(dotProd / (normMag * lightMag)) / Math.PI) * light.brightness;
 	}
 }

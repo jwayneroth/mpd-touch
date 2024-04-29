@@ -10,7 +10,7 @@ const randint = (min, max) => {
 };
 
 const WAVE_COLOR = RGBToHex(randint(0, 255), randint(0, 255), randint(0, 255));
-const BASE_COLOR = RGBToHex(randint(0, 255), randint(0, 255), randint(0, 255));
+const BASE_COLOR =  RGBToHex(randint(0, 255), randint(0, 255), randint(0, 255));
 
 const WAVE_RES = 33; // odd number please
 
@@ -91,7 +91,8 @@ export default class Wave {
 		self.cos_y = Math.cos(self.view_angle_y);
 		self.sin_y = Math.sin(self.view_angle_y);
 
-		self.light = new Light(BASE_RIGHT + 100, BASE_TOP - 25, 0, 1);
+		self.lightVx = -2;
+		self.light = self.initLight();
 
 		self.intervals = 0;
 
@@ -115,11 +116,26 @@ export default class Wave {
 
 		self.computeWave();
 
+		self.computeLight();
+
 		self.renderBase();
 
 		self.renderWave();
 
 		//self.light.draw(self.window);
+	}
+
+	initLight() {
+
+		const light = new Light(BASE_RIGHT + 50, BASE_TOP - BASE_HEIGHT - 10, 120, 1); //BASE_TOP - 100, -100, 1);
+
+		light.point.setVanishingPoint(this.vpX, this.vpY);
+		light.point.setCenter(0, 0, BASE_DEPTH / 2);
+		//light.point.rotateX(self.view_angle_x);
+		//light.point.rotateY(self.view_angle_y);
+		//light.point.rotateZ(self.view_angle_z);
+
+		return light;
 	}
 
 	/**
@@ -143,9 +159,9 @@ export default class Wave {
 
 			point.setVanishingPoint(self.vpX, self.vpY);
 			point.setCenter(0, 0, BASE_DEPTH / 2);
-			point.rotateX(self.view_angle_x);
-			point.rotateY(self.view_angle_y);
-			point.rotateZ(self.view_angle_z);
+			//point.rotateX(self.view_angle_x);
+			//point.rotateY(self.view_angle_y);
+			//point.rotateZ(self.view_angle_z);
 
 			self.base_triangles[0] = new Triangle(self.base_points[0], self.base_points[1], self.base_points[3], BASE_COLOR, self.light);
 			self.base_triangles[1] = new Triangle(self.base_points[1], self.base_points[2], self.base_points[3], BASE_COLOR, self.light);
@@ -165,7 +181,7 @@ export default class Wave {
 		let i, tri;
 		for (i = 0; i < self.base_triangles.length; i++) {
 			tri = self.base_triangles[i];
-			tri.draw(self.window)
+			tri.draw(self.window, self.light)
 		}
 	}
 
@@ -183,12 +199,12 @@ export default class Wave {
 
 		// front center bottom point
 		self.wave_points[0].x = self.wave_vx;
-		self.wave_points[0].y = BASE_BOTTOM;
+		self.wave_points[0].y = BASE_BOTTOM - 3;
 		self.wave_points[0].z = BASE_FRONT;
 
 		// back center bottom point
 		self.wave_points[1].x = self.wave_vx;
-		self.wave_points[1].y = BASE_BOTTOM;
+		self.wave_points[1].y = BASE_BOTTOM - 3;
 		self.wave_points[1].z = BASE_BACK;
 
 		self.setWaveEdge(self.wave_vx);
@@ -197,9 +213,9 @@ export default class Wave {
 			point = self.wave_points[i];
 			point.setVanishingPoint(self.vpX, self.vpY)
 			point.setCenter(0, 0, BASE_DEPTH / 2)
-			point.rotateX(self.view_angle_x)
-			point.rotateY(self.view_angle_y)
-			point.rotateZ(self.view_angle_z)
+			//point.rotateX(self.view_angle_x)
+			//point.rotateY(self.view_angle_y)
+			//point.rotateZ(self.view_angle_z)
 		}
 
 		// front triangles
@@ -259,24 +275,24 @@ export default class Wave {
 		self.setWaveHeightAndX();
 
 		self.wave_points[0].x = self.wave_vx
-		self.wave_points[0].y = BASE_BOTTOM - 3
-		self.wave_points[0].z = BASE_FRONT
+		// self.wave_points[0].y = BASE_BOTTOM - 3
+		// self.wave_points[0].z = BASE_FRONT
 
 		self.wave_points[1].x = self.wave_vx
-		self.wave_points[1].y = BASE_BOTTOM - 3
-		self.wave_points[1].z = BASE_BACK
+		// self.wave_points[1].y = BASE_BOTTOM - 3
+		// self.wave_points[1].z = BASE_BACK
 
 		self.setWaveEdge()
 
-		let i, point;
-		for (i = 0; i < self.wave_points.length; i++) {
-			point = self.wave_points[i];
-			point.setVanishingPoint(self.vpX, self.vpY)
-			point.setCenter(0, 0, BASE_DEPTH / 2)
-			point.rotateX(self.view_angle_x)
-			point.rotateY(self.view_angle_y)
-			point.rotateZ(self.view_angle_z)
-		}
+		// let i, point;
+		// for (i = 0; i < self.wave_points.length; i++) {
+		// 	point = self.wave_points[i];
+		// 	point.setVanishingPoint(self.vpX, self.vpY)
+		// 	point.setCenter(0, 0, BASE_DEPTH / 2)
+		// 	point.rotateX(self.view_angle_x)
+		// 	point.rotateY(self.view_angle_y)
+		// 	point.rotateZ(self.view_angle_z)
+		// }
 
 		// for (i = 0; i < self.base_points.length; i++) {
 		// 	point = self.base_points[i];
@@ -286,6 +302,15 @@ export default class Wave {
 		// 	point.rotateY(self.view_angle_y)
 		// 	point.rotateZ(self.view_angle_z)
 		// }
+	}
+
+	computeLight() {
+		const newX = this.light.x += this.lightVx;
+		if (newX < BASE_LEFT - 100 || newX > BASE_RIGHT + 100) {
+			this.lightVx *= -1;
+		}
+		//const newY = this.light.y + 1;
+		this.light.setPoint(newX, this.light.y, this.light.z);
 	}
 
 	incrementCounter() {
@@ -457,7 +482,7 @@ export default class Wave {
 		let i, tri;
 		for (i = 0; i < self.wave_triangles.length; i++) {
 			tri = self.wave_triangles[i];
-			tri.draw(self.window)
+			tri.draw(self.window, self.light)
 		}
 		self.renderFace()
 	}
@@ -471,7 +496,7 @@ export default class Wave {
 		let i, tri;
 		for (i = 0; i < self.face_triangles.length; i++) {
 			tri = self.face_triangles[i];
-			tri.draw(self.window)
+			tri.draw(self.window, self.light)
 		}
 	}
 
