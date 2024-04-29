@@ -1381,7 +1381,6 @@ var Wave = /*#__PURE__*/function () {
       self.incrementCounter();
       self.computeWave();
       self.computeLight();
-      self.renderBG();
       self.renderBase();
       self.renderWave();
 
@@ -1432,22 +1431,6 @@ var Wave = /*#__PURE__*/function () {
         self.base_triangles[4] = new _triangle_light__WEBPACK_IMPORTED_MODULE_2__["default"](self.base_points[1], self.base_points[5], self.base_points[2], BASE_COLOR, self.light);
         self.base_triangles[5] = new _triangle_light__WEBPACK_IMPORTED_MODULE_2__["default"](self.base_points[5], self.base_points[6], self.base_points[2], BASE_COLOR, self.light);
       }
-    }
-  }, {
-    key: "renderBG",
-    value: function renderBG() {
-      // const ctx = this.window;
-      // var color = parseColor('#00ff00', true),
-      // 	red = color >> 16,
-      // 	green = color >> 8 & 0xff,
-      // 	blue = color & 0xff,
-      // 	lightFactor = this.getLightFactor();
-      // red *= lightFactor;
-      // green *= lightFactor;
-      // blue *= lightFactor;
-
-      // ctx.fillStyle = parseColor(red << 16 | green << 8 | blue);
-      // ctx.fillRect(0,0,800,425);
     }
 
     /**

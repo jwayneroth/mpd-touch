@@ -120,8 +120,6 @@ export default class Wave {
 
 		self.computeLight();
 
-		self.renderBG();
-
 		self.renderBase();
 
 		self.renderWave();
@@ -174,21 +172,6 @@ export default class Wave {
 			self.base_triangles[4] = new Triangle(self.base_points[1], self.base_points[5], self.base_points[2], BASE_COLOR, self.light);
 			self.base_triangles[5] = new Triangle(self.base_points[5], self.base_points[6], self.base_points[2], BASE_COLOR, self.light);
 		}
-	}
-
-	renderBG() {
-		// const ctx = this.window;
-		// var color = parseColor('#00ff00', true),
-		// 	red = color >> 16,
-		// 	green = color >> 8 & 0xff,
-		// 	blue = color & 0xff,
-		// 	lightFactor = this.getLightFactor();
-		// red *= lightFactor;
-		// green *= lightFactor;
-		// blue *= lightFactor;
-
-		// ctx.fillStyle = parseColor(red << 16 | green << 8 | blue);
-		// ctx.fillRect(0,0,800,425);
 	}
 
 	/**
