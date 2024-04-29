@@ -11,13 +11,13 @@ export default class Triangle {
 		this.light = light;
 	}
 
-	draw(context, light) {
+	draw(context) {
 		if (this.isBackface()) {
 			return;
 		}
 		context.save();
 		context.lineWidth = this.lineWidth;
-		context.fillStyle = context.strokeStyle = this.getAdjustedColor(light);
+		context.fillStyle = context.strokeStyle = this.getAdjustedColor();
 		context.beginPath();
 		context.moveTo(this.pointA.getScreenX(), this.pointA.getScreenY());
 		context.lineTo(this.pointB.getScreenX(), this.pointB.getScreenY());
@@ -42,19 +42,20 @@ export default class Triangle {
 		return cax * bcy > cay * bcx;
 	}
 
-	getAdjustedColor(light) {
+	getAdjustedColor() {
 		var color = parseColor(this.color, true),
 			red = color >> 16,
 			green = color >> 8 & 0xff,
 			blue = color & 0xff,
-			lightFactor = this.getLightFactor(light);
+			lightFactor = this.getLightFactor();
 		red *= lightFactor;
 		green *= lightFactor;
 		blue *= lightFactor;
 		return parseColor(red << 16 | green << 8 | blue);
 	}
 
-	getLightFactor(light) {
+	getLightFactor() {
+		const light = this.light;
 		var ab = {
 			x: this.pointA.x - this.pointB.x,
 			y: this.pointA.y - this.pointB.y,

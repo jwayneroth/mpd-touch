@@ -997,13 +997,13 @@ var Triangle = /*#__PURE__*/function () {
   }
   _createClass(Triangle, [{
     key: "draw",
-    value: function draw(context, light) {
+    value: function draw(context) {
       if (this.isBackface()) {
         return;
       }
       context.save();
       context.lineWidth = this.lineWidth;
-      context.fillStyle = context.strokeStyle = this.getAdjustedColor(light);
+      context.fillStyle = context.strokeStyle = this.getAdjustedColor();
       context.beginPath();
       context.moveTo(this.pointA.getScreenX(), this.pointA.getScreenY());
       context.lineTo(this.pointB.getScreenX(), this.pointB.getScreenY());
@@ -1031,12 +1031,12 @@ var Triangle = /*#__PURE__*/function () {
     }
   }, {
     key: "getAdjustedColor",
-    value: function getAdjustedColor(light) {
+    value: function getAdjustedColor() {
       var color = (0,_utils__WEBPACK_IMPORTED_MODULE_0__.parseColor)(this.color, true),
         red = color >> 16,
         green = color >> 8 & 0xff,
         blue = color & 0xff,
-        lightFactor = this.getLightFactor(light);
+        lightFactor = this.getLightFactor();
       red *= lightFactor;
       green *= lightFactor;
       blue *= lightFactor;
@@ -1044,7 +1044,8 @@ var Triangle = /*#__PURE__*/function () {
     }
   }, {
     key: "getLightFactor",
-    value: function getLightFactor(light) {
+    value: function getLightFactor() {
+      var light = this.light;
       var ab = {
         x: this.pointA.x - this.pointB.x,
         y: this.pointA.y - this.pointB.y,
@@ -1285,7 +1286,7 @@ var randint = function randint(min, max) {
   max = Math.floor(max);
   return Math.floor(Math.random() * (max - min + 1)) + min;
 };
-var WAVE_COLOR = (0,_utils__WEBPACK_IMPORTED_MODULE_0__.RGBToHex)(randint(0, 255), randint(0, 255), randint(0, 255));
+var WAVE_COLOR = (0,_utils__WEBPACK_IMPORTED_MODULE_0__.RGBToHex)(randint(200, 255), randint(200, 255), randint(200, 255));
 var BASE_COLOR = (0,_utils__WEBPACK_IMPORTED_MODULE_0__.RGBToHex)(randint(0, 255), randint(0, 255), randint(0, 255));
 var WAVE_RES = 33; // odd number please
 
@@ -1359,7 +1360,9 @@ var Wave = /*#__PURE__*/function () {
     self.wave_vx = null;
     self.cos_y = Math.cos(self.view_angle_y);
     self.sin_y = Math.sin(self.view_angle_y);
-    self.lightVx = -2;
+    self.lightAngle = 0;
+    self.lightRadius = BASE_WIDTH / 2 + 10;
+    self.lightVx = .0125;
     self.light = self.initLight();
     self.intervals = 0;
     self.wave_pattern_idx = randint(0, WAVE_PATTERNS.length - 1);
@@ -1378,6 +1381,7 @@ var Wave = /*#__PURE__*/function () {
       self.incrementCounter();
       self.computeWave();
       self.computeLight();
+      self.renderBG();
       self.renderBase();
       self.renderWave();
 
@@ -1386,7 +1390,7 @@ var Wave = /*#__PURE__*/function () {
   }, {
     key: "initLight",
     value: function initLight() {
-      var light = new _light__WEBPACK_IMPORTED_MODULE_1__["default"](BASE_RIGHT + 50, BASE_TOP - BASE_HEIGHT - 10, 120, 1); //BASE_TOP - 100, -100, 1);
+      var light = new _light__WEBPACK_IMPORTED_MODULE_1__["default"](BASE_RIGHT + 50, BASE_TOP - WAVE_HEIGHT_MAX, -50, 1); //BASE_TOP - 100, -100, 1);
 
       light.point.setVanishingPoint(this.vpX, this.vpY);
       light.point.setCenter(0, 0, BASE_DEPTH / 2);
@@ -1429,6 +1433,22 @@ var Wave = /*#__PURE__*/function () {
         self.base_triangles[5] = new _triangle_light__WEBPACK_IMPORTED_MODULE_2__["default"](self.base_points[5], self.base_points[6], self.base_points[2], BASE_COLOR, self.light);
       }
     }
+  }, {
+    key: "renderBG",
+    value: function renderBG() {
+      // const ctx = this.window;
+      // var color = parseColor('#00ff00', true),
+      // 	red = color >> 16,
+      // 	green = color >> 8 & 0xff,
+      // 	blue = color & 0xff,
+      // 	lightFactor = this.getLightFactor();
+      // red *= lightFactor;
+      // green *= lightFactor;
+      // blue *= lightFactor;
+
+      // ctx.fillStyle = parseColor(red << 16 | green << 8 | blue);
+      // ctx.fillRect(0,0,800,425);
+    }
 
     /**
      renderBase
@@ -1440,7 +1460,7 @@ var Wave = /*#__PURE__*/function () {
       var i, tri;
       for (i = 0; i < self.base_triangles.length; i++) {
         tri = self.base_triangles[i];
-        tri.draw(self.window, self.light);
+        tri.draw(self.window);
       }
     }
 
@@ -1539,12 +1559,17 @@ var Wave = /*#__PURE__*/function () {
   }, {
     key: "computeLight",
     value: function computeLight() {
-      var newX = this.light.x += this.lightVx;
-      if (newX < BASE_LEFT - 100 || newX > BASE_RIGHT + 100) {
-        this.lightVx *= -1;
-      }
-      //const newY = this.light.y + 1;
-      this.light.setPoint(newX, this.light.y, this.light.z);
+      // const newX = this.light.x += this.lightVx;
+      // if (newX < BASE_LEFT - 100 || newX > BASE_RIGHT + 100) {
+      // 	this.lightVx *= -1;
+      // }
+      // //const newY = this.light.y + 1;
+      // this.light.setPoint(newX, this.light.y, this.light.z);
+
+      var newX = 0 + Math.sin(this.lightAngle) * this.lightRadius;
+      var newY = BASE_TOP + BASE_HEIGHT / 2 + Math.cos(this.lightAngle) * this.lightRadius;
+      this.lightAngle += this.lightVx;
+      this.light.setPoint(newX, newY, this.light.z);
     }
   }, {
     key: "incrementCounter",
@@ -1691,7 +1716,7 @@ var Wave = /*#__PURE__*/function () {
       var i, tri;
       for (i = 0; i < self.wave_triangles.length; i++) {
         tri = self.wave_triangles[i];
-        tri.draw(self.window, self.light);
+        tri.draw(self.window);
       }
       self.renderFace();
     }
@@ -1706,7 +1731,7 @@ var Wave = /*#__PURE__*/function () {
       var i, tri;
       for (i = 0; i < self.face_triangles.length; i++) {
         tri = self.face_triangles[i];
-        tri.draw(self.window, self.light);
+        tri.draw(self.window);
       }
     }
 
@@ -1718,7 +1743,7 @@ var Wave = /*#__PURE__*/function () {
     value: function doColorChange() {
       var self = this;
       var base_color = (0,_utils__WEBPACK_IMPORTED_MODULE_0__.RGBToHex)(randint(0, 255), randint(0, 255), randint(0, 255));
-      var wave_color = (0,_utils__WEBPACK_IMPORTED_MODULE_0__.RGBToHex)(randint(0, 255), randint(0, 255), randint(0, 255));
+      var wave_color = (0,_utils__WEBPACK_IMPORTED_MODULE_0__.RGBToHex)(randint(200, 255), randint(200, 255), randint(200, 255));
 
       //console.log(`random base color: ${base_color}`);
 

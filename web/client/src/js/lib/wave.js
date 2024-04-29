@@ -9,7 +9,7 @@ const randint = (min, max) => {
 	return Math.floor(Math.random() * (max - min + 1)) + min;
 };
 
-const WAVE_COLOR = RGBToHex(randint(0, 255), randint(0, 255), randint(0, 255));
+const WAVE_COLOR = RGBToHex(randint(200, 255), randint(200, 255), randint(200, 255));
 const BASE_COLOR =  RGBToHex(randint(0, 255), randint(0, 255), randint(0, 255));
 
 const WAVE_RES = 33; // odd number please
@@ -91,7 +91,9 @@ export default class Wave {
 		self.cos_y = Math.cos(self.view_angle_y);
 		self.sin_y = Math.sin(self.view_angle_y);
 
-		self.lightVx = -2;
+		self.lightAngle = 0;
+		self.lightRadius = BASE_WIDTH/2 + 10;
+		self.lightVx = .0125;
 		self.light = self.initLight();
 
 		self.intervals = 0;
@@ -118,6 +120,8 @@ export default class Wave {
 
 		self.computeLight();
 
+		self.renderBG();
+
 		self.renderBase();
 
 		self.renderWave();
@@ -127,7 +131,7 @@ export default class Wave {
 
 	initLight() {
 
-		const light = new Light(BASE_RIGHT + 50, BASE_TOP - BASE_HEIGHT - 10, 120, 1); //BASE_TOP - 100, -100, 1);
+		const light = new Light(BASE_RIGHT + 50, BASE_TOP-WAVE_HEIGHT_MAX, -50, 1); //BASE_TOP - 100, -100, 1);
 
 		light.point.setVanishingPoint(this.vpX, this.vpY);
 		light.point.setCenter(0, 0, BASE_DEPTH / 2);
@@ -172,6 +176,21 @@ export default class Wave {
 		}
 	}
 
+	renderBG() {
+		// const ctx = this.window;
+		// var color = parseColor('#00ff00', true),
+		// 	red = color >> 16,
+		// 	green = color >> 8 & 0xff,
+		// 	blue = color & 0xff,
+		// 	lightFactor = this.getLightFactor();
+		// red *= lightFactor;
+		// green *= lightFactor;
+		// blue *= lightFactor;
+
+		// ctx.fillStyle = parseColor(red << 16 | green << 8 | blue);
+		// ctx.fillRect(0,0,800,425);
+	}
+
 	/**
 	 renderBase
 	 */
@@ -181,7 +200,7 @@ export default class Wave {
 		let i, tri;
 		for (i = 0; i < self.base_triangles.length; i++) {
 			tri = self.base_triangles[i];
-			tri.draw(self.window, self.light)
+			tri.draw(self.window)
 		}
 	}
 
@@ -305,12 +324,17 @@ export default class Wave {
 	}
 
 	computeLight() {
-		const newX = this.light.x += this.lightVx;
-		if (newX < BASE_LEFT - 100 || newX > BASE_RIGHT + 100) {
-			this.lightVx *= -1;
-		}
-		//const newY = this.light.y + 1;
-		this.light.setPoint(newX, this.light.y, this.light.z);
+		// const newX = this.light.x += this.lightVx;
+		// if (newX < BASE_LEFT - 100 || newX > BASE_RIGHT + 100) {
+		// 	this.lightVx *= -1;
+		// }
+		// //const newY = this.light.y + 1;
+		// this.light.setPoint(newX, this.light.y, this.light.z);
+
+		const newX = 0 + Math.sin(this.lightAngle) * this.lightRadius;
+		const newY = BASE_TOP + BASE_HEIGHT/2 + Math.cos(this.lightAngle) * this.lightRadius;
+		this.lightAngle += this.lightVx;
+		this.light.setPoint(newX, newY, this.light.z);
 	}
 
 	incrementCounter() {
@@ -482,7 +506,7 @@ export default class Wave {
 		let i, tri;
 		for (i = 0; i < self.wave_triangles.length; i++) {
 			tri = self.wave_triangles[i];
-			tri.draw(self.window, self.light)
+			tri.draw(self.window)
 		}
 		self.renderFace()
 	}
@@ -496,7 +520,7 @@ export default class Wave {
 		let i, tri;
 		for (i = 0; i < self.face_triangles.length; i++) {
 			tri = self.face_triangles[i];
-			tri.draw(self.window, self.light)
+			tri.draw(self.window)
 		}
 	}
 
@@ -507,7 +531,7 @@ export default class Wave {
 		const self = this;
 
 		const base_color = RGBToHex(randint(0, 255), randint(0, 255), randint(0, 255));
-		const wave_color = RGBToHex(randint(0, 255), randint(0, 255), randint(0, 255));
+		const wave_color = RGBToHex(randint(200, 255), randint(200, 255), randint(200, 255));
 
 		//console.log(`random base color: ${base_color}`);
 
