@@ -2402,15 +2402,12 @@ var RadioPage = /*#__PURE__*/function () {
   }, {
     key: "archiveClick",
     value: function archiveClick(evt) {
-      var _this4 = this;
       console.log('archive link click', evt.currentTarget.dataset.url);
       evt.preventDefault();
       var archive = evt.currentTarget.dataset.url;
       this.apiCall('archive', {
         archive: archive
-      }, function () {
-        return _this4.gotoNowPlaying();
-      });
+      }, function () {});
       return false;
     }
 

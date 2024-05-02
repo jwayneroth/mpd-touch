@@ -260,7 +260,7 @@ export default class RadioPage {
 		console.log('archive link click', evt.currentTarget.dataset.url);
 		evt.preventDefault();
 		const archive = evt.currentTarget.dataset.url;
-		this.apiCall('archive', { archive }, () => this.gotoNowPlaying());
+		this.apiCall('archive', { archive }, () => {});
 		return false;
 	}
 
