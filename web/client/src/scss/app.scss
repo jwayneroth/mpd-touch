@@ -1,6 +1,16 @@
 @import 'vars';
 @import 'mixins';
 @import 'typography';
+
+$form-range-track-height: 1.5rem;
+$form-range-track-bg: transparent;
+$form-range-track-border-radius: 0;
+
+$form-range-thumb-width: .275rem;
+$form-range-thumb-height: 1.5rem;
+$form-range-thumb-border-radius: 0;
+$form-range-thumb-box-shadow: none; //0 .1rem .25rem rgba(#000, .1);
+
 @import "~bootstrap/scss/bootstrap";
 
 * {
@@ -585,6 +595,41 @@ body {
 		flex-flow: column nowrap;
 		justify-content: space-between;
 		align-items: center;
+	}
+
+	&__volume-wrap {
+		position: relative;
+		width: 100%;
+	}
+	&__volume {
+		position: relative;
+		z-index: 2;
+		height: $form-range-track-height;
+	}
+	&__volume-all {
+		position: absolute;
+		left: 0;
+		top: 0;
+		z-index: 0;
+		margin: 0;
+		padding: 0;
+		list-style-type: none;
+		display: flex;
+		flex-flow: row nowrap;
+		justify-content: space-between;
+		align-items: bottom;
+		width: 100%;
+
+		li {
+			flex: 0 0 $form-range-thumb-width;
+
+			a {
+				display: block;
+				width: $form-range-thumb-width;
+				height: $form-range-thumb-height;
+				background: map-get($map: $theme_colors, $key: 'dark_gray' );
+			}
+		}
 	}
 }
 

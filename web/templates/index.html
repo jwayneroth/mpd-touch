@@ -68,7 +68,8 @@
 				</button>
 				<div id="controls__body" class="modal-body">
 					<h2>Volume <span id="controls__volume-display">{%if 'current_volume' in locals() %}&nbsp;:&nbsp;{{ current_volume }}{% end %}</span></h2>
-					<input
+					<div id="controls__volume-wrap">
+						<input
 						type="range"
 						class="form-range"
 						id="controls__volume"
@@ -81,6 +82,12 @@
 						disabled
 						{% end %}
 					/>
+					<ul id="controls__volume-all">
+						{% for i in range(0,21) %}
+							<li><a data-idx="{{ i }}"></a></li>
+						{% end %}
+					</ul>
+				</div>
 					<div class="btn-group">
 						<button type="button" class="btn btn-dark" data-tag-name="volume-off">
 							<span class="icon volume-off"></span>

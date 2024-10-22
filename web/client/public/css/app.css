@@ -2669,7 +2669,7 @@ textarea.form-control-lg {
 
 .form-range {
   width: 100%;
-  height: 1.5rem;
+  height: 2rem;
   padding: 0;
   -webkit-appearance: none;
      -moz-appearance: none;
@@ -2689,14 +2689,14 @@ textarea.form-control-lg {
   border: 0;
 }
 .form-range::-webkit-slider-thumb {
-  width: 1rem;
-  height: 1rem;
-  margin-top: -0.25rem;
+  width: 0.275rem;
+  height: 1.5rem;
+  margin-top: 0rem;
   -webkit-appearance: none;
           appearance: none;
   background-color: rgb(139, 250, 73);
   border: 0;
-  border-radius: 1rem;
+  border-radius: 0;
   -webkit-transition: background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
   transition: background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
 }
@@ -2711,21 +2711,21 @@ textarea.form-control-lg {
 }
 .form-range::-webkit-slider-runnable-track {
   width: 100%;
-  height: 0.5rem;
+  height: 1.5rem;
   color: transparent;
   cursor: pointer;
-  background-color: var(--bs-secondary-bg);
+  background-color: transparent;
   border-color: transparent;
-  border-radius: 1rem;
+  border-radius: 0;
 }
 .form-range::-moz-range-thumb {
-  width: 1rem;
-  height: 1rem;
+  width: 0.275rem;
+  height: 1.5rem;
   -moz-appearance: none;
        appearance: none;
   background-color: rgb(139, 250, 73);
   border: 0;
-  border-radius: 1rem;
+  border-radius: 0;
   -moz-transition: background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
   transition: background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
 }
@@ -2740,12 +2740,12 @@ textarea.form-control-lg {
 }
 .form-range::-moz-range-track {
   width: 100%;
-  height: 0.5rem;
+  height: 1.5rem;
   color: transparent;
   cursor: pointer;
-  background-color: var(--bs-secondary-bg);
+  background-color: transparent;
   border-color: transparent;
-  border-radius: 1rem;
+  border-radius: 0;
 }
 .form-range:disabled {
   pointer-events: none;
@@ -17403,6 +17403,38 @@ body {
   flex-flow: column nowrap;
   justify-content: space-between;
   align-items: center;
+}
+#controls__volume-wrap {
+  position: relative;
+  width: 100%;
+}
+#controls__volume {
+  position: relative;
+  z-index: 2;
+  height: 1.5rem;
+}
+#controls__volume-all {
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 0;
+  margin: 0;
+  padding: 0;
+  list-style-type: none;
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: space-between;
+  align-items: bottom;
+  width: 100%;
+}
+#controls__volume-all li {
+  flex: 0 0 0.275rem;
+}
+#controls__volume-all li a {
+  display: block;
+  width: 0.275rem;
+  height: 1.5rem;
+  background: rgb(80, 77, 81);
 }
 
 #screensaver {
