@@ -4,7 +4,7 @@
 <table>
 	<tr>
 		<td colspan="2">
-			<p>Now playing screen with scrolling track info</p>
+			<p>Now playing screen with scrolling track info</p><span></span>
 		</td>
 	</tr>
 	<tr>
