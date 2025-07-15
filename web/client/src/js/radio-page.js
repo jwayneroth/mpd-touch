@@ -56,7 +56,7 @@ export default class RadioPage {
 
 		this.initStreamPanelButtons();
 
-		this.getAllStatuses();
+		//this.getAllStatuses();
 	}
 
 	onExit() {
@@ -95,7 +95,7 @@ export default class RadioPage {
 				ico.classList.add('refresh');
 				ico.dataset.title = title;
 				ico.innerHTML = `<span class="icon repeat"></span>`;
-				ico.addEventListener('click', this.getStreamStatus.bind(this, title, url));
+				//ico.addEventListener('click', this.getStreamStatus.bind(this, title, url));
 
 				stream.appendChild(div);
 				stream.appendChild(ico);
