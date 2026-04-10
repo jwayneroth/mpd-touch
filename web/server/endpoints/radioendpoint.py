@@ -3,6 +3,7 @@ from tornado.escape import url_unescape
 import feedparser
 import re
 import urllib
+from urllib.request import Request, urlopen
 import json
 
 from lib.mpd_client import *
@@ -11,7 +12,7 @@ from web.server.constants import *
 class RadioEndpoint(RequestHandler):
 	def initialize(self, app):
 		self.app = app
-		self.url_opener = urllib.request
+		#self.url_opener = urllib.request
 
 	def get(self, resource):
 		scene = self.app.scenes['Radio']
@@ -31,15 +32,22 @@ class RadioEndpoint(RequestHandler):
 				self.finish()
 
 			elif resource == "archive":
-				archive = url_unescape(self.get_argument('archive'))
-				try:
-					res = self.url_opener.urlopen( archive )
-					logger.debug("opened archive url: %s", res)
-					html = res.read()
-				except:
-					logger.debug("error opening archive")
-					self.finish()
-					return
+				archive_url = self.get_argument('archive')
+				logger.debug("archive url: %s", archive_url)
+				archive = url_unescape(archive_url)
+				logger.debug("unescaped url: %s", archive)
+				#try:
+				req = Request(
+					url=archive,
+					headers={'User-Agent': 'Mozilla/5.0'}
+				)
+				html = urlopen( req ).read()
+				#logger.debug("opened archive url: %s", res)
+				#html = res.read()
+				#except:
+				#	logger.debug("error opening archive")
+				#	self.finish()
+				#	return
 				archive_url = str(html, 'utf-8').strip()
 				mpd.radio_station_start(archive_url)
 				self.finish()
