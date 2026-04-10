@@ -1,5 +1,7 @@
 import { axios, API_URL } from './api';
 
+const STATUS_URL = "https://wfmu.org/currentliveshows_aggregator.php?ch=1,4,6,8";
+
 const FMU_STREAMS = [
 	{
 		'appTitle': "WFMU",
