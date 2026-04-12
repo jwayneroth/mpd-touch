@@ -21,7 +21,7 @@ const FMU_STREAMS = [
 	}
 ];
 
-const STATUS_TIMEOUT = 40000;
+const STATUS_TIMEOUT = 45000;
 
 /**
  * Radio Page
@@ -59,6 +59,7 @@ export default class RadioPage {
 		this.initStreamPanelButtons();
 
 		//this.getAllStatuses();
+		this.getAllStatusesPHP();
 	}
 
 	onExit() {
@@ -125,6 +126,16 @@ export default class RadioPage {
 		this.statusTimeoutID = window.setTimeout(() => this.getAllStatuses(), STATUS_TIMEOUT);
 	}
 
+	getAllStatusesPHP() {
+		console.log('RadioPage::getAllStatusesPHP');
+
+		//this.getStreamStatus(title, url);
+
+		axios.get(API_URL + '/radio/status-all', {}).then(this.onStatusesAll.bind(this));
+
+		this.statusTimeoutID = window.setTimeout(() => this.getAllStatusesPHP(), STATUS_TIMEOUT);
+	}
+
 	getStreamStatus(title, url) {
 		const params = { title, url };
 		axios.get(API_URL + '/radio/status', { params }).then(this.onStreamStatus.bind(this));
@@ -159,6 +170,37 @@ export default class RadioPage {
 			div.querySelector('.show-title').innerHTML = `on <a href="https://www.wfmu.org/playlists/shows/${playlist['@attributes'].id}" target="_blank">${status.show}</a>`;
 		} else {
 			div.querySelector('.show-title').innerHTML = `on <span>${show}</span>`;
+		}
+	}
+
+	onStatusesAll(response) {
+
+		const { statuses } = response.data;
+
+		console.log('onPHPStreamStatus', statuses);
+
+		let i, title, li, track, show, needle, status;
+
+		for (i = 0; i < FMU_STREAMS.length; i++) {
+			title = FMU_STREAMS[i].appTitle;
+			li = this.dom.streamsPanel.querySelector('li[data-title="' + title + '"] .listennow-current-track');
+			track = li.querySelector('.current-title');
+			show = li.querySelector('.show-title');
+			switch(title) {
+				case 'GtDR':
+					needle = 'Drummer';
+					break;
+				case "Rock 'n Soul":
+					needle = 'Soul';
+					break;
+				default:
+					needle = title;
+			}
+			status = statuses.find(stts => {
+				return (stts.title && stts.title.indexOf(needle) > -1);
+			});
+			track.innerHTML = (status && status.track) ? status.track : '';
+			show.innerHTML = (status && status.show) ? status.show : '';
 		}
 	}
 
