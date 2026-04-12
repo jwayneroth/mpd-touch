@@ -20,7 +20,8 @@ def strip_tags(html):
 
 import feedparser
 import re
-import urllib
+#import urllib
+from urllib.request import Request, urlopen
 
 from .piscrollscene import *
 
@@ -58,7 +59,7 @@ class RadioScene(PiScrollScene):
 		]
 
 		#self.url_opener = urllib.FancyURLopener({})
-		self.url_opener = urllib.request
+		#self.url_opener = urllib.request
 
 		self.streams_view = self.make_scroll_view()
 		self.archives_view = self.make_scroll_view()
@@ -272,9 +273,13 @@ class RadioScene(PiScrollScene):
 
 		try:
 			#f = self.url_opener.open( url )
-			res = self.url_opener.urlopen( url )
+			#res = self.url_opener.urlopen( url )
+			req = Request(
+				url=url,
+				headers={'User-Agent': 'Mozilla/5.0'}
+			)
+			html = urlopen( req ).read()
 			logger.debug("opened archive url: %s", res)
-			html = res.read()
 		except:
 			logger.debug("error opening archive")
 			return
