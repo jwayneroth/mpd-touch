@@ -12,14 +12,12 @@ from web.server.constants import *
 
 class RadioEndpoint(RequestHandler):
 	def parse_fmu_statuses(self):
-		# print('parse_fmu_statuses')
 		STATUS_URL = "https://wfmu.org/currentliveshows_aggregator.php?ch=1,4,6,8"
 		req = Request(
 			url = STATUS_URL,
 			headers = {'User-Agent': 'Mozilla/5.0'}
 		)
 		statuses = urlopen( req ).read()
-		#print('statues {0}'.format(statuses))
 		soup = BeautifulSoup(statuses, 'html.parser')
 		streams = soup.find_all('div', {'class': 'item-even'}) + soup.find_all('div', {'class': 'item-odd'})
 		streams_parsed = []
@@ -32,18 +30,19 @@ class RadioEndpoint(RequestHandler):
 			track = stream.find('div', {'class': 'bigline'})
 			if (track) :
 				track = track.get_text().strip()
-			# print('track {0}'.format(track))
 			show = stream.find('div', {'class': 'smallline'})
 			if (show) :
 				show = show.get_text().strip()
-			# print('show {0}'.format(show))
+			playlist = stream.find(href=re.compile('playlists'))
+			if (playlist) :
+				playlist = playlist['href']
 			if (title) :
 				streams_parsed.append({
 					'title': title,
 					'track': track,
-					'show': show
+					'show': show,
+					'playlist': playlist,
 				})
-		# print('streams_parsed: {0}', streams_parsed)
 		return streams_parsed
 
 	def initialize(self, app):
@@ -128,6 +127,7 @@ class RadioEndpoint(RequestHandler):
 					return
 
 				print('status-all statuses: {0}', statuses)
+
 				self.write({'statuses': statuses})
 
 		except:

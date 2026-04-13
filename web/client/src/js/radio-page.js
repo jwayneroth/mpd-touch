@@ -181,6 +181,9 @@ export default class RadioPage {
 
 		let i, title, li, track, show, needle, status;
 
+		trackHtml = '';
+		showHtml = '';
+
 		for (i = 0; i < FMU_STREAMS.length; i++) {
 			title = FMU_STREAMS[i].appTitle;
 			li = this.dom.streamsPanel.querySelector('li[data-title="' + title + '"] .listennow-current-track');
@@ -199,8 +202,21 @@ export default class RadioPage {
 			status = statuses.find(stts => {
 				return (stts.title && stts.title.indexOf(needle) > -1);
 			});
-			track.innerHTML = (status && status.track) ? status.track : '';
-			show.innerHTML = (status && status.show) ? status.show : '';
+			if ( status ) {
+				if (status.track) {
+					trackHtml = status.track;
+				}
+				if (status.show) {
+					showHtml = status.show;
+					if (status.playlist) {
+						showHtml = `<a href="${status.playlist}">${showHtml}</a>`;
+					}
+				} else if (status.playlist) {
+					showHtml = `<a href="${status.playlist}">playlist</a>`;
+				}
+			}
+			track.innerHTML = trackHtml;
+			show.innerHTML = showHtml;
 		}
 	}
 
