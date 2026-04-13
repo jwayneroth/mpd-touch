@@ -181,8 +181,8 @@ export default class RadioPage {
 
 		let i, title, li, track, show, needle, status;
 
-		trackHtml = '';
-		showHtml = '';
+		let trackHtml = '';
+		let showHtml = '';
 
 		for (i = 0; i < FMU_STREAMS.length; i++) {
 			title = FMU_STREAMS[i].appTitle;
@@ -209,10 +209,10 @@ export default class RadioPage {
 				if (status.show) {
 					showHtml = status.show;
 					if (status.playlist) {
-						showHtml = `<a href="${status.playlist}">${showHtml}</a>`;
+						showHtml = `<a href="https://wfmu.org/${status.playlist}" target="_blank">${showHtml}</a>`;
 					}
 				} else if (status.playlist) {
-					showHtml = `<a href="${status.playlist}">playlist</a>`;
+					showHtml = `<a href="https://wfmu.org/${status.playlist}" target="_blank">playlist</a>`;
 				}
 			}
 			track.innerHTML = trackHtml;
