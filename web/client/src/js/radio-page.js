@@ -179,16 +179,15 @@ export default class RadioPage {
 
 		console.log('onPHPStreamStatus', statuses);
 
-		let i, title, li, track, show, needle, status;
-
-		let trackHtml = '';
-		let showHtml = '';
+		let i, title, li, track, show, needle, status, trackHtml, showHtml;
 
 		for (i = 0; i < FMU_STREAMS.length; i++) {
 			title = FMU_STREAMS[i].appTitle;
 			li = this.dom.streamsPanel.querySelector('li[data-title="' + title + '"] .listennow-current-track');
 			track = li.querySelector('.current-title');
 			show = li.querySelector('.show-title');
+			trackHtml = '';
+			showHtml = '';
 			switch(title) {
 				case 'GtDR':
 					needle = 'Drummer';
